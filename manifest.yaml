@@ -93,8 +93,8 @@ physical_verification:
   - item: "M2 屏幕点亮与分辨率确认（8 色带图案）"
     required_action: "on-board 观察红色/绿色/蓝色/白色整屏与 8 条色带是否正常、满屏、无花屏；由学生录制启动视频作为证据"
     executed_at: "2026-10-10（启动视频录制于 14:45:59；色带帧取自该视频 n=49，t≈1.633s）"
-    evidence_path: "evidence/M2/color_bars_2026-10-10.jpg（由视频抽帧所得照片）+ evidence/M2/screen_boot_20261010.link.txt（原始视频，网盘链接待补）+ evidence/M2/resolution_2026-10-10.txt（rtconfig.h 摘录）"
-    agent_conclusion: "由学生录制启动视频、agent 抽帧核对（ffmpeg select n=49）：屏幕可正常点亮并显示彩色图案，色带水平、边界清晰、横向满宽，未见花屏/错位；配合编译产物 rtconfig.h（390x450），假设 A-01（屏幕实物与 SDK 配置一致）成立。局限：该帧为探针 v1 分行刷的中间态（可见约 7 条色带 + 底部尚未覆盖的白色区域），不是静止完整的 8 条色带；拍摄视角略倾斜，不可用于像素级测量。详见 evidence/M2/color_bars_2026-10-10.txt。"
+    evidence_path: "evidence/M2/color_bars_2026-10-10.jpg"
+    agent_conclusion: "由学生录制启动视频、agent 抽帧核对（ffmpeg select n=49）：屏幕可正常点亮并显示彩色图案，色带水平、边界清晰、横向满宽，未见花屏/错位；配合编译产物 rtconfig.h（390x450），假设 A-01（屏幕实物与 SDK 配置一致）成立。配套证据：抽帧说明见 evidence/M2/color_bars_2026-10-10.txt，原始启动视频见 evidence/M2/screen_boot_20261010.link.txt（网盘链接待补），分辨率依据见 evidence/M2/resolution_2026-10-10.txt。局限：该帧为探针 v1 分行刷的中间态（可见约 7 条色带 + 底部尚未覆盖的白色区域），不是静止完整的 8 条色带；拍摄视角略倾斜，不可用于像素级测量。"
 
 physical_verification_note: |
   M2 阶段的烧录（sftool write_flash --verify）与启动复位（CodeKit 串口复位）由 agent 执行、学生确认，
