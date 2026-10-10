@@ -59,8 +59,11 @@ design:
       decided_by: "学生拍板（agent 梳理三条共存方案代价并指出主观判据风险）"
 
 code:
-  repo_url: "<git仓库地址>"
-  commit_range: "<起始commit..结束commit，对应本次里程碑>"
+  repo_url: "https://github.com/kuro-0721/hsp-micro-rhythm.git"
+  commit_range: "3b43aa0..dae8ffd"
+  # 说明：覆盖 M1-方案评审 与 M2-关键技术验证 两个里程碑（均在 2026-10-10 收口）。
+  # 3b43aa0 = 仓库初始化首提交；dae8ffd = M1 收口提交（即首次推送时 main 分支的末端）。
+  # 仓库于 2026-10-10 由学生 kuro-0721 创建并首次推送，含 main 分支与上述两个里程碑标签。
 
 physical_verification:
   # 每一个物理验证节点都要有对应记录，节点类型见配套文档《Agent协作开发与评审机制》第三节表格
