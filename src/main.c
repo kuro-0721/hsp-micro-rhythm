@@ -9,6 +9,9 @@
  * 行为：启动后打印 "Hello world!"，随后 RGB 灯按 红→绿→蓝 依次亮 500ms、灭 500ms，
  *       每个颜色串口打印一行日志。可作为 T0 的编译、烧录和串口取证对象。
  *
+ * M2 阶段：额外调用 m2_probe_start()（见 src/m2_probe.c），在保留上述 RGB 心跳的前提下
+ *       验证“屏幕点亮 + 刷新帧率 + 触摸事件时间戳”。M3 定稿后再换成 docs/02 的正式模块。
+ *
  * 新增 .c 文件直接放进 src/ 即可，src/SConscript 会自动收集。
  */
 #include "rtthread.h"
@@ -40,6 +43,9 @@ static const struct rgb_color color_table[] =
 
 static struct rt_device *rgbled_device;
 
+/* M2 原型入口（src/m2_probe.c）。不引入头文件，避免改动构建脚本的 include 路径。 */
+extern void m2_probe_start(void);
+
 static void rgb_led_init(void)
 {
 #ifdef SF32LB52X
@@ -68,6 +74,9 @@ int main(void)
     rt_kprintf("Hello world!\n");
 
     rgb_led_init();
+
+    /* M2 关键技术验证：点亮屏幕、测帧率、打印触摸事件时间戳 */
+    m2_probe_start();
 
     while (1)
     {
