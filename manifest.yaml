@@ -41,6 +41,10 @@ design:
       alternatives_considered: "全 LVGL v8 实现（开发快，但 SDK 例程 README 标注'未验证'，且动画不保证帧间隔，判定精度不可控）；混合方案（LVGL 做菜单 + 自绘游戏层，复杂度对单人项目偏高）"
       rationale: "时序指标本身就是交付物；自绘能把帧间隔与判定延迟握在自己手里，并输出可复核的统计，同时可利用 CO5300 的 TE/VSYNC 对齐刷帧防撕裂"
       decided_by: "agent建议+学生确认"
+    - decision: "渲染缓冲：整屏缓冲（PSRAM）+ 每帧单次提交，废弃分行刷（见 docs/adr/0003）"
+      alternatives_considered: "分行刷（每帧 8 次提交，内存占用小但需 351KB→46KB）；整屏双缓冲（多 351KB，需要缓冲切换与 TE 协调）"
+      rationale: "M2 实测（480 样本/模式）表明瓶颈是“每次提交等一个 VSYNC（≈15.8ms）”，不是带宽：分行刷 132ms/帧（≈7.6fps），整屏单次提交 29ms/帧、p95 31ms、0 超时帧。PSRAM 8MB 下单缓冲 351KB 容量充裕，省这 300KB 没有意义"
+      decided_by: "agent建议+学生确认（agent 提供可证伪的对比实验，学生拍板采纳）"
     - decision: "游戏素材：曲目用自制或明确免授权（CC0/CC-BY），谱面与美术一律自制（见 docs/adr/0002）"
       alternatives_considered: "直接使用 Phigros 的曲目与谱面（零成本、效果好，但侵犯版权且与课程学术诚信要求冲突，REQ-105 直接不通过）"
       rationale: "谱面是判定时刻与轨道的数据，必须自己可控；素材来源必须可自证，避免评审时说不清来源"
@@ -68,6 +72,26 @@ physical_verification:
     evidence_path: "evidence/T0/rgb_blink_20261010.link.txt"
     agent_conclusion: "视频元信息 1280x720 / 30fps / 10.147733s；agent 用 ffmpeg 抽帧（0.25s/帧）后逐帧取色，辉光依次为绿→蓝→红循环，红色峰值出现在 t=2.50 / 5.50 / 8.50 s（间隔 3.0 s）。串口证据显示相邻颜色日志间隔 1.002~1.004 s（见 evidence/T0/serial_rgb_cycle_2026-10-10.txt 与 boot_log）。两者与固件“每色亮 500ms + 灭 500ms”一致。局限：4fps 抽帧无法判定颜色起点顺序与毫秒级时长；网盘链接待补。"
 
+  - item: "M2 帧率对比实验（分行刷 vs 整屏单缓冲）"
+    required_action: "学生批准架构实验；因学生要求免除拆插，烧录与复位由 agent 用 sftool / CodeKit 串口复位执行，屏幕现象由学生确认"
+    executed_at: "2026-10-10T15:2x+08:00"
+    evidence_path: "evidence/M2/band_vs_full_2026-10-10.txt"
+    agent_conclusion: "同一固件内交替两模式各 480 样本：BAND avg=132ms p95=133ms draw=5ms flush=126ms miss=480；FULL avg=29ms p95=31ms max=33ms draw=8ms flush=21ms miss=0。判定：瓶颈为每次提交等待 VSYNC（126/8≈15.8ms≈一个 60Hz 面板帧），非带宽；整屏单次提交满足 REQ-101（p95≤33ms），已写入 ADR-0003。局限：时间戳分辨率 1ms；30fps 下 CPU 填充余量仅 4ms。"
+  - item: "M2 触摸事件时间戳采集"
+    required_action: "学生在屏幕上点按/滑动若干次，由 agent 抓取串口原始字节"
+    executed_at: "2026-10-10T14:58~15:00+08:00"
+    evidence_path: "evidence/M2/touch_timestamp_2026-10-10.txt"
+    agent_conclusion: "254 条触摸事件中，中断时刻与读点时刻的差值：0ms × 253、1ms × 1 次。由于固件时间戳分辨率为 1ms，准确结论只能是“中断→读点 < 1ms”，不得写成“0 延迟”。坐标实测均在屏内（最大如 (319,377)）。"
+  - item: "M2 屏幕点亮与分辨率确认"
+    required_action: "on-board 观察红色/绿色/蓝色/白色整屏与 8 条色带是否正常、满屏、无花屏"
+    executed_at: "2026-10-10"
+    evidence_path: "project/build_sf32lb52-lchspi-ulp_hcpu/rtconfig.h（LCD_HOR_RES_MAX 390 / LCD_VER_RES_MAX 450）+ 学生目视确认"
+    agent_conclusion: "编译产物的 rtconfig.h 明确写出 390x450，且屏幕色带与移动横条渲染正常，假设 A-01（屏幕实物与 SDK 配置一致）成立。注意：本次未保存色带照片，属于证据形式上的缺口（已在 known_issues 登记）。"
+
+physical_verification_note: |
+  M2 阶段的烧录（sftool write_flash --verify）与启动复位（CodeKit 串口复位）由 agent 执行、学生确认，
+  不是学生亲自操作（见 docs/06 的 P-09）。串口数据为真实抓取的设备原始字节，未做任何修改。
+
 test_results:
   # T0 为环境与仓库任务（非 REQ 驱动的功能需求），未在 docs/03 建立 TC 编号，
   # 故本次不填 test_results，直接由 physical_verification 承接证据。
@@ -79,6 +103,10 @@ test_results:
     evidence_path: "<对应的原始数据/截图路径>"
 
 known_issues:
+  - "**流程偏离**：M2 阶段的固件烧录与启动复位由 agent 执行（学生要求免除拆插 USB），屏幕现象由学生确认；未按“学生亲自烧录”记录（docs/06 的 P-09）。"
+  - "M2 的时间戳基于 rt_tick_get_millisecond()，分辨率仅 1ms，因此触摸“中断→读点 0ms”只能表述为 <1ms，不能当精确值；端到端延迟（REQ-104）仍需 GPIO 打点测量。"
+  - "帧率虽达标（p95 31ms），但 30fps 下 CPU 填充仅剩 4ms 余量；音符密集时可能掉帧，后续必须只刷脏区或启用 EPIC 硬件 2D 加速。"
+  - "M2 未保存屏幕色带照片，分辨率确认目前依赖编译产物 rtconfig.h + 学生目视描述，属证据形式缺口，M3 需补拍。"
   - "RGB 闪烁视频（6.4MB）受 .gitignore 第 23 行 “*.mp4” 规则限制未入库；链接文件 evidence/T0/rgb_blink_20261010.link.txt 中的网盘链接与提取码仍为待填占位符，须在里程碑提交前补齐（现仅本地可见）。"
   - "启动日志窗口不完整：CodeKit 串口监视器只保留最近 20~60 条记录，本次从 SDK 启动中期开始，不含 ROM / 引导阶段输出；如需完整引导日志需在缓冲区为空时重做一次采集。"
   - "板载无 RESET 键，复位只能靠拔插 USB；且要捕获上电瞬间的启动横幅，必须先建立串口监听再复位，否则横幅会错过。"

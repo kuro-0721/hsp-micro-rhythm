@@ -1,0 +1,144 @@
+# M2 probe v2 对比实验：分行刷 vs 整屏单缓冲 —— 原始字节，未做任何修改
+#
+# 设备：黄山派 sf32lb52-lchspi-ulp + 22Pin 屏幕拓展板（1.85" 390x450，CO5300 QSPI，TE 可用）
+# 固件：src/m2_probe.c v2（同一固件内每 30 帧切换一次模式），Binary size 301,852 B
+# 采集方式：agent 用 PowerShell System.IO.Ports.SerialPort 直接读 COM9 原始字节写盘
+#           （属性赋值方式构造 SerialPort；后台 Start-Job 执行）。**未修改内容**。
+# 采集窗口：2026-10-10 约 15:2x（本地时间 GMT+8），约 45 秒、117 行、5346 字节
+#
+# 实验判据（先定判据再看数据）：
+#   VSYNC 限制（每次提交等一个面板帧）→ FULL 单帧应 ≈16.7ms
+#   带宽限制                          → FULL 单帧应 ≈123ms
+#
+# 实测（480 个样本 / 模式，agent 统计）：
+#   mode=BAND n=480 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=480
+#   mode=FULL n=480 avg=29ms  p95=31ms  max=33ms  draw=8ms flush=21ms  miss=0
+#
+# 结论：
+#   1) 瓶颈是「每次提交的固定开销（等 VSYNC）」，不是带宽：
+#      BAND 每帧 8 次提交 → 126ms 等待 ≈ 8 × 15.8ms（≈ 一个 60Hz 面板帧）
+#      FULL 每帧 1 次提交 → 21ms 等待（同样传输 351KB）
+#   2) FULL 模式单帧渲染 29ms（draw 8ms + flush 21ms），p95=31ms，超时帧 0
+#      → 配合 33ms 帧节拍可稳定在 30fps，**REQ-101（p95 ≤ 33ms）可达**
+#   3) CPU 填充 175,500 像素耗时 8ms（≈22 Mpx/s），占单帧 28%，后续可用
+#      只刷脏区或硬件 2D 加速（BSP_USING_EPIC 已使能）继续压缩
+#   局限：时间戳基于 rt_tick_get_millisecond()，分辨率 1ms；上述毫秒数为该精度下的读数。
+#
+# ==================== 以下为原始字节内容 ====================
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[M2] mode=BAND n=240 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=240
+[M2] mode=FULL n=210 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=450 target=33ms ----
+[M2] switch to mode=FULL
+[course_starter] rgb -> red
+[M2] mode=BAND n=240 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=240
+[M2] mode=FULL n=240 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=480 target=33ms ----
+[M2] switch to mode=BAND
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[M2] mode=BAND n=270 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=270
+[M2] mode=FULL n=240 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=510 target=33ms ----
+[M2] switch to mode=FULL
+[course_starter] rgb -> blue
+[M2] mode=BAND n=270 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=270
+[M2] mode=FULL n=270 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=540 target=33ms ----
+[M2] switch to mode=BAND
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[M2] mode=BAND n=300 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=300
+[M2] mode=FULL n=270 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=570 target=33ms ----
+[M2] switch to mode=FULL
+[course_starter] rgb -> green
+[M2] mode=BAND n=300 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=300
+[M2] mode=FULL n=300 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=600 target=33ms ----
+[M2] switch to mode=BAND
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[M2] mode=BAND n=330 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=330
+[M2] mode=FULL n=300 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=630 target=33ms ----
+[M2] switch to mode=FULL
+[course_starter] rgb -> red
+[M2] mode=BAND n=330 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=330
+[M2] mode=FULL n=330 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=660 target=33ms ----
+[M2] switch to mode=BAND
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[M2] mode=BAND n=360 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=360
+[M2] mode=FULL n=330 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=690 target=33ms ----
+[M2] switch to mode=FULL
+[course_starter] rgb -> blue
+[M2] mode=BAND n=360 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=360
+[M2] mode=FULL n=360 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=720 target=33ms ----
+[M2] switch to mode=BAND
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[M2] mode=BAND n=390 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=390
+[M2] mode=FULL n=360 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=750 target=33ms ----
+[M2] switch to mode=FULL
+[course_starter] rgb -> green
+[M2] mode=BAND n=390 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=390
+[M2] mode=FULL n=390 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=780 target=33ms ----
+[M2] switch to mode=BAND
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[M2] mode=BAND n=420 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=420
+[M2] mode=FULL n=390 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=810 target=33ms ----
+[M2] switch to mode=FULL
+[course_starter] rgb -> red
+[M2] mode=BAND n=420 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=420
+[M2] mode=FULL n=420 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=840 target=33ms ----
+[M2] switch to mode=BAND
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[M2] mode=BAND n=450 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=450
+[M2] mode=FULL n=420 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=870 target=33ms ----
+[M2] switch to mode=FULL
+[course_starter] rgb -> blue
+[M2] mode=BAND n=450 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=450
+[M2] mode=FULL n=450 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=900 target=33ms ----
+[M2] switch to mode=BAND
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[M2] mode=BAND n=480 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=480
+[M2] mode=FULL n=450 avg=29ms p95=31ms max=31ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=930 target=33ms ----
+[M2] switch to mode=FULL
+[course_starter] rgb -> red
+[M2] mode=BAND n=480 avg=132ms p95=133ms max=133ms draw=5ms flush=126ms miss=480
+[M2] mode=FULL n=480 avg=29ms p95=31ms max=33ms draw=8ms flush=21ms miss=0
+[M2] ---- frame=960 target=33ms ----
+[M2] switch to mode=BAND
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
