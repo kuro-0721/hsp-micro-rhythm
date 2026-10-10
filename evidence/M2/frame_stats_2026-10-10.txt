@@ -1,0 +1,23 @@
+# M2 原型串口捕获（帧间隔统计）—— 原始字节，未做任何修改
+#
+# 设备：黄山派 sf32lb52-lchspi-ulp + 22Pin 屏幕拓展板（1.85" 390x450）
+# 固件：src/m2_probe.c（分行刷 band=60 行，每帧 8 次串行提交），提交 4e6acce
+# 采集方式：agent 用 PowerShell System.IO.Ports.SerialPort 打开 COM9（不依赖 CodeKit 串口工具）
+#           直接读原始字节写入文件；**未做任何内容修改**（无时间戳前缀、无删减）。
+# 采集窗口：2026-10-10 14:52:35 ~ 14:52:45（本地时间 GMT+8），共 10 秒、437 字节
+# 说明：本文件不是启动日志——采集时设备已在运行（frame 计数已到 960），
+#       启动一次性的 [M2] lcd info / fill duration 输出不在此窗口内，需要复位后重新采集。
+#
+# ==================== 以下为原始字节内容 ====================
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[M2] frame=960 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[M2] frame=990 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[course_starter] rgb -> green

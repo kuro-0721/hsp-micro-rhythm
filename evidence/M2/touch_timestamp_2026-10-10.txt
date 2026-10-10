@@ -1,0 +1,333 @@
+# M2 原型串口捕获（触摸事件时间戳 + 帧统计）—— 原始字节，未做任何修改
+#
+# 设备：黄山派 sf32lb52-lchspi-ulp + 22Pin 屏幕拓展板（1.85" 390x450，触摸 FT6146）
+# 固件：src/m2_probe.c（分行刷 band=60 行），提交 4e6acce
+# 采集方式：agent 用 PowerShell System.IO.Ports.SerialPort 打开 COM9 直接读原始字节并写盘
+#           （Windows 上用 Start-Job 后台执行）；**未对内容做任何修改**（无时间戳前缀、无删减）。
+# 采集窗口：2026-10-10 约 14:58 ~ 15:00（本地时间 GMT+8），学生在窗口内点按/滑动屏幕
+# 内容统计：316 行 = 254 条 [M2] touch + 12 条 [M2] frame + 其余为 [course_starter] rgb 心跳
+#
+# 本次读数（由 agent 统计，非推测）：
+#   touch isr=...ms 与 read=...ms 的差值：0ms × 253 次，1ms × 1 次
+#     ⚠️ 注意：固件用的是 rt_tick_get_millisecond()，分辨率只有 1ms，
+#        因此该结果只能说明「中断到读点 < 1ms」，不能说"精确等于 0ms"。
+#   帧统计：avg=131ms p95=132ms max=132ms miss=30（窗口 30 帧，target=33ms）
+#     ⚠️ 判定：REQ-101（帧间隔 p95 ≤ 33ms）**不达标**，实测约为目标的 4 倍。
+#
+# ==================== 以下为原始字节内容 ====================
+[M2] touch #804 DOWN (234,216) isr=295139ms read=295139ms irq2read=0ms
+[M2] touch #805 UP (234,216) isr=295294ms read=295294ms irq2read=0ms
+[M2] touch #806 DOWN (239,235) isr=295585ms read=295585ms irq2read=0ms
+[M2] touch #807 UP (239,235) isr=295679ms read=295679ms irq2read=0ms
+[course_starter] rgb -> blue
+[M2] touch #808 DOWN (247,241) isr=295971ms read=295971ms irq2read=0ms
+[M2] touch #809 UP (247,241) isr=296116ms read=296116ms irq2read=0ms
+[M2] touch #810 DOWN (247,216) isr=296345ms read=296345ms irq2read=0ms
+[M2] touch #811 UP (247,216) isr=296448ms read=296448ms irq2read=0ms
+[course_starter] rgb -> red
+[M2] touch #812 DOWN (259,245) isr=296750ms read=296750ms irq2read=0ms
+[M2] touch #813 UP (259,245) isr=296833ms read=296833ms irq2read=0ms
+[M2] touch #814 DOWN (256,244) isr=297051ms read=297051ms irq2read=0ms
+[M2] touch #815 UP (256,244) isr=297124ms read=297124ms irq2read=0ms
+[M2] touch #816 UP (250,241) isr=297312ms read=297312ms irq2read=0ms
+[M2] touch #817 DOWN (250,241) isr=297323ms read=297323ms irq2read=0ms
+[M2] touch #818 UP (250,241) isr=297385ms read=297385ms irq2read=0ms
+[M2] frame=2250 avg=131ms p95=132ms max=133ms miss=30 (target=33ms)
+[M2] touch #819 UP (245,214) isr=297624ms read=297624ms irq2read=0ms
+[M2] touch #820 DOWN (245,214) isr=297634ms read=297634ms irq2read=0ms
+[M2] touch #821 UP (245,214) isr=297665ms read=297665ms irq2read=0ms
+[course_starter] rgb -> green
+[M2] touch #822 UP (242,211) isr=297894ms read=297894ms irq2read=0ms
+[M2] touch #823 DOWN (242,211) isr=297904ms read=297904ms irq2read=0ms
+[M2] touch #824 UP (242,211) isr=297925ms read=297925ms irq2read=0ms
+[M2] touch #825 DOWN (248,216) isr=298154ms read=298154ms irq2read=0ms
+[M2] touch #826 UP (248,216) isr=298195ms read=298195ms irq2read=0ms
+[M2] touch #827 DOWN (243,244) isr=298548ms read=298548ms irq2read=0ms
+[M2] touch #828 UP (243,244) isr=298590ms read=298590ms irq2read=0ms
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[M2] touch #829 DOWN (201,307) isr=299754ms read=299754ms irq2read=0ms
+[M2] touch #830 UP (201,307) isr=299815ms read=299815ms irq2read=0ms
+[M2] touch #831 UP (200,310) isr=299972ms read=299972ms irq2read=0ms
+[M2] touch #832 DOWN (200,310) isr=299982ms read=299982ms irq2read=0ms
+[M2] touch #833 UP (200,310) isr=300023ms read=300023ms irq2read=0ms
+[M2] touch #834 UP (235,312) isr=300200ms read=300200ms irq2read=0ms
+[M2] touch #835 DOWN (235,312) isr=300210ms read=300210ms irq2read=0ms
+[M2] touch #836 UP (235,312) isr=300241ms read=300241ms irq2read=0ms
+[M2] touch #837 DOWN (213,308) isr=300470ms read=300470ms irq2read=0ms
+[M2] touch #838 UP (213,308) isr=300511ms read=300511ms irq2read=0ms
+[course_starter] rgb -> green
+[M2] touch #839 DOWN (222,260) isr=300865ms read=300865ms irq2read=0ms
+[M2] touch #840 UP (222,260) isr=300886ms read=300886ms irq2read=0ms
+[M2] touch #841 DOWN (249,257) isr=301198ms read=301198ms irq2read=0ms
+[M2] touch #842 UP (249,257) isr=301322ms read=301322ms irq2read=0ms
+[M2] touch #843 UP (264,257) isr=301441ms read=301441ms irq2read=0ms
+[M2] touch #844 DOWN (264,257) isr=301449ms read=301449ms irq2read=0ms
+[M2] touch #845 UP (264,257) isr=301519ms read=301519ms irq2read=0ms
+[M2] frame=2280 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[course_starter] rgb -> blue
+[M2] touch #846 DOWN (252,267) isr=301831ms read=301831ms irq2read=0ms
+[M2] touch #847 UP (252,267) isr=301872ms read=301872ms irq2read=0ms
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[M2] frame=2310 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[M2] frame=2340 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[M2] touch #848 DOWN (188,326) isr=309743ms read=309743ms irq2read=0ms
+[course_starter] rgb -> green
+[M2] touch #849 UP (188,326) isr=309815ms read=309815ms irq2read=0ms
+[M2] touch #850 UP (185,324) isr=309992ms read=309992ms irq2read=0ms
+[M2] touch #851 DOWN (185,324) isr=310003ms read=310003ms irq2read=0ms
+[M2] touch #852 UP (185,324) isr=310033ms read=310033ms irq2read=0ms
+[M2] touch #853 DOWN (156,324) isr=310127ms read=310127ms irq2read=0ms
+[M2] touch #854 UP (156,324) isr=310231ms read=310231ms irq2read=0ms
+[M2] touch #855 UP (184,323) isr=310387ms read=310387ms irq2read=0ms
+[M2] touch #856 DOWN (184,323) isr=310397ms read=310397ms irq2read=0ms
+[M2] touch #857 UP (184,323) isr=310480ms read=310480ms irq2read=0ms
+[M2] touch #858 DOWN (198,323) isr=310606ms read=310606ms irq2read=0ms
+[M2] touch #859 UP (198,323) isr=310688ms read=310688ms irq2read=0ms
+[course_starter] rgb -> blue
+[M2] touch #860 UP (195,322) isr=310865ms read=310865ms irq2read=0ms
+[M2] touch #861 DOWN (195,322) isr=310876ms read=310876ms irq2read=0ms
+[M2] touch #862 UP (195,322) isr=310917ms read=310917ms irq2read=0ms
+[M2] touch #863 DOWN (212,322) isr=311021ms read=311021ms irq2read=0ms
+[M2] touch #864 UP (212,322) isr=311135ms read=311135ms irq2read=0ms
+[M2] touch #865 UP (201,321) isr=311260ms read=311260ms irq2read=0ms
+[M2] touch #866 DOWN (201,321) isr=311270ms read=311270ms irq2read=0ms
+[M2] touch #867 UP (201,321) isr=311311ms read=311311ms irq2read=0ms
+[M2] touch #868 UP (208,323) isr=311467ms read=311467ms irq2read=0ms
+[M2] touch #869 DOWN (208,323) isr=311478ms read=311478ms irq2read=0ms
+[M2] touch #870 UP (208,323) isr=311550ms read=311550ms irq2read=0ms
+[M2] touch #871 UP (200,323) isr=311741ms read=311741ms irq2read=0ms
+[M2] touch #872 DOWN (200,323) isr=311749ms read=311749ms irq2read=0ms
+[course_starter] rgb -> red
+[M2] touch #873 UP (200,323) isr=311799ms read=311799ms irq2read=0ms
+[M2] touch #874 UP (207,323) isr=311945ms read=311945ms irq2read=0ms
+[M2] touch #875 DOWN (207,323) isr=311955ms read=311955ms irq2read=0ms
+[M2] touch #876 UP (207,323) isr=312007ms read=312007ms irq2read=0ms
+[M2] touch #877 UP (201,320) isr=312163ms read=312163ms irq2read=0ms
+[M2] touch #878 DOWN (201,320) isr=312173ms read=312173ms irq2read=0ms
+[M2] touch #879 UP (201,320) isr=312235ms read=312235ms irq2read=0ms
+[M2] touch #880 UP (209,321) isr=312370ms read=312370ms irq2read=0ms
+[M2] touch #881 DOWN (209,321) isr=312380ms read=312380ms irq2read=0ms
+[M2] touch #882 UP (209,321) isr=312442ms read=312442ms irq2read=0ms
+[M2] touch #883 UP (208,321) isr=312577ms read=312577ms irq2read=0ms
+[M2] touch #884 DOWN (208,321) isr=312588ms read=312588ms irq2read=0ms
+[M2] touch #885 UP (208,321) isr=312681ms read=312681ms irq2read=0ms
+[course_starter] rgb -> green
+[M2] touch #886 UP (199,318) isr=312909ms read=312909ms irq2read=0ms
+[M2] touch #887 DOWN (199,318) isr=312920ms read=312920ms irq2read=0ms
+[M2] touch #888 UP (199,318) isr=312961ms read=312961ms irq2read=0ms
+[M2] touch #889 UP (204,318) isr=313141ms read=313141ms irq2read=0ms
+[M2] touch #890 DOWN (204,318) isr=313149ms read=313149ms irq2read=0ms
+[M2] touch #891 UP (204,318) isr=313168ms read=313168ms irq2read=0ms
+[M2] touch #892 DOWN (210,319) isr=313314ms read=313314ms irq2read=0ms
+[M2] touch #893 UP (210,319) isr=313376ms read=313376ms irq2read=0ms
+[M2] frame=2370 avg=131ms p95=132ms max=133ms miss=30 (target=33ms)
+[M2] touch #894 UP (211,320) isr=313553ms read=313553ms irq2read=0ms
+[M2] touch #895 DOWN (211,320) isr=313563ms read=313563ms irq2read=0ms
+[M2] touch #896 UP (211,320) isr=313594ms read=313594ms irq2read=0ms
+[M2] touch #897 UP (207,318) isr=313782ms read=313782ms irq2read=0ms
+[M2] touch #898 DOWN (207,318) isr=313792ms read=313792ms irq2read=0ms
+[course_starter] rgb -> blue
+[M2] touch #899 UP (207,318) isr=313833ms read=313833ms irq2read=0ms
+[M2] touch #900 UP (214,320) isr=313958ms read=313958ms irq2read=0ms
+[M2] touch #901 DOWN (214,320) isr=313969ms read=313969ms irq2read=0ms
+[M2] touch #902 UP (214,320) isr=314051ms read=314051ms irq2read=0ms
+[M2] touch #903 DOWN (212,320) isr=314218ms read=314218ms irq2read=0ms
+[M2] touch #904 UP (212,320) isr=314280ms read=314280ms irq2read=0ms
+[M2] touch #905 UP (208,320) isr=314477ms read=314477ms irq2read=0ms
+[M2] touch #906 DOWN (208,320) isr=314487ms read=314487ms irq2read=0ms
+[M2] touch #907 UP (208,320) isr=314539ms read=314539ms irq2read=0ms
+[M2] touch #908 DOWN (207,320) isr=314736ms read=314736ms irq2read=0ms
+[course_starter] rgb -> red
+[M2] touch #909 UP (207,320) isr=314840ms read=314840ms irq2read=0ms
+[M2] touch #910 UP (216,322) isr=315006ms read=315006ms irq2read=0ms
+[M2] touch #911 DOWN (216,322) isr=315016ms read=315016ms irq2read=0ms
+[M2] touch #912 UP (216,322) isr=315099ms read=315099ms irq2read=0ms
+[M2] touch #913 DOWN (215,321) isr=315660ms read=315660ms irq2read=0ms
+[M2] touch #914 UP (215,321) isr=315722ms read=315722ms irq2read=0ms
+[course_starter] rgb -> green
+[M2] touch #915 UP (234,321) isr=315857ms read=315857ms irq2read=0ms
+[M2] touch #916 DOWN (234,321) isr=315868ms read=315868ms irq2read=0ms
+[M2] touch #917 UP (234,321) isr=315930ms read=315930ms irq2read=0ms
+[M2] touch #918 UP (238,324) isr=316065ms read=316065ms irq2read=0ms
+[M2] touch #919 DOWN (238,324) isr=316075ms read=316075ms irq2read=0ms
+[M2] touch #920 UP (238,324) isr=316116ms read=316116ms irq2read=0ms
+[M2] touch #921 UP (239,323) isr=316303ms read=316304ms irq2read=1ms
+[M2] touch #922 DOWN (239,323) isr=316314ms read=316314ms irq2read=0ms
+[M2] touch #923 UP (239,323) isr=316365ms read=316365ms irq2read=0ms
+[M2] touch #924 DOWN (241,323) isr=316512ms read=316512ms irq2read=0ms
+[M2] touch #925 UP (241,323) isr=316574ms read=316574ms irq2read=0ms
+[M2] touch #926 DOWN (237,323) isr=316730ms read=316730ms irq2read=0ms
+[M2] touch #927 UP (237,323) isr=316771ms read=316771ms irq2read=0ms
+[course_starter] rgb -> blue
+[M2] touch #928 UP (239,323) isr=316941ms read=316941ms irq2read=0ms
+[M2] touch #929 DOWN (239,323) isr=316949ms read=316949ms irq2read=0ms
+[M2] touch #930 UP (239,323) isr=317020ms read=317020ms irq2read=0ms
+[M2] touch #931 UP (250,323) isr=317197ms read=317197ms irq2read=0ms
+[M2] touch #932 DOWN (250,323) isr=317207ms read=317207ms irq2read=0ms
+[M2] touch #933 UP (250,323) isr=317269ms read=317269ms irq2read=0ms
+[M2] frame=2400 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[M2] touch #934 UP (236,324) isr=317446ms read=317446ms irq2read=0ms
+[M2] touch #935 DOWN (236,324) isr=317456ms read=317456ms irq2read=0ms
+[M2] touch #936 UP (236,324) isr=317549ms read=317549ms irq2read=0ms
+[M2] touch #937 DOWN (255,326) isr=317685ms read=317685ms irq2read=0ms
+[M2] touch #938 UP (255,326) isr=317788ms read=317788ms irq2read=0ms
+[course_starter] rgb -> red
+[M2] touch #939 UP (246,326) isr=317954ms read=317954ms irq2read=0ms
+[M2] touch #940 DOWN (246,326) isr=317965ms read=317965ms irq2read=0ms
+[M2] touch #941 UP (246,326) isr=318027ms read=318027ms irq2read=0ms
+[M2] touch #942 UP (262,326) isr=318163ms read=318163ms irq2read=0ms
+[M2] touch #943 DOWN (262,326) isr=318173ms read=318173ms irq2read=0ms
+[M2] touch #944 UP (262,326) isr=318256ms read=318256ms irq2read=0ms
+[course_starter] rgb -> green
+[M2] touch #945 DOWN (244,320) isr=318849ms read=318849ms irq2read=0ms
+[M2] touch #946 UP (244,320) isr=318859ms read=318859ms irq2read=0ms
+[M2] touch #947 UP (246,322) isr=319046ms read=319046ms irq2read=0ms
+[M2] touch #948 DOWN (246,322) isr=319056ms read=319056ms irq2read=0ms
+[M2] touch #949 UP (246,322) isr=319097ms read=319097ms irq2read=0ms
+[M2] touch #950 UP (249,321) isr=319285ms read=319285ms irq2read=0ms
+[M2] touch #951 DOWN (249,321) isr=319295ms read=319295ms irq2read=0ms
+[M2] touch #952 UP (249,321) isr=319388ms read=319388ms irq2read=0ms
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[M2] frame=2430 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[M2] touch #953 DOWN (184,198) isr=323596ms read=323596ms irq2read=0ms
+[M2] touch #954 UP (184,198) isr=323648ms read=323648ms irq2read=0ms
+[M2] touch #955 DOWN (137,211) isr=323804ms read=323804ms irq2read=0ms
+[course_starter] rgb -> red
+[M2] touch #956 UP (137,211) isr=323876ms read=323876ms irq2read=0ms
+[M2] touch #957 DOWN (137,237) isr=324001ms read=324001ms irq2read=0ms
+[M2] touch #958 UP (137,237) isr=324042ms read=324042ms irq2read=0ms
+[M2] touch #959 DOWN (146,308) isr=324262ms read=324262ms irq2read=0ms
+[M2] touch #960 UP (146,308) isr=324303ms read=324303ms irq2read=0ms
+[M2] touch #961 UP (205,330) isr=324531ms read=324531ms irq2read=0ms
+[M2] touch #962 DOWN (205,330) isr=324542ms read=324542ms irq2read=0ms
+[M2] touch #963 UP (205,330) isr=324666ms read=324666ms irq2read=0ms
+[M2] touch #964 DOWN (203,292) isr=324760ms read=324760ms irq2read=0ms
+[M2] touch #965 UP (203,292) isr=324832ms read=324832ms irq2read=0ms
+[course_starter] rgb -> green
+[M2] touch #966 DOWN (230,235) isr=324884ms read=324884ms irq2read=0ms
+[M2] touch #967 UP (230,235) isr=324998ms read=324998ms irq2read=0ms
+[M2] touch #968 DOWN (231,175) isr=325082ms read=325082ms irq2read=0ms
+[M2] touch #969 UP (231,175) isr=325185ms read=325185ms irq2read=0ms
+[M2] frame=2460 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[M2] touch #970 DOWN (218,135) isr=325310ms read=325310ms irq2read=0ms
+[M2] touch #971 UP (218,135) isr=325372ms read=325372ms irq2read=0ms
+[M2] touch #972 DOWN (256,146) isr=325528ms read=325528ms irq2read=0ms
+[M2] touch #973 UP (256,146) isr=325580ms read=325580ms irq2read=0ms
+[M2] touch #974 UP (252,241) isr=325757ms read=325757ms irq2read=0ms
+[course_starter] rgb -> blue
+[M2] touch #975 DOWN (245,295) isr=325924ms read=325924ms irq2read=0ms
+[M2] touch #976 UP (245,295) isr=325966ms read=325966ms irq2read=0ms
+[M2] touch #977 DOWN (237,348) isr=326132ms read=326132ms irq2read=0ms
+[M2] touch #978 UP (237,348) isr=326184ms read=326184ms irq2read=0ms
+[M2] touch #979 DOWN (237,351) isr=326319ms read=326319ms irq2read=0ms
+[M2] touch #980 UP (237,351) isr=326433ms read=326433ms irq2read=0ms
+[M2] touch #981 UP (246,296) isr=326568ms read=326568ms irq2read=0ms
+[M2] touch #982 DOWN (246,296) isr=326578ms read=326578ms irq2read=0ms
+[M2] touch #983 UP (246,296) isr=326609ms read=326609ms irq2read=0ms
+[M2] touch #984 UP (293,263) isr=326786ms read=326786ms irq2read=0ms
+[M2] touch #985 DOWN (293,263) isr=326796ms read=326796ms irq2read=0ms
+[M2] touch #986 UP (293,263) isr=326879ms read=326879ms irq2read=0ms
+[course_starter] rgb -> red
+[M2] touch #987 DOWN (240,374) isr=327285ms read=327285ms irq2read=0ms
+[M2] touch #988 UP (240,374) isr=327305ms read=327305ms irq2read=0ms
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[M2] frame=2490 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[course_starter] rgb -> red
+[M2] touch #989 DOWN (248,305) isr=329945ms read=329945ms irq2read=0ms
+[M2] touch #990 UP (248,305) isr=330038ms read=330038ms irq2read=0ms
+[M2] touch #991 UP (266,301) isr=330205ms read=330205ms irq2read=0ms
+[M2] touch #992 DOWN (266,301) isr=330215ms read=330215ms irq2read=0ms
+[M2] touch #993 UP (266,301) isr=330277ms read=330277ms irq2read=0ms
+[M2] touch #994 DOWN (307,298) isr=330392ms read=330392ms irq2read=0ms
+[M2] touch #995 UP (307,298) isr=330443ms read=330443ms irq2read=0ms
+[M2] touch #996 DOWN (298,255) isr=330558ms read=330558ms irq2read=0ms
+[M2] touch #997 UP (298,255) isr=330620ms read=330620ms irq2read=0ms
+[M2] touch #998 UP (208,250) isr=330818ms read=330818ms irq2read=0ms
+[M2] touch #999 DOWN (208,250) isr=330828ms read=330828ms irq2read=0ms
+[M2] touch #1000 UP (208,250) isr=330849ms read=330849ms irq2read=0ms
+[course_starter] rgb -> green
+[M2] touch #1001 DOWN (232,292) isr=330984ms read=330984ms irq2read=0ms
+[M2] touch #1002 UP (232,292) isr=331057ms read=331057ms irq2read=0ms
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[M2] frame=2520 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[course_starter] rgb -> green
+[course_starter] rgb -> blue
+[course_starter] rgb -> red
+[course_starter] rgb -> green
+[M2] frame=2550 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[course_starter] rgb -> blue
+[M2] touch #1003 DOWN (239,271) isr=338728ms read=338728ms irq2read=0ms
+[M2] touch #1004 UP (239,271) isr=338852ms read=338852ms irq2read=0ms
+[course_starter] rgb -> red
+[M2] touch #1005 DOWN (243,254) isr=339029ms read=339029ms irq2read=0ms
+[M2] touch #1006 DOWN (241,254) isr=339340ms read=339340ms irq2read=0ms
+[M2] touch #1007 UP (241,254) isr=339361ms read=339361ms irq2read=0ms
+[M2] touch #1008 DOWN (213,267) isr=339518ms read=339518ms irq2read=0ms
+[M2] touch #1009 DOWN (218,268) isr=339737ms read=339737ms irq2read=0ms
+[M2] touch #1010 DOWN (224,270) isr=339747ms read=339747ms irq2read=0ms
+[M2] touch #1011 UP (224,270) isr=339757ms read=339757ms irq2read=0ms
+[M2] touch #1012 DOWN (312,299) isr=339893ms read=339893ms irq2read=0ms
+[course_starter] rgb -> green
+[M2] touch #1013 UP (312,299) isr=340131ms read=340131ms irq2read=0ms
+[M2] touch #1014 DOWN (193,260) isr=340340ms read=340340ms irq2read=0ms
+[M2] touch #1015 UP (193,260) isr=340443ms read=340443ms irq2read=0ms
+[M2] touch #1016 UP (246,271) isr=340641ms read=340641ms irq2read=0ms
+[M2] touch #1017 DOWN (246,271) isr=340651ms read=340651ms irq2read=0ms
+[M2] touch #1018 UP (246,271) isr=340723ms read=340723ms irq2read=0ms
+[course_starter] rgb -> blue
+[M2] touch #1019 DOWN (204,251) isr=341057ms read=341057ms irq2read=0ms
+[M2] touch #1020 UP (204,251) isr=341119ms read=341119ms irq2read=0ms
+[M2] frame=2580 avg=131ms p95=132ms max=132ms miss=30 (target=33ms)
+[M2] touch #1021 DOWN (195,249) isr=341410ms read=341410ms irq2read=0ms
+[M2] touch #1022 UP (195,249) isr=341441ms read=341441ms irq2read=0ms
+[M2] touch #1023 DOWN (199,250) isr=341680ms read=341680ms irq2read=0ms
+[M2] touch #1024 UP (199,250) isr=341732ms read=341732ms irq2read=0ms
+[M2] touch #1025 DOWN (201,254) isr=341940ms read=341940ms irq2read=0ms
+[M2] touch #1026 UP (201,254) isr=341971ms read=341971ms irq2read=0ms
+[course_starter] rgb -> red
+[M2] touch #1027 UP (203,257) isr=342158ms read=342158ms irq2read=0ms
+[M2] touch #1028 DOWN (203,257) isr=342169ms read=342169ms irq2read=0ms
+[M2] touch #1029 UP (203,257) isr=342199ms read=342199ms irq2read=0ms
+[M2] touch #1030 UP (195,254) isr=342387ms read=342387ms irq2read=0ms
+[M2] touch #1031 DOWN (195,254) isr=342397ms read=342397ms irq2read=0ms
+[M2] touch #1032 UP (195,254) isr=342428ms read=342428ms irq2read=0ms
+[M2] touch #1033 UP (195,261) isr=342595ms read=342595ms irq2read=0ms
+[M2] touch #1034 DOWN (195,261) isr=342605ms read=342605ms irq2read=0ms
+[M2] touch #1035 UP (195,261) isr=342636ms read=342636ms irq2read=0ms
+[M2] touch #1036 UP (195,262) isr=342804ms read=342804ms irq2read=0ms
+[M2] touch #1037 DOWN (195,262) isr=342814ms read=342814ms irq2read=0ms
+[M2] touch #1038 UP (195,262) isr=342866ms read=342866ms irq2read=0ms
+[course_starter] rgb -> green
+[M2] touch #1039 DOWN (188,257) isr=343011ms read=343011ms irq2read=0ms
+[M2] touch #1040 UP (188,257) isr=343053ms read=343053ms irq2read=0ms
+[M2] touch #1041 DOWN (191,258) isr=343178ms read=343178ms irq2read=0ms
+[M2] touch #1042 UP (191,258) isr=343240ms read=343240ms irq2read=0ms
+[M2] touch #1043 UP (190,259) isr=343385ms read=343385ms irq2read=0ms
+[M2] touch #1044 DOWN (190,259) isr=343396ms read=343396ms irq2read=0ms
+[M2] touch #1045 UP (190,259) isr=343427ms read=343427ms irq2read=0ms
+[M2] touch #1046 UP (195,261) isr=343552ms read=343552ms irq2read=0ms
+[M2] touch #1047 DOWN (195,261) isr=343562ms read=343562ms irq2read=0ms
+[M2] touch #1048 UP (195,261) isr=343603ms read=343603ms irq2read=0ms
+[M2] touch #1049 UP (195,258) isr=343749ms read=343749ms irq2read=0ms
+[M2] touch #1050 DOWN (195,258) isr=343760ms read=343760ms irq2read=0ms
+[M2] touch #1051 UP (195,258) isr=343801ms read=343801ms irq2read=0ms
+[M2] touch #1052 UP (193,256) isr=343947ms read=343947ms irq2read=0ms
+[M2] touch #1053 DOWN (193,256) isr=343957ms read=343957ms irq2read=0ms
+[course_starter] rgb -> blue
+[M2] touch #1054 UP (193,256) isr=343999ms read=343999ms irq2read=0ms
+[M2] touch #1055 UP (196,258) isr=344141ms read=344141ms irq2read=0ms
+[M2] touch #1056 DOWN (196,258) isr=344149ms read=344149ms irq2read=0ms
+[M2] touch #1057 UP (196,258) isr=344269ms read=344269ms irq2read=0ms
+[
