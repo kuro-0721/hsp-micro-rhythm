@@ -26,17 +26,25 @@ dev_agent:
   session_log_hash: "<可选：会话记录文件的哈希值，用于防止事后篡改>"
 
 requirements:
-  prd_path: "<需求规格说明路径，默认 docs/01-需求规格说明.md>"
-  hardware_constraints_ref: "<引用的硬件规格文档，例如黄山派硬件手册链接或本地副本路径>"
+  prd_path: "docs/01-需求规格说明.md"
+  hardware_constraints_ref: "立创黄山派 wiki（https://wiki.lckfb.com/zh-hans/hspi-sf32lb52/lckfb-hspi-sf32lb52/）、课程课件 P9 硬件参数表、SDK 板级配置 customer/boards/Kconfig_lcd: LCD_USING_TFT_CO5300（1.85\" 390x450，触摸 FT6146）+ sf32lb52-lchspi-ulp/hcpu/board.conf"
 
 design:
-  architecture_doc_path: "<方案设计说明路径，默认 docs/02-方案设计说明.md>"
+  architecture_doc_path: "docs/02-方案设计说明.md"
   key_decisions:
     # 每一条关键决策都要写清楚：决策内容 / 考虑过的备选方案 / 选择理由 / 谁做的最终决定
-    - decision: "<例如：选择BLE而非WiFi做数据同步>"
-      alternatives_considered: "<例如：曾考虑过用SD卡离线导出，因为使用场景需要实时同步而放弃>"
-      rationale: "<为什么最终这么选，写具体理由，不要只写'效果更好'>"
-      decided_by: "<agent建议+学生确认 / 学生主导 / 纯agent自动决定（不建议用于关键决策）>"
+    - decision: "产品方向：做 4 轨下落式微音游（在黄山派 390x450 触摸屏上）"
+      alternatives_considered: "曾考虑桌面计时/提醒终端（风险最低但创新度不足）、穿戴姿态感知（IMU 抬腕亮屏，验证链条更长）、蓝牙数据回传盒子（BT PAN 例程未声明支持本板，不确定性最高）"
+      rationale: "音游能把'实时判定精度'变成可测量的数字（帧间隔、判定延迟），与本板可用外设（触摸屏 + 音频 + 马达）匹配，且过程证据链最清晰"
+      decided_by: "学生主导（agent 提供三个备选与权衡表）"
+    - decision: "渲染与帧循环：自绘 framebuffer + 固定帧循环，不使用 LVGL（见 docs/adr/0001）"
+      alternatives_considered: "全 LVGL v8 实现（开发快，但 SDK 例程 README 标注'未验证'，且动画不保证帧间隔，判定精度不可控）；混合方案（LVGL 做菜单 + 自绘游戏层，复杂度对单人项目偏高）"
+      rationale: "时序指标本身就是交付物；自绘能把帧间隔与判定延迟握在自己手里，并输出可复核的统计，同时可利用 CO5300 的 TE/VSYNC 对齐刷帧防撕裂"
+      decided_by: "agent建议+学生确认"
+    - decision: "游戏素材：曲目用自制或明确免授权（CC0/CC-BY），谱面与美术一律自制（见 docs/adr/0002）"
+      alternatives_considered: "直接使用 Phigros 的曲目与谱面（零成本、效果好，但侵犯版权且与课程学术诚信要求冲突，REQ-105 直接不通过）"
+      rationale: "谱面是判定时刻与轨道的数据，必须自己可控；素材来源必须可自证，避免评审时说不清来源"
+      decided_by: "agent建议+学生确认"
 
 code:
   repo_url: "<git仓库地址>"
