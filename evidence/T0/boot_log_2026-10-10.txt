@@ -1,0 +1,72 @@
+# 启动日志证据（CodeKit 串口监视器捕获）
+#
+# 设备：黄山派 sf32lb52-lchspi-ulp，串口 COM9（CH340，VID 1A86 / PID 7523），1000000 8-N-1
+# 固件：T0 内置例程（src/main.c）+ SiFli SDK v2.5.1；本次编译产物 main.bin（297,444 B）
+# 触发方式：学生拔插 USB 使设备上电启动（板载无 RESET 键）
+# 采集方式：SiFli CodeKit 串口监视器捕获，agent 从监视器缓冲区导出
+# 时间戳：原记录为 UTC（末尾 Z），本地时间 = UTC+8，即 2026-10-10 14:03:15 ~ 14:03:20
+# 窗口说明：监视器只保留最近 20 条记录（id 16~35），故本窗口从 SDK 启动中期开始，
+#           不含更早的 ROM/引导阶段输出；应用启动横幅与首轮 RGB 日志均完整包含。
+# 形态说明：监视器按接收块切分，个别行首尾被截断（如 "Regist touch screen dri" / "ver, probe=..."），
+#           且原文含 ANSI 转义序列，均为监视器原始记录，未做整理或美化。
+#           除每条记录前的 "---- id=... " 分隔行（由导出者添加以便索引）外，逐字导出、未修改任何字符。
+# 相关证据：烧录见 flash_log_2026-10-10.txt，稳态循环输出见 serial_rgb_cycle_2026-10-10.txt
+#
+# ==================== 以下为原始记录 ====================
+---- id=16  2026-10-10T06:03:15.426Z ----
+I/TOUCH] Regist touch screen dri
+---- id=17  2026-10-10T06:03:15.427Z ----
+ver, probe=1202740d [0m
+[32;2
+---- id=18  2026-10-10T06:03:15.427Z ----
+2m[I/FAL] Flash Abstraction Laye
+---- id=19  2026-10-10T06:03:15.427Z ----
+r (V0.5.99) initialize success.
+---- id=20  2026-10-10T06:03:15.428Z ----
+[0m
+[32;22m[I/FAL] The FAL MTD NOR device (dfu) created succes
+---- id=21  2026-10-10T06:03:15.428Z ----
+sfully[0m
+[32;22m[I/FAL] The 
+---- id=22  2026-10-10T06:03:15.429Z ----
+FAL MTD NOR device (ble) created
+---- id=23  2026-10-10T06:03:15.430Z ----
+ successfully[0m
+
+---- id=24  2026-10-10T06:03:15.432Z ----
+call par CFG1(3313)
+fc 9, xtal
+---- id=25  2026-10-10T06:03:15.432Z ----
+ 2000, pll 2140
+call par CFG1(
+---- id=26  2026-10-10T06:03:15.432Z ----
+3313)
+fc 7, xtal 2000, pll 171
+---- id=27  2026-10-10T06:03:15.433Z ----
+7
+
+[course_starter] v0.1.0 bo
+---- id=28  2026-10-10T06:03:15.435Z ----
+ot ok
+Hello world!
+
+---- id=29  2026-10-10T06:03:15.439Z ----
+[course_starter] rgb -> red
+msh
+---- id=30  2026-10-10T06:03:15.440Z ----
+ />
+---- id=31  2026-10-10T06:03:16.443Z ----
+[course_starter] rgb -> green
+
+---- id=32  2026-10-10T06:03:17.446Z ----
+[course_starter] rgb -> blue
+
+---- id=33  2026-10-10T06:03:18.448Z ----
+[course_starter] rgb -> red
+
+---- id=34  2026-10-10T06:03:19.451Z ----
+[course_starter] rgb -> green
+
+---- id=35  2026-10-10T06:03:20.454Z ----
+[course_starter] rgb -> blue
+

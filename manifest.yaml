@@ -44,13 +44,25 @@ code:
 
 physical_verification:
   # 每一个物理验证节点都要有对应记录，节点类型见配套文档《Agent协作开发与评审机制》第三节表格
-  - item: "<验证项名称，例如：固件烧录与串口启动log>"
-    required_action: "<agent当时要求学生具体做什么>"
-    executed_at: "<学生实际执行的时间戳>"
-    evidence_path: "<原始证据文件路径：照片/视频/日志/示波器截图>"
-    agent_conclusion: "<agent基于该证据得出的结论，例如：启动正常，IMU初始化成功>"
+  - item: "固件烧录（sftool write_flash --verify）"
+    required_action: "把开发板接 USB-to-UART 口（COM9），在 SiFli CodeKit 中执行 Download 任务写入本次编译产物"
+    executed_at: "2026-10-10T13:43:48+08:00（烧录任务日志的最后写入时间）"
+    evidence_path: "evidence/T0/flash_log_2026-10-10.txt"
+    agent_conclusion: "日志显示 sftool -p COM9 -c SF32LB52 -b 1000000 -m nor write_flash --verify 对 bootloader.bin@0x12010000、main.bin@0x12020000、ftab.bin@0x12000000 写入完成，“SiFli: Download 已完成，退出码 0”。仅能证明写入并校验通过，不能证明启动与功能正常。"
+  - item: "上电启动与启动日志（串口捕捉）"
+    required_action: "保持串口监视器已连接的前提下拔插 USB，使设备上电启动（板载无 RESET 键）"
+    executed_at: "2026-10-10T14:03:15+08:00（由串口日志 UTC 时间戳 06:03:15Z 换算）"
+    evidence_path: "evidence/T0/boot_log_2026-10-10.txt"
+    agent_conclusion: "捕获到 SDK 启动日志（TOUCH 驱动注册、FAL V0.5.99 initialize success、dfu/ble MTD 创建、时钟 CFG1 配置），随后为应用横幅 [course_starter] v0.1.0 boot ok、Hello world!，以及首轮 [course_starter] rgb -> red / green / blue，并出现 msh 提示符。未见 ERROR / ASSERT。局限：监视器只保留最近 20 条，未含 ROM / 引导阶段输出；日志按接收块切分，个别行首尾被截断（原文保留，未整理）。"
+  - item: "板载 RGB 灯三色循环（录像 + 串口交叉验证）"
+    required_action: "拍摄一段板载 RGB 灯闪烁视频（10 秒以上）并回传；因 *.mp4 被 .gitignore 忽略，需放网盘并在 evidence/ 下留链接文件"
+    executed_at: "2026-10-10T13:45:10+08:00（视频文件修改时间）"
+    evidence_path: "evidence/T0/rgb_blink_20261010.link.txt"
+    agent_conclusion: "视频元信息 1280x720 / 30fps / 10.147733s；agent 用 ffmpeg 抽帧（0.25s/帧）后逐帧取色，辉光依次为绿→蓝→红循环，红色峰值出现在 t=2.50 / 5.50 / 8.50 s（间隔 3.0 s）。串口证据显示相邻颜色日志间隔 1.002~1.004 s（见 evidence/T0/serial_rgb_cycle_2026-10-10.txt 与 boot_log）。两者与固件“每色亮 500ms + 灭 500ms”一致。局限：4fps 抽帧无法判定颜色起点顺序与毫秒级时长；网盘链接待补。"
 
 test_results:
+  # T0 为环境与仓库任务（非 REQ 驱动的功能需求），未在 docs/03 建立 TC 编号，
+  # 故本次不填 test_results，直接由 physical_verification 承接证据。
   - test_id: "<测试编号，例如 TC-01>"
     description: "<测试内容简述>"
     expected: "<预期结果>"
@@ -59,7 +71,10 @@ test_results:
     evidence_path: "<对应的原始数据/截图路径>"
 
 known_issues:
-  - "<已知问题1，真实项目通常都有未解决或有局限性的地方，主动说明比隐瞒更可信>"
+  - "RGB 闪烁视频（6.4MB）受 .gitignore 第 23 行 “*.mp4” 规则限制未入库；链接文件 evidence/T0/rgb_blink_20261010.link.txt 中的网盘链接与提取码仍为待填占位符，须在里程碑提交前补齐（现仅本地可见）。"
+  - "启动日志窗口不完整：CodeKit 串口监视器只保留最近 20~60 条记录，本次从 SDK 启动中期开始，不含 ROM / 引导阶段输出；如需完整引导日志需在缓冲区为空时重做一次采集。"
+  - "板载无 RESET 键，复位只能靠拔插 USB；且要捕获上电瞬间的启动横幅，必须先建立串口监听再复位，否则横幅会错过。"
+  - "本次烧录与启动由学生在 SiFli CodeKit 图形界面完成，终端侧未留下 sftool 原始 stdout；烧录证据取自 CodeKit 输出通道日志的逐字摘录（文件头已注明来源与行号）。"
 
 self_review: |
   <agent生成的自我复盘，包括：本次里程碑完成度如何、哪些地方agent自己也不确定、

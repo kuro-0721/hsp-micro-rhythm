@@ -1,0 +1,70 @@
+# 串口输出证据（CodeKit 串口监视器捕获，59 秒窗口）
+#
+# 设备：黄山派 sf32lb52-lchspi-ulp，串口 COM9（CH340，VID 1A86/PID 7523），波特率 1000000
+# 固件：T0 内置例程（src/main.c），本次编译产物 main.bin（297,444 B）
+# 采集方式：由 SiFli CodeKit 的串口监视器捕获，agent 从监视器缓冲区导出最近 60 条记录
+# 时间戳：原文为 UTC（末尾 Z）；本地时间 = UTC+8，即 2026-10-10 13:53:15 ~ 13:54:14
+# 内容说明：本次窗口只覆盖设备的稳态循环输出，不包含上电/复位瞬间的启动横幅
+#           （启动横幅见 boot_log_2026-10-10.txt）。除本注释块外逐字导出，未修改任何字符。
+#
+# ==================== 以下为原始记录 ====================
+2026-10-10T05:53:15.690Z  id=92  [course_starter] rgb -> green
+2026-10-10T05:53:16.693Z  id=93  [course_starter] rgb -> blue
+2026-10-10T05:53:17.695Z  id=94  [course_starter] rgb -> red
+2026-10-10T05:53:18.697Z  id=95  [course_starter] rgb -> green
+2026-10-10T05:53:19.700Z  id=96  [course_starter] rgb -> blue
+2026-10-10T05:53:20.702Z  id=97  [course_starter] rgb -> red
+2026-10-10T05:53:21.705Z  id=98  [course_starter] rgb -> green
+2026-10-10T05:53:22.707Z  id=99  [course_starter] rgb -> blue
+2026-10-10T05:53:23.710Z  id=100  [course_starter] rgb -> red
+2026-10-10T05:53:24.712Z  id=101  [course_starter] rgb -> green
+2026-10-10T05:53:25.715Z  id=102  [course_starter] rgb -> blue
+2026-10-10T05:53:26.717Z  id=103  [course_starter] rgb -> red
+2026-10-10T05:53:27.719Z  id=104  [course_starter] rgb -> green
+2026-10-10T05:53:28.722Z  id=105  [course_starter] rgb -> blue
+2026-10-10T05:53:29.725Z  id=106  [course_starter] rgb -> red
+2026-10-10T05:53:30.727Z  id=107  [course_starter] rgb -> green
+2026-10-10T05:53:31.730Z  id=108  [course_starter] rgb -> blue
+2026-10-10T05:53:32.732Z  id=109  [course_starter] rgb -> red
+2026-10-10T05:53:33.735Z  id=110  [course_starter] rgb -> green
+2026-10-10T05:53:34.738Z  id=111  [course_starter] rgb -> blue
+2026-10-10T05:53:35.740Z  id=112  [course_starter] rgb -> red
+2026-10-10T05:53:36.741Z  id=113  [course_starter] rgb -> green
+2026-10-10T05:53:37.744Z  id=114  [course_starter] rgb -> blue
+2026-10-10T05:53:38.746Z  id=115  [course_starter] rgb -> red
+2026-10-10T05:53:39.749Z  id=116  [course_starter] rgb -> green
+2026-10-10T05:53:40.751Z  id=117  [course_starter] rgb -> blue
+2026-10-10T05:53:41.754Z  id=118  [course_starter] rgb -> red
+2026-10-10T05:53:42.757Z  id=119  [course_starter] rgb -> green
+2026-10-10T05:53:43.760Z  id=120  [course_starter] rgb -> blue
+2026-10-10T05:53:44.765Z  id=121  [course_starter] rgb -> red
+2026-10-10T05:53:45.765Z  id=122  [course_starter] rgb -> green
+2026-10-10T05:53:46.768Z  id=123  [course_starter] rgb -> blue
+2026-10-10T05:53:47.771Z  id=124  [course_starter] rgb -> red
+2026-10-10T05:53:48.774Z  id=125  [course_starter] rgb -> green
+2026-10-10T05:53:49.776Z  id=126  [course_starter] rgb -> blue
+2026-10-10T05:53:50.779Z  id=127  [course_starter] rgb -> red
+2026-10-10T05:53:51.781Z  id=128  [course_starter] rgb -> green
+2026-10-10T05:53:52.784Z  id=129  [course_starter] rgb -> blue
+2026-10-10T05:53:53.786Z  id=130  [course_starter] rgb -> red
+2026-10-10T05:53:54.789Z  id=131  [course_starter] rgb -> green
+2026-10-10T05:53:55.791Z  id=132  [course_starter] rgb -> blue
+2026-10-10T05:53:56.794Z  id=133  [course_starter] rgb -> red
+2026-10-10T05:53:57.797Z  id=134  [course_starter] rgb -> green
+2026-10-10T05:53:58.799Z  id=135  [course_starter] rgb -> blue
+2026-10-10T05:53:59.802Z  id=136  [course_starter] rgb -> red
+2026-10-10T05:54:00.809Z  id=137  [course_starter] rgb -> green
+2026-10-10T05:54:01.819Z  id=138  [course_starter] rgb -> blue
+2026-10-10T05:54:02.814Z  id=139  [course_starter] rgb -> red
+2026-10-10T05:54:03.812Z  id=140  [course_starter] rgb -> green
+2026-10-10T05:54:04.815Z  id=141  [course_starter] rgb -> blue
+2026-10-10T05:54:05.817Z  id=142  [course_starter] rgb -> red
+2026-10-10T05:54:06.822Z  id=143  [course_starter] rgb -> green
+2026-10-10T05:54:07.824Z  id=144  [course_starter] rgb -> blue
+2026-10-10T05:54:08.826Z  id=145  [course_starter] rgb -> red
+2026-10-10T05:54:09.828Z  id=146  [course_starter] rgb -> green
+2026-10-10T05:54:10.831Z  id=147  [course_starter] rgb -> blue
+2026-10-10T05:54:11.834Z  id=148  [course_starter] rgb -> red
+2026-10-10T05:54:12.836Z  id=149  [course_starter] rgb -> green
+2026-10-10T05:54:13.839Z  id=150  [course_starter] rgb -> blue
+2026-10-10T05:54:14.841Z  id=151  [course_starter] rgb -> red
