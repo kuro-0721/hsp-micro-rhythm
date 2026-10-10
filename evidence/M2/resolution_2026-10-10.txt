@@ -1,0 +1,26 @@
+# 屏幕分辨率与显示相关配置的证据（编译产物摘录）
+#
+# 目的：为假设 A-01「屏幕实物与 SDK 配置一致（1.85" 390x450 / CO5300 / FT6146 触摸 / TE 可用）」留下可核对的证据。
+#
+# 原始来源：**编译产物** project/build_sf32lb52-lchspi-ulp_hcpu/rtconfig.h
+#   （该文件由 scons 依据板级配置 customer/boards/sf32lb52-lchspi-ulp/hcpu/board.conf 与
+#     customer/boards/Kconfig_lcd 的 LCD_USING_TFT_CO5300 生成，因此反映的是**实际参与编译的配置**，
+#     比只看源码默认值更可靠。注意 rtconfig.h 属构建产物，不入库，故摘录于此。）
+# 采集：由 agent（GitHub Copilot / DeepSeek V4.1 Flash）逐字摘录，除本注释块外未修改任何字符。
+# 采集时间：2026-10-10
+#
+# 另有学生目视确认（2026-10-10）：上板后整屏红/绿/蓝/白填充与 8 条横向色带均正常、满屏、无花屏，
+# 移动横条连续动画无撕裂。
+#   ⚠️ 证据形式缺口（已登记在 manifest.known_issues）：本次**未保存色带照片**，
+#      目前分辨率确认依赖编译产物 + 学生目视描述；M3 需补拍照片。
+#
+# ==================== 以下为 rtconfig.h 摘录 ====================
+#define BSP_USING_EPIC 1
+#define BSP_USING_PSRAM 1
+#define LCD_USING_TFT_CO5300 1
+#define LCD_CO5300_VSYNC_ENABLE 1
+#define LCD_HOR_RES_MAX 390
+#define LCD_VER_RES_MAX 450
+#define BSP_USING_TOUCHD 1
+#define LCD_USING_CO5300 1
+#define TOUCH_IRQ_PIN 41

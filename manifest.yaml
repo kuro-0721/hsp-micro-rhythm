@@ -85,7 +85,7 @@ physical_verification:
   - item: "M2 屏幕点亮与分辨率确认"
     required_action: "on-board 观察红色/绿色/蓝色/白色整屏与 8 条色带是否正常、满屏、无花屏"
     executed_at: "2026-10-10"
-    evidence_path: "project/build_sf32lb52-lchspi-ulp_hcpu/rtconfig.h（LCD_HOR_RES_MAX 390 / LCD_VER_RES_MAX 450）+ 学生目视确认"
+    evidence_path: "evidence/M2/resolution_2026-10-10.txt"
     agent_conclusion: "编译产物的 rtconfig.h 明确写出 390x450，且屏幕色带与移动横条渲染正常，假设 A-01（屏幕实物与 SDK 配置一致）成立。注意：本次未保存色带照片，属于证据形式上的缺口（已在 known_issues 登记）。"
 
 physical_verification_note: |
