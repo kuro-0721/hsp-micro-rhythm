@@ -90,11 +90,11 @@ physical_verification:
     executed_at: "2026-10-10T14:58~15:00+08:00"
     evidence_path: "evidence/M2/touch_timestamp_2026-10-10.txt"
     agent_conclusion: "254 条触摸事件中，中断时刻与读点时刻的差值：0ms × 253、1ms × 1 次。由于固件时间戳分辨率为 1ms，准确结论只能是“中断→读点 < 1ms”，不得写成“0 延迟”。坐标实测均在屏内（最大如 (319,377)）。"
-  - item: "M2 屏幕点亮与分辨率确认"
-    required_action: "on-board 观察红色/绿色/蓝色/白色整屏与 8 条色带是否正常、满屏、无花屏"
-    executed_at: "2026-10-10"
-    evidence_path: "evidence/M2/resolution_2026-10-10.txt"
-    agent_conclusion: "编译产物的 rtconfig.h 明确写出 390x450，且屏幕色带与移动横条渲染正常，假设 A-01（屏幕实物与 SDK 配置一致）成立。注意：本次未保存色带照片，属于证据形式上的缺口（已在 known_issues 登记）。"
+  - item: "M2 屏幕点亮与分辨率确认（8 色带图案）"
+    required_action: "on-board 观察红色/绿色/蓝色/白色整屏与 8 条色带是否正常、满屏、无花屏；由学生录制启动视频作为证据"
+    executed_at: "2026-10-10（启动视频录制于 14:45:59；色带帧取自该视频 n=49，t≈1.633s）"
+    evidence_path: "evidence/M2/color_bars_2026-10-10.jpg（由视频抽帧所得照片）+ evidence/M2/screen_boot_20261010.link.txt（原始视频，网盘链接待补）+ evidence/M2/resolution_2026-10-10.txt（rtconfig.h 摘录）"
+    agent_conclusion: "由学生录制启动视频、agent 抽帧核对（ffmpeg select n=49）：屏幕可正常点亮并显示彩色图案，色带水平、边界清晰、横向满宽，未见花屏/错位；配合编译产物 rtconfig.h（390x450），假设 A-01（屏幕实物与 SDK 配置一致）成立。局限：该帧为探针 v1 分行刷的中间态（可见约 7 条色带 + 底部尚未覆盖的白色区域），不是静止完整的 8 条色带；拍摄视角略倾斜，不可用于像素级测量。详见 evidence/M2/color_bars_2026-10-10.txt。"
 
 physical_verification_note: |
   M2 阶段的烧录（sftool write_flash --verify）与启动复位（CodeKit 串口复位）由 agent 执行、学生确认，
@@ -114,7 +114,7 @@ known_issues:
   - "**流程偏离**：M2 阶段的固件烧录与启动复位由 agent 执行（学生要求免除拆插 USB），屏幕现象由学生确认；未按“学生亲自烧录”记录（docs/06 的 P-09）。"
   - "M2 的时间戳基于 rt_tick_get_millisecond()，分辨率仅 1ms，因此触摸“中断→读点 0ms”只能表述为 <1ms，不能当精确值；端到端延迟（REQ-104）仍需 GPIO 打点测量。"
   - "帧率虽达标（p95 31ms），但 30fps 下 CPU 填充仅剩 4ms 余量；音符密集时可能掉帧，后续必须只刷脏区或启用 EPIC 硬件 2D 加速。"
-  - "M2 未保存屏幕色带照片，分辨率确认目前依赖编译产物 rtconfig.h + 学生目视描述，属证据形式缺口，M3 需补拍。"
+  - "M2 屏幕色带证据已补齐（evidence/M2/color_bars_2026-10-10.jpg，由学生录制的启动视频抽帧而得）。局限：该帧为分行刷中间态，不是静止完整的 8 条色带；且原始视频 17.9MB 受 .gitignore 的 *.mp4 规则限制未入库，链接文件中的网盘链接仍为待填占位符。"
   - "RGB 闪烁视频（6.4MB）受 .gitignore 第 23 行 “*.mp4” 规则限制未入库；链接文件 evidence/T0/rgb_blink_20261010.link.txt 中的网盘链接与提取码仍为待填占位符，须在里程碑提交前补齐（现仅本地可见）。"
   - "启动日志窗口不完整：CodeKit 串口监视器只保留最近 20~60 条记录，本次从 SDK 启动中期开始，不含 ROM / 引导阶段输出；如需完整引导日志需在缓冲区为空时重做一次采集。"
   - "板载无 RESET 键，复位只能靠拔插 USB；且要捕获上电瞬间的启动横幅，必须先建立串口监听再复位，否则横幅会错过。"
