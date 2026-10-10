@@ -429,6 +429,15 @@ void m2_probe_start(void)
     t = m2_color_bars();
     rt_kprintf("[M2] color bars duration=%ums\n", t);
 
+    /* 保持色带 15 秒，供上板拍照取证（M2 证据缺口：8 色带照片）；
+     * 拍照完成后板子会自动继续进入帧率对比实验。 */
+    rt_kprintf("[M2] >>> HOLD 15s for photo evidence - photograph the screen NOW <<<\n");
+    for (int hold = 15; hold > 0; hold--)
+    {
+        rt_kprintf("[M2] hold %d\n", hold);
+        rt_thread_mdelay(1000);
+    }
+
     rt_thread_t tid = rt_thread_create("m2_loop", m2_loop_thread, RT_NULL, 2048, 20, 10);
     if (tid)
         rt_thread_startup(tid);
