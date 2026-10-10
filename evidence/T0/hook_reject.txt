@@ -1,0 +1,43 @@
+# 提交规范钩子（commit-msg）拒绝记录 —— T0 第 5 步体验证据
+#
+# 目的：证明 .githooks/commit-msg 真的在拦截不合规提交，且拒绝理由具体可读。
+# 环境：Git 2.54.0.windows.1，core.hooksPath=.githooks，commit.template=.gitmessage
+# 采集方式：由 agent（GitHub Copilot / DeepSeek V4.1 Flash）在终端执行两次故意不合规的提交尝试，
+#           用 `cmd /c 'git commit ... > 文件 2>&1'` 原样重定向钩子输出（避免 PowerShell 包装 stderr），
+#           除本注释块与两次尝试之间的分隔行外，未修改钩子输出的任何字符。
+# 重要：两次尝试都被钩子拒绝，**没有产生任何非法提交**；测试用的临时文件已删除。
+# 背景命令（两次尝试前均执行过 git add）：
+#   echo "scratch for hook test" > .hooktest.txt && git add -A
+#
+# ==================== 尝试 1：空话标题 `update code` ====================
+# 命令：git commit -m "update code"
+提交信息不符合规范：update code
+  ✗ 标题格式应为 `<type>(<scope>): <主题>`（注意冒号后有一个空格），例如 `feat(rgb): 新增 RGB 灯红绿蓝循环闪烁`
+  ✗ 缺少正文项 `改动:`
+  ✗ 缺少正文项 `AI协作:`
+
+正确示例：
+  feat(rgb): 新增 RGB 灯红绿蓝循环闪烁
+  
+  背景: REQ-002 要求用 RGB 灯指示设备运行状态。
+  改动: main.c 中新增 rgb_led_init/set_color，按颜色表循环点亮。
+  验证: 编译通过；上板后串口依次输出 red/green/blue，见 evidence/M2/rgb_log.txt。
+  AI协作: 是(Claude Code)；采纳颜色表实现，人工修正了灯珠供电未打开的问题。
+
+详见 docs/guides/git-workflow.md；可使用 `git config commit.template .gitmessage` 获得模板。
+
+# ==================== 尝试 2：标题合规但缺 `验证:` 段 ====================
+# 命令：git commit -F .git/tmp_bad2.txt（标题 feat(test): 钩子体验用半坏提交，正文缺 验证: ）
+
+提交信息不符合规范：feat(test): 钩子体验用半坏提交
+  ✗ 缺少正文项 `验证:`
+
+正确示例：
+  feat(rgb): 新增 RGB 灯红绿蓝循环闪烁
+  
+  背景: REQ-002 要求用 RGB 灯指示设备运行状态。
+  改动: main.c 中新增 rgb_led_init/set_color，按颜色表循环点亮。
+  验证: 编译通过；上板后串口依次输出 red/green/blue，见 evidence/M2/rgb_log.txt。
+  AI协作: 是(Claude Code)；采纳颜色表实现，人工修正了灯珠供电未打开的问题。
+
+详见 docs/guides/git-workflow.md；可使用 `git config commit.template .gitmessage` 获得模板。
