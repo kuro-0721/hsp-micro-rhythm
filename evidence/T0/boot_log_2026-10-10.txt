@@ -34,16 +34,20 @@ FAL MTD NOR device (ble) created
  successfully[0m
 
 ---- id=24  2026-10-10T06:03:15.432Z ----
-call par CFG1(3313)
+call par CFG1(3313)
+
 fc 9, xtal
 ---- id=25  2026-10-10T06:03:15.432Z ----
- 2000, pll 2140
+ 2000, pll 2140
+
 call par CFG1(
 ---- id=26  2026-10-10T06:03:15.432Z ----
-3313)
+3313)
+
 fc 7, xtal 2000, pll 171
 ---- id=27  2026-10-10T06:03:15.433Z ----
-7
+7
+
 
 [course_starter] v0.1.0 bo
 ---- id=28  2026-10-10T06:03:15.435Z ----
