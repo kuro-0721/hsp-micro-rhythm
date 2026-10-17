@@ -1,0 +1,99 @@
+[LOOP] frames=300 avg=29ms p95=33ms max=34ms draw=2ms flush=27ms miss=0
+[LOOP] frames=600 avg=31ms p95=34ms max=34ms draw=2ms flush=29ms miss=0
+SFBL
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 10 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[32m[I/TOUCH] Regist touch screen driver, probe=1202740d [0m
+[32;22m[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.[0m
+[32;22m[I/FAL] The FAL MTD NOR device (dfu) created successfully[0m
+[32;22m[I/FAL] The FAL MTD NOR device (ble) created successfully[0m
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2105
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1688
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x20020158
+
+==================== [SELFTEST] REQ-007 boot self-test ====================
+
+--- [SELFTEST] section 2/3: judge engine (REQ-003) ---
+[SELFTEST] judge: PASS (window/combo/acc/score/lane)
+  judge edge cases (window/one-per-tap/combo/acc/lane): PASS
+[BULK] judge: 50 notes, click offset sweep -119..+119ms
+[BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+  bulk judge (50 known click offsets): PASS
+  judge latency histogram (touch IRQ to judge): 0 samples
+    no real touch at boot - normal; printed again at RESULT
+
+--- [SELFTEST] section 1/3: chart parsing (REQ-006) ---
+  bad chart (lane 9 on line 2): PASS (returned -2, reported line 2)
+  [INJECT MODE SELFTEST_INJECT_BAD_CHART=1] next item should FAIL
+  builtin chart: FAIL (returned -2)
+
+  sections 1-2 done, 1 failure(s); section 3 (frame rate) in 150 frames (~4s)
+[32m[I/TOUCH] Open[0m
+[32m[I/TOUCH] Opened.[0m
+[TP] touch ready (queue=32, only DOWN events are queued)
+[SCENE] -> TITLE at 303ms (boot)
+[APP] init done, selftest errors=1 -> TITLE
+[32m[I/TOUCH] Find touch screen driver...[0m
+[32m[I/TOUCH] Probe 1202740d[0m
+[32m[I/TOUCH] touch screen found driver  2000b220, ft6146[0m
+[LOOP] start, frame=33ms
+[E/drv.ft6146] ft6146 id_H=64
+[E/drv.ft6146] ft6146 id_L=56
+[SCENE] -> PLAYING at 1791ms (notes=0, tap=1782ms, latency=9ms)
+
+--- [SELFTEST] section 3/3: frame rate (REQ-101) ---
+  frames=150 target=33ms avg=30ms p95=33ms max=34ms
+  draw=2ms flush=28ms overrun_frames=0
+  p95 (limit 34ms): PASS
+
+==================== [SELFTEST] RESULT: FAIL ====================
+  section 1-2 failures: 1, section 3 failures: 0
+  note: p95 limit widened 33ms to 34ms by CR-04; tick resolution 1ms, see docs/06 R-10
+
+[LOOP] frames=300 avg=31ms p95=33ms max=34ms draw=2ms flush=28ms miss=0
+[LOOP] frames=600 avg=32ms p95=34ms max=34ms draw=2ms flush=29ms miss=0
+[LOOP] frames=900 avg=32ms p95=34ms max=34ms draw=2ms flush=29ms miss=0
+[LOOP] frames=1200 avg=32ms p95=34ms max=34ms draw=2ms flush=29ms miss=0

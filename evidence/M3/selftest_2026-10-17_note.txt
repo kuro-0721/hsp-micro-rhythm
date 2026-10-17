@@ -1,0 +1,79 @@
+文件：selftest_normal_2026-10-17.log       正常模式（SELFTEST_INJECT_BAD_CHART=0），153 行
+      selftest_badchart_2026-10-17.log     注入模式（SELFTEST_INJECT_BAD_CHART=1），99 行
+      selftest_normal_2026-10-17_garbled_cn.log  首次上板的失败记录（中文乱码），另见同名 _note.txt
+说明：M3 第 4 步「启动自检三节汇总」（REQ-007 / TC-007）的两轮上板证据。
+
+【被测固件】
+  正常模式：提交 b887e16（编码修复后），main.bin 310,500 B
+  注入模式：同一份代码，仅把 src/selftest.c 的 SELFTEST_INJECT_BAD_CHART 改为 1
+  两次均由学生亲自烧录并拔插复位，agent 只负责抓串口。
+
+【第一轮：正常模式（TC-007 第一项判据）】
+  ==================== [SELFTEST] REQ-007 boot self-test ====================
+  --- [SELFTEST] section 2/3: judge engine (REQ-003) ---
+  [SELFTEST] judge: PASS (window/combo/acc/score/lane)
+    judge edge cases (window/one-per-tap/combo/acc/lane): PASS
+    bulk judge (50 known click offsets): PASS
+    judge latency histogram (touch IRQ to judge): 0 samples
+      no real touch at boot - normal; printed again at RESULT
+  --- [SELFTEST] section 1/3: chart parsing (REQ-006) ---
+    bad chart (lane 9 on line 2): PASS (returned -2, reported line 2)
+    builtin chart: PASS (58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14)
+    builtin chart summary (58 notes / last 29500ms): PASS
+    sections 1-2 done, 0 failure(s); section 3 (frame rate) in 150 frames (~4s)
+  [APP] init done, selftest errors=0 -> TITLE
+  --- [SELFTEST] section 3/3: frame rate (REQ-101) ---
+    frames=150 target=33ms avg=28ms p95=33ms max=33ms
+    draw=2ms flush=26ms overrun_frames=0
+    p95 (limit 34ms): PASS
+  ==================== [SELFTEST] RESULT: PASS ====================
+    section 1-2 failures: 0, section 3 failures: 0
+
+  结算时补打的实测判定延迟直方图：
+  [SELFTEST] measured judge latency (this run ended):
+    judge latency histogram (touch IRQ to judge): 49 samples
+      0-10=14  11-20=17  21-33=18  34-50=0  51-100=0  over100=0 (ms)
+      p95 = 33ms (limit 50ms): PASS
+
+  判定：
+  - 三节齐全（谱面 / 判定 / 帧率），每节都有明确 PASS/FAIL，最后有总结论。**PASS**。
+  - 第 3 节确实等了 150 帧（约 4~5s）才输出，分阶段时机设计成立。
+  - 判定延迟直方图 49 个真实样本全部落在 33ms 以内，P95 = 33ms，满足 REQ-003 的 50ms 判据。
+
+【第二轮：注入模式（TC-007 第二项判据）】
+  --- [SELFTEST] section 1/3: chart parsing (REQ-006) ---
+    bad chart (lane 9 on line 2): PASS (returned -2, reported line 2)
+    [INJECT MODE SELFTEST_INJECT_BAD_CHART=1] next item should FAIL
+    builtin chart: FAIL (returned -2)
+    sections 1-2 done, 1 failure(s); section 3 (frame rate) in 150 frames (~4s)
+  [APP] init done, selftest errors=1 -> TITLE
+  --- [SELFTEST] section 3/3: frame rate (REQ-101) ---
+    frames=150 target=33ms avg=30ms p95=33ms max=34ms
+    draw=2ms flush=28ms overrun_frames=0
+    p95 (limit 34ms): PASS
+  ==================== [SELFTEST] RESULT: FAIL ====================
+    section 1-2 failures: 1, section 3 failures: 0
+
+  判定：注入错误谱面后，第 1 节 `builtin chart: FAIL`、`[APP] init done, selftest
+  errors=1`、总结论 `RESULT: FAIL`，三处一致。**满足「错误谱面时对应项应显示 FAIL」**。
+  注意第 3 节仍是 PASS（帧率与谱面无关，失败不应传染到其他节），总结论按「任一节失败
+  即 FAIL」汇总，符合设计。
+  注入模式下屏幕没有可玩的谱面，这是预期行为。
+
+【本轮发现并已修复的缺陷（保留失败记录）】
+  首次上板（提交 e39ae86）时所有中文日志变成 '?'，根因是 GCC 对源文件的字符集转换
+  会把 rt_kprintf 里的非 ASCII 字面量替掉。修复为全部英文（提交 b887e16），
+  失败记录见 selftest_normal_2026-10-17_garbled_cn.log 与其 _note.txt。
+  教训：嵌入式串口日志的格式串只能用 ASCII；源码注释写中文不受影响。
+
+【本轮发现但未修复的问题（已登记 docs/04 的 L-11）】
+  `loop_stats()` 的 avg/p95 统计的是每帧 draw+flush 耗时，**不是帧间隔**。
+  本轮 flush 只需 26~29ms，帧循环用 rt_thread_delay 补足剩余时间，所以实际帧间隔
+  仍是 33ms，但 avg 显示 28~32ms。REQ-101 字面要求是「帧间隔 P95」，严格说应改
+  为记录「本帧开始减上帧开始」。本次未改，避免与 TC-007 的验证混在一起。
+
+【局限（不美化）】
+  ① 判定延迟直方图统计的是「触摸中断 → 判定执行」，**不是**「触摸 → 画面翻转」，
+     后者仍需 GPIO 打点（见 L-02 / REQ-104）。
+  ② 注入模式的 FAIL 是编译期开关造出来的，不是运行时检测到真实坏数据。
+  ③ 两轮都在 TITLE 停留期间采样，未覆盖长时间演奏下的帧率自检。
