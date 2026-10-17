@@ -1,0 +1,161 @@
+[LOOP] frames=300 iv_avg=33ms iv_p95=34ms iv_max=38ms work=31ms draw=2ms flush=29ms drop=0
+SFBL
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 10 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[32m[I/TOUCH] Regist touch screen driver, probe=1202740d [0m
+[32;22m[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.[0m
+[32;22m[I/FAL] The FAL MTD NOR device (dfu) created successfully[0m
+[32;22m[I/FAL] The FAL MTD NOR device (ble) created successfully[0m
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2108
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1689
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x2002012c
+
+==================== [SELFTEST] REQ-007 boot self-test ====================
+
+--- [SELFTEST] section 2/3: judge engine (REQ-003) ---
+[SELFTEST] judge: PASS (window/combo/acc/score/lane)
+  judge edge cases (window/one-per-tap/combo/acc/lane): PASS
+[BULK] judge: 50 notes, click offset sweep -119..+119ms
+[BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+  bulk judge (50 known click offsets): PASS
+  judge latency histogram (touch IRQ to judge): 0 samples
+    no real touch at boot - normal; printed again at RESULT
+
+--- [SELFTEST] section 1/3: chart parsing (REQ-006) ---
+  bad chart (lane 9 on line 2): PASS (returned -2, reported line 2)
+[CHART] builtin loaded: 58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14
+  builtin chart: PASS (58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14)
+  builtin chart summary (58 notes / last 29500ms): PASS
+
+  sections 1-2 done, 0 failure(s); section 3 (frame rate) in 150 frames (~4s)
+[32m[I/TOUCH] Open[0m
+[32m[I/TOUCH] Opened.[0m
+[TP] touch ready (queue=32, only DOWN events are queued)
+[SCENE] -> TITLE at 305ms (boot)
+[APP] init done, selftest errors=0 -> TITLE
+[32m[I/TOUCH] Find touch screen driver...[0m
+[32m[I/TOUCH] Probe 1202740d[0m
+[32m[I/TOUCH] touch screen found driver  2000b220, ft6146[0m
+[LOOP] start, frame=33ms
+[E/drv.ft6146] ft6146 id_H=64
+[E/drv.ft6146] ft6146 id_L=56
+
+--- [SELFTEST] section 3/3: frame rate (REQ-101) ---
+  frames=150 target=33ms
+  frame interval (REQ-101 uses this): avg=33ms p95=34ms max=34ms
+  work per frame: avg=31ms draw=2ms flush=28ms
+  dropped frames: 0
+  p95 interval (limit 34ms): PASS
+
+==================== [SELFTEST] RESULT: PASS ====================
+  section 1-2 failures: 0, section 3 failures: 0
+  note: p95 limit widened 33ms to 34ms by CR-04; tick resolution 1ms, see docs/06 R-10
+
+[SCENE] -> PLAYING at 6597ms (notes=58, tap=6565ms, latency=32ms)
+[HIT] lane=0 tap=7520ms chart=925ms lag=2ms -> GOOD
+[HIT] lane=2 tap=8174ms chart=1588ms lag=11ms -> GOOD
+[HIT] lane=3 tap=9161ms chart=2581ms lag=17ms -> GOOD
+[HIT] lane=3 tap=10192ms chart=3608ms lag=13ms -> GOOD
+[LOOP] frames=300 iv_avg=33ms iv_p95=34ms iv_max=38ms work=31ms draw=2ms flush=29ms drop=0
+[HIT] lane=0 tap=10567ms chart=3972ms lag=2ms -> PERFECT
+[HIT] lane=2 tap=11092ms chart=4501ms lag=6ms -> PERFECT
+[HIT] lane=2 tap=11607ms chart=5031ms lag=21ms -> PERFECT
+[HIT] lane=0 tap=12080ms chart=5494ms lag=11ms -> PERFECT
+[HIT] lane=3 tap=12509ms chart=5925ms lag=13ms -> GOOD
+[HIT] lane=1 tap=13099ms chart=6521ms lag=19ms -> PERFECT
+[HIT] lane=3 tap=13561ms chart=6984ms lag=20ms -> PERFECT
+[HIT] lane=1 tap=14151ms chart=7580ms lag=26ms -> GOOD
+[HIT] lane=2 tap=14569ms chart=7978ms lag=6ms -> PERFECT
+[HIT] lane=0 tap=15009ms chart=8441ms lag=29ms -> PERFECT
+[HIT] lane=0 tap=15536ms chart=8971ms lag=32ms -> PERFECT
+[HIT] lane=2 tap=16008ms chart=9434ms lag=23ms -> GOOD
+[HIT] lane=1 tap=16545ms chart=9964ms lag=16ms -> PERFECT
+[HIT] lane=1 tap=17565ms chart=10990ms lag=22ms -> PERFECT
+[HIT] lane=3 tap=18005ms chart=11420ms lag=12ms -> GOOD
+[HIT] lane=0 tap=18456ms chart=11884ms lag=25ms -> GOOD
+[HIT] lane=2 tap=18960ms chart=12381ms lag=18ms -> GOOD
+[HIT] lane=2 tap=19593ms chart=13009ms lag=13ms -> PERFECT
+[HIT] lane=0 tap=20023ms chart=13439ms lag=13ms -> GOOD
+[LOOP] frames=600 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=29ms drop=0
+[HIT] lane=3 tap=20473ms chart=13903ms lag=27ms -> GOOD
+[HIT] lane=1 tap=21063ms chart=14498ms lag=32ms -> PERFECT
+[HIT] lane=3 tap=21503ms chart=14928ms lag=22ms -> GOOD
+[HIT] lane=1 tap=22040ms chart=15458ms lag=15ms -> PERFECT
+[HIT] lane=2 tap=22577ms chart=15987ms lag=7ms -> PERFECT
+[HIT] lane=0 tap=22963ms chart=16385ms lag=19ms -> GOOD
+[HIT] lane=0 tap=23511ms chart=16914ms lag=0ms -> GOOD
+[HIT] lane=2 tap=24014ms chart=17444ms lag=27ms -> PERFECT
+[HIT] lane=1 tap=24595ms chart=18007ms lag=9ms -> PERFECT
+[HIT] lane=3 tap=25003ms chart=18437ms lag=31ms -> GOOD
+[HIT] lane=1 tap=25583ms chart=19000ms lag=14ms -> PERFECT
+[HIT] lane=3 tap=26001ms chart=19430ms lag=26ms -> GOOD
+[HIT] lane=0 tap=26462ms chart=19893ms lag=28ms -> GOOD
+[HIT] lane=2 tap=26967ms chart=20389ms lag=19ms -> GOOD
+[HIT] lane=2 tap=27535ms chart=20952ms lag=14ms -> PERFECT
+[HIT] lane=0 tap=28007ms chart=21415ms lag=5ms -> GOOD
+[HIT] lane=1 tap=29037ms chart=22441ms lag=1ms -> PERFECT
+[HIT] lane=3 tap=29509ms chart=22937ms lag=25ms -> GOOD
+[LOOP] frames=900 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=29ms drop=0
+[HIT] lane=1 tap=30119ms chart=23535ms lag=13ms -> PERFECT
+[HIT] lane=2 tap=30539ms chart=23964ms lag=22ms -> PERFECT
+[HIT] lane=0 tap=31042ms chart=24461ms lag=16ms -> PERFECT
+[HIT] lane=0 tap=31546ms chart=24957ms lag=8ms -> PERFECT
+[HIT] lane=2 tap=32083ms chart=25487ms lag=1ms -> PERFECT
+[HIT] lane=1 tap=32619ms chart=26050ms lag=28ms -> PERFECT
+[HIT] lane=3 tap=33016ms chart=26447ms lag=28ms -> PERFECT
+[HIT] lane=1 tap=33640ms chart=27043ms lag=0ms -> PERFECT
+[HIT] lane=3 tap=34015ms chart=27441ms lag=23ms -> PERFECT
+[HIT] lane=0 tap=34541ms chart=27971ms lag=27ms -> PERFECT
+[HIT] lane=2 tap=34992ms chart=28402ms lag=7ms -> GOOD
+[HIT] lane=2 tap=35508ms chart=28933ms lag=22ms -> GOOD
+[HIT] lane=0 tap=36034ms chart=29463ms lag=26ms -> PERFECT
+[SCENE] -> RESULT at 36060ms score=4250 maxcombo=22 acc=73.27% P=31 G=23 M=4
+[SELFTEST] measured judge latency (this run ended):
+  judge latency histogram (touch IRQ to judge): 54 samples
+    0-10=13  11-20=19  21-33=22  34-50=0  51-100=0  over100=0 (ms)
+    p95 = 33ms (limit 50ms): PASS
+[LOOP] frames=1200 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=29ms drop=0
+[LOOP] frames=1500 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=29ms drop=0
