@@ -21,6 +21,8 @@ static rt_device_t s_touch;
 static struct rt_semaphore s_sema;
 static volatile uint32_t s_isr_ms;
 static volatile uint32_t s_dropped;
+static volatile int s_pressed;              /* 当前是否已处于「按下」状态（去抖用） */
+static volatile uint32_t s_last_down_ms;
 
 static struct touch_ev s_queue[TP_QUEUE_LEN];
 static volatile int s_head;     /* 生产者（读点线程）写 */
@@ -88,11 +90,33 @@ static void tp_thread(void *param)
         if (rt_device_read(s_touch, 0, &msg, 1) != 1)
             continue;
 
-        /* P0 只做点击判定：只收 DOWN。MOVE/UP 明确丢弃，而不是「其余全当 UP」。 */
-        if (msg.event != TOUCH_EVENT_DOWN)
-            continue;
+        /*
+         * 事件处理：一次「按下」只产生一个事件（去抖）。
+         *
+         * 实测（2026-10-17）：手指在屏上拖动时驱动会**持续报 DOWN**（间隔 ~11ms、坐标渐变），
+         * 若按「DOWN 就入队」会把一次拖动拆成几十次「点击」，直接污染判定。
+         * 所以维护 s_pressed：DOWN 仅在「尚未按下」时入队，UP 才清除状态；
+         * 另加 1s 兑底，防止 UP 事件丢失导致状态卡死。
+         */
+        switch (msg.event)
+        {
+        case TOUCH_EVENT_DOWN:
+            if (!s_pressed || (isr_ms - s_last_down_ms) > 1000u)
+            {
+                s_pressed = 1;
+                s_last_down_ms = isr_ms;
+                tp_push(isr_ms, msg.x, msg.y);
+            }
+            break;
 
-        tp_push(isr_ms, msg.x, msg.y);
+        case TOUCH_EVENT_UP:
+            s_pressed = 0;
+            break;
+
+        default:
+            /* TOUCH_EVENT_MOVE 等：按下期间一律忽略 */
+            break;
+        }
     }
 }
 
@@ -104,6 +128,8 @@ int touch_init(void)
     s_head = 0;
     s_tail = 0;
     s_dropped = 0;
+    s_pressed = 0;
+    s_last_down_ms = 0;
     for (i = 0; i < TP_QUEUE_LEN; i++)
     {
         s_queue[i].t_ms = 0;

@@ -1,0 +1,230 @@
+[BENCH] notes/lane=0 frames=200 avg=33ms p95=34ms max=34ms draw=2ms flush=30ms miss=0
+[BENCH] notes/lane=5 frames=200 avg=33ms p95=34ms max=34ms draw=2ms flush=30ms miss=0
+[BENCH] notes/lane=10 frames=200 avg=33ms p95=34ms max=34ms draw=3ms flush=29ms miss=0
+[TP] #1 DOWN (154,319) t=21636ms lane=1 judge=NONE
+[TP] #2 DOWN (183,305) t=22033ms lane=1 judge=NONE
+[TP] #3 DOWN (196,262) t=22450ms lane=2 judge=NONE
+[TP] #4 DOWN (205,250) t=22869ms lane=2 judge=NONE
+[TP] #5 DOWN (200,252) t=23329ms lane=2 judge=NONE
+[TP] #6 DOWN (201,256) t=23768ms lane=2 judge=NONE
+[TP] #7 DOWN (194,210) t=24357ms lane=2 judge=NONE
+SFBL
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 10 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[32m[I/TOUCH] Regist touch screen driver, probe=1202740d [0m
+[32;22m[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.[0m
+[32;22m[I/FAL] The FAL MTD NOR device (dfu) created successfully[0m
+[32;22m[I/FAL] The FAL MTD NOR device (ble) created successfully[0m
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2106
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1689
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x200200fc
+[SELFTEST] judge: PASS (window/combo/acc/score/lane)
+[BULK] judge: 50 notes, click offset sweep -119..+119ms
+[BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+[APP] judge selftest+bulk: PASS
+[32m[I/TOUCH] Open[0m
+[32m[I/TOUCH] Opened.[0m
+[TP] touch ready (queue=32, only DOWN events are queued)
+[INPUT] bridge ready (touch -> judge, print only)
+[32m[I/TOUCH] Find touch screen driver...[0m
+[32m[I/TOUCH] Probe 1202740d[0m
+[32m[I/TOUCH] touch screen found driver  2000b220, ft6146[0m
+[LOOP] start, frame=33ms, bench 6 steps x 200 frames
+[E/drv.ft6146] ft6146 id_H=64
+[E/drv.ft6146] ft6146 id_L=56
+[BENCH] notes/lane=0 frames=200 avg=33ms p95=34ms max=34ms draw=2ms flush=30ms miss=0
+[BENCH] notes/lane=5 frames=200 avg=33ms p95=34ms max=34ms draw=2ms flush=30ms miss=0
+[TP] #1 DOWN (155,368) t=16845ms lane=1 judge=NONE
+[TP] #2 DOWN (151,368) t=17273ms lane=1 judge=NONE
+[TP] #3 DOWN (236,387) t=17915ms lane=2 judge=NONE
+[TP] #4 DOWN (269,389) t=18322ms lane=2 judge=NONE
+[TP] #5 DOWN (262,381) t=18719ms lane=2 judge=NONE
+[TP] #6 DOWN (347,378) t=19094ms lane=3 judge=NONE
+[TP] #7 DOWN (295,374) t=19500ms lane=3 judge=NONE
+[TP] #8 DOWN (191,418) t=19993ms lane=1 judge=NONE
+[BENCH] notes/lane=10 frames=200 avg=33ms p95=34ms max=34ms draw=3ms flush=29ms miss=0
+[TP] #9 DOWN (125,383) t=20401ms lane=1 judge=NONE
+[TP] #10 DOWN (164,382) t=20829ms lane=1 judge=NONE
+[TP] #11 DOWN (173,378) t=21150ms lane=1 judge=NONE
+[TP] #12 DOWN (154,376) t=21311ms lane=1 judge=NONE
+[TP] #13 DOWN (147,379) t=21472ms lane=1 judge=NONE
+[TP] #14 DOWN (156,380) t=21654ms lane=1 judge=NONE
+[TP] #15 DOWN (139,380) t=21825ms lane=1 judge=NONE
+[TP] #16 DOWN (154,383) t=22148ms lane=1 judge=NONE
+[TP] #17 DOWN (150,384) t=22309ms lane=1 judge=NONE
+[TP] #18 DOWN (276,421) t=22587ms lane=2 judge=NONE
+[TP] #19 DOWN (297,414) t=22866ms lane=3 judge=NONE
+[TP] #20 DOWN (314,386) t=23112ms lane=3 judge=NONE
+[TP] #21 DOWN (159,417) t=23831ms lane=1 judge=NONE
+[TP] #22 DOWN (145,305) t=24217ms lane=1 judge=NONE
+[TP] #23 DOWN (146,329) t=24613ms lane=1 judge=NONE
+[TP] #24 DOWN (142,357) t=25149ms lane=1 judge=NONE
+[TP] #25 DOWN (142,352) t=25374ms lane=1 judge=NONE
+[TP] #26 DOWN (142,347) t=25385ms lane=1 judge=NONE
+[TP] #27 DOWN (142,342) t=25396ms lane=1 judge=NONE
+[TP] #28 DOWN (142,337) t=25407ms lane=1 judge=NONE
+[TP] #29 DOWN (142,332) t=25417ms lane=1 judge=NONE
+[TP] #30 DOWN (142,328) t=25428ms lane=1 judge=NONE
+[TP] #31 DOWN (142,324) t=25439ms lane=1 judge=NONE
+[TP] #32 DOWN (142,321) t=25449ms lane=1 judge=NONE
+[TP] #33 DOWN (142,317) t=25460ms lane=1 judge=NONE
+[TP] #34 DOWN (142,313) t=25471ms lane=1 judge=NONE
+[TP] #35 DOWN (142,309) t=25482ms lane=1 judge=NONE
+[TP] #36 DOWN (142,305) t=25494ms lane=1 judge=NONE
+[TP] #37 DOWN (142,301) t=25505ms lane=1 judge=NONE
+[TP] #38 DOWN (142,297) t=25515ms lane=1 judge=NONE
+[TP] #39 DOWN (142,293) t=25526ms lane=1 judge=NONE
+[TP] #40 DOWN (142,290) t=25537ms lane=1 judge=NONE
+[TP] #41 DOWN (142,287) t=25547ms lane=1 judge=NONE
+[TP] #42 DOWN (142,284) t=25558ms lane=1 judge=NONE
+[TP] #43 DOWN (178,333) t=26244ms lane=1 judge=NONE
+[TP] #44 DOWN (178,347) t=26308ms lane=1 judge=NONE
+[TP] #45 DOWN (178,376) t=26319ms lane=1 judge=NONE
+[TP] #46 DOWN (178,384) t=26330ms lane=1 judge=NONE
+[TP] #47 DOWN (178,391) t=26340ms lane=1 judge=NONE
+[BENCH] notes/lane=20 frames=200 avg=33ms p95=34ms max=34ms draw=3ms flush=29ms miss=0
+[TP] #48 DOWN (146,379) t=26844ms lane=1 judge=NONE
+[TP] #49 DOWN (141,386) t=27113ms lane=1 judge=NONE
+[TP] #50 DOWN (138,392) t=27404ms lane=1 judge=NONE
+[TP] #51 DOWN (134,386) t=27748ms lane=1 judge=NONE
+[TP] #52 DOWN (138,380) t=28037ms lane=1 judge=NONE
+[TP] #53 DOWN (134,376) t=28202ms lane=1 judge=NONE
+[TP] #54 DOWN (141,364) t=28627ms lane=1 judge=NONE
+[TP] #55 DOWN (138,361) t=28820ms lane=1 judge=NONE
+[TP] #56 DOWN (143,363) t=29003ms lane=1 judge=NONE
+[TP] #57 DOWN (154,269) t=29550ms lane=1 judge=NONE
+[TP] #58 DOWN (204,260) t=29893ms lane=2 judge=NONE
+[TP] #59 DOWN (297,324) t=30290ms lane=3 judge=NONE
+[TP] #60 DOWN (212,419) t=30773ms lane=2 judge=NONE
+[TP] #61 DOWN (119,386) t=31201ms lane=1 judge=NONE
+[TP] #62 DOWN (91,373) t=31533ms lane=0 judge=NONE
+[TP] #63 DOWN (79,374) t=31962ms lane=0 judge=NONE
+[TP] #64 DOWN (205,366) t=32498ms lane=2 judge=NONE
+[TP] #65 DOWN (291,380) t=33046ms lane=3 judge=NONE
+[BENCH] notes/lane=30 frames=200 avg=33ms p95=34ms max=34ms draw=4ms flush=28ms miss=0
+[TP] #66 DOWN (213,372) t=33475ms lane=2 judge=NONE
+[TP] #67 DOWN (145,321) t=33927ms lane=1 judge=NONE
+[TP] #68 DOWN (140,330) t=34355ms lane=1 judge=NONE
+[TP] #69 DOWN (149,314) t=34880ms lane=1 judge=NONE
+[TP] #70 DOWN (322,368) t=35341ms lane=3 judge=NONE
+[TP] #71 DOWN (290,376) t=35610ms lane=2 judge=NONE
+[TP] #72 DOWN (249,424) t=35824ms lane=2 judge=NONE
+[TP] #73 DOWN (187,358) t=36413ms lane=1 judge=NONE
+[TP] #74 DOWN (112,353) t=37518ms lane=1 judge=NONE
+[TP] #75 DOWN (215,370) t=38043ms lane=2 judge=NONE
+[TP] #76 DOWN (145,376) t=38449ms lane=1 judge=NONE
+[TP] #77 DOWN (235,359) t=39008ms lane=2 judge=NONE
+[TP] #78 DOWN (371,375) t=39297ms lane=3 judge=NONE
+[TP] #79 DOWN (245,324) t=39607ms lane=2 judge=NONE
+[TP] #80 DOWN (77,301) t=39864ms lane=0 judge=NONE
+[BENCH] notes/lane=50 frames=200 avg=33ms p95=34ms max=34ms draw=5ms flush=27ms miss=0
+[BENCH] done -> normal mode (8 notes/lane)
+[TP] #81 DOWN (1,300) t=40122ms lane=0 judge=NONE
+[TP] #82 DOWN (104,304) t=40432ms lane=1 judge=NONE
+[TP] #83 DOWN (232,354) t=40969ms lane=2 judge=NONE
+[TP] #84 DOWN (295,354) t=41215ms lane=3 judge=NONE
+[TP] #85 DOWN (356,374) t=41430ms lane=3 judge=NONE
+[TP] #86 DOWN (253,359) t=41655ms lane=2 judge=NONE
+[TP] #87 DOWN (162,357) t=41858ms lane=1 judge=NONE
+[TP] #88 DOWN (120,362) t=42061ms lane=1 judge=NONE
+[TP] #89 DOWN (76,355) t=42254ms lane=0 judge=NONE
+[TP] #90 DOWN (78,356) t=42512ms lane=0 judge=NONE
+[TP] #91 DOWN (236,353) t=42802ms lane=2 judge=NONE
+[TP] #92 DOWN (245,302) t=43069ms lane=2 judge=NONE
+[TP] #93 DOWN (241,271) t=43230ms lane=2 judge=NONE
+[TP] #94 DOWN (239,272) t=43412ms lane=2 judge=NONE
+[TP] #95 DOWN (240,280) t=43626ms lane=2 judge=NONE
+[TP] #96 DOWN (243,297) t=44033ms lane=2 judge=NONE
+[TP] #97 DOWN (249,302) t=44666ms lane=2 judge=NONE
+[TP] #98 DOWN (142,298) t=47262ms lane=1 judge=NONE
+[TP] #99 DOWN (232,301) t=47680ms lane=2 judge=NONE
+[TP] #100 DOWN (296,297) t=48099ms lane=3 judge=NONE
+[TP] #101 DOWN (118,259) t=48453ms lane=1 judge=NONE
+[TP] #102 DOWN (292,306) t=48905ms lane=3 judge=NONE
+[TP] #103 DOWN (236,304) t=49462ms lane=2 judge=NONE
+[TP] #104 DOWN (142,304) t=49871ms lane=1 judge=NONE
+[TP] #105 DOWN (317,306) t=50525ms lane=3 judge=NONE
+[TP] #106 DOWN (244,308) t=57798ms lane=2 judge=NONE
+[TP] #107 DOWN (146,320) t=58163ms lane=1 judge=NONE
+[TP] #108 DOWN (147,317) t=58442ms lane=1 judge=NONE
+[TP] #109 DOWN (200,311) t=58870ms lane=2 judge=NONE
+[TP] #110 DOWN (306,324) t=59192ms lane=3 judge=NONE
+[TP] #111 DOWN (389,360) t=59471ms lane=3 judge=NONE
+[TP] #112 DOWN (295,324) t=59728ms lane=3 judge=NONE
+[TP] #113 DOWN (200,297) t=59986ms lane=2 judge=NONE
+[TP] #114 DOWN (174,271) t=60244ms lane=1 judge=NONE
+[TP] #115 DOWN (117,257) t=60479ms lane=1 judge=NONE
+[TP] #116 DOWN (80,252) t=60673ms lane=0 judge=NONE
+[TP] #117 DOWN (85,243) t=60952ms lane=0 judge=NONE
+[TP] #118 DOWN (116,242) t=61103ms lane=1 judge=NONE
+[TP] #119 DOWN (72,216) t=61414ms lane=0 judge=NONE
+[TP] #120 DOWN (67,214) t=61575ms lane=0 judge=NONE
+[TP] #121 DOWN (83,212) t=61984ms lane=0 judge=NONE
+[TP] #122 DOWN (135,247) t=62242ms lane=1 judge=NONE
+[TP] #123 DOWN (159,241) t=62502ms lane=1 judge=NONE
+[TP] #124 DOWN (182,239) t=62682ms lane=1 judge=NONE
+[TP] #125 DOWN (200,241) t=65580ms lane=2 judge=NONE
+[TP] #126 DOWN (195,244) t=65869ms lane=2 judge=NONE
+[TP] #127 DOWN (199,245) t=66073ms lane=2 judge=NONE
+[TP] #128 DOWN (232,253) t=66652ms lane=2 judge=NONE
+[TP] #129 DOWN (222,251) t=66889ms lane=2 judge=NONE
+[TP] #130 DOWN (230,252) t=67114ms lane=2 judge=NONE
+[TP] #131 DOWN (210,251) t=67340ms lane=2 judge=NONE
+[TP] #132 DOWN (230,251) t=67715ms lane=2 judge=NONE
+[TP] #133 DOWN (256,259) t=68101ms lane=2 judge=NONE
+[TP] #134 DOWN (365,326) t=68476ms lane=3 judge=NONE
+[TP] #135 DOWN (320,311) t=68755ms lane=3 judge=NONE
+[TP] #136 DOWN (248,268) t=68991ms lane=2 judge=NONE
+[TP] #137 DOWN (119,251) t=69260ms lane=1 judge=NONE
+[TP] #138 DOWN (82,249) t=69625ms lane=0 judge=NONE
+[TP] #139 DOWN (98,248) t=69894ms lane=1 judge=NONE
+[TP] #140 DOWN (127,249) t=70194ms lane=1 judge=NONE
+[TP] #141 DOWN (143,248) t=70376ms lane=1 judge=NONE
+[TP] #142 DOWN (227,308) t=72404ms lane=2 judge=NONE
+[TP] #143 DOWN (208,267) t=72737ms lane=2 judge=NONE
+[TP] #144 DOWN (84,245) t=73146ms lane=0 judge=NONE
+[TP] #145 DOWN (1,211) t=73457ms lane=0 judge=NONE
+[TP] #146 DOWN (1,208) t=73735ms lane=0 judge=NONE
