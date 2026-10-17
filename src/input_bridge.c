@@ -7,8 +7,10 @@
  *
  * 第 3 步 scene.c 接管输入后，本文件删除。
  *
- * 注意：本模块**不参与渲染**，也不在帧循环线程里跑，只做输入搬运，
- * 因此不会影响 p95 已压在 33ms 线上的帧循环。
+ * 注意：本模块**不参与渲染**，也不在帧循环线程里跑，只做输入搬运。
+ * 实测：加入本模块后 p95 从 33ms 变为 34ms（REQ-101 已按 CR-04 放宽到 ≤34ms）。
+ * 但该 1ms 变化**与本线程的优先级无关**（曾从 19 改为 25，数据纹丝不动），
+ * 也不在触摸事件的数量（全程不碰屏仍为 34ms），具体原因未定为 R-10。
  */
 #include "app.h"
 
@@ -50,7 +52,15 @@ static void bridge_thread(void *param)
 
 int input_bridge_start(void)
 {
-    rt_thread_t tid = rt_thread_create("inbr", bridge_thread, RT_NULL, 2048, 19, 10);
+    /*
+     * 优先级 25：低于帧循环线程 game（20），因为 RT-Thread 里数字越小优先级越高。
+     * 本线程只是 5ms 轮询的搬运工，没有理由抢占渲染。
+     *
+     * 【已被实测证伪的说法，保留记录】最初改这个优先级时以为它是 p95 从 33ms 变 34ms 的原因，
+     * 但对比 evidence/M3/judge_run2（prio 19，p95 34ms）与 judge_run3（prio 25，p95 34ms）
+     * 可以看到两轮数据完全一致——优先级不是原因。保留 25 只是因为它本身合理，不是为了修 p95。
+     */
+    rt_thread_t tid = rt_thread_create("inbr", bridge_thread, RT_NULL, 2048, 25, 10);
 
     if (!tid)
     {
@@ -58,6 +68,6 @@ int input_bridge_start(void)
         return -1;
     }
     rt_thread_startup(tid);
-    rt_kprintf("[INPUT] bridge ready (touch -> judge, print only)\n");
+    rt_kprintf("[INPUT] bridge ready (touch -> judge, prio 25 < game 20)\n");
     return 0;
 }

@@ -1,0 +1,101 @@
+[BENCH] notes/lane=0 frames=200 avg=33ms p95=34ms max=34ms draw=2ms flush=30ms miss=0
+[BENCH] notes/lane=5 frames=200 avg=33ms p95=34ms max=34ms draw=2ms flush=30ms miss=0
+SFBL
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 10 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[32m[I/TOUCH] Regist touch screen driver, probe=1202740d [0m
+[32;22m[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.[0m
+[32;22m[I/FAL] The FAL MTD NOR device (dfu) created successfully[0m
+[32;22m[I/FAL] The FAL MTD NOR device (ble) created successfully[0m
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2107
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1689
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x20020104
+[SELFTEST] judge: PASS (window/combo/acc/score/lane)
+[BULK] judge: 50 notes, click offset sweep -119..+119ms
+[BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+[APP] judge selftest+bulk: PASS
+[32m[I/TOUCH] Open[0m
+[32m[I/TOUCH] Opened.[0m
+[TP] touch ready (queue=32, only DOWN events are queued)
+[INPUT] bridge ready (touch -> judge, print only)
+[32m[I/TOUCH] Find touch screen driver...[0m
+[32m[I/TOUCH] Probe 1202740d[0m
+[32m[I/TOUCH] touch screen found driver  2000b220, ft6146[0m
+[LOOP] start, frame=33ms, bench 6 steps x 200 frames
+[E/drv.ft6146] ft6146 id_H=64
+[E/drv.ft6146] ft6146 id_L=56
+[BENCH] notes/lane=0 frames=200 avg=33ms p95=34ms max=34ms draw=2ms flush=30ms miss=0
+[BENCH] notes/lane=5 frames=200 avg=33ms p95=34ms max=34ms draw=2ms flush=30ms miss=0
+[BENCH] notes/lane=10 frames=200 avg=33ms p95=34ms max=34ms draw=3ms flush=29ms miss=0
+[BENCH] notes/lane=20 frames=200 avg=33ms p95=34ms max=34ms draw=3ms flush=29ms miss=0
+[BENCH] notes/lane=30 frames=200 avg=33ms p95=34ms max=34ms draw=4ms flush=28ms miss=0
+[BENCH] notes/lane=50 frames=200 avg=33ms p95=34ms max=34ms draw=5ms flush=27ms miss=0
+[BENCH] done -> normal mode (8 notes/lane)
+[TP] #1 DOWN (65,299) t=42399ms lane=0 judge=NONE
+[TP] #2 DOWN (29,355) t=44060ms lane=0 judge=NONE
+[TP] #3 DOWN (183,311) t=44499ms lane=1 judge=NONE
+[TP] #4 DOWN (299,272) t=44938ms lane=3 judge=NONE
+[TP] #5 DOWN (361,294) t=45335ms lane=3 judge=NONE
+[TP] #6 DOWN (180,309) t=45742ms lane=1 judge=NONE
+[TP] #7 DOWN (1,328) t=46202ms lane=0 judge=NONE
+[TP] #8 DOWN (134,320) t=47402ms lane=1 judge=NONE
+[TP] #9 DOWN (186,303) t=47712ms lane=1 judge=NONE
+[TP] #10 DOWN (256,302) t=48077ms lane=2 judge=NONE
+[TP] #11 DOWN (70,332) t=48732ms lane=0 judge=NONE
+[TP] #12 DOWN (187,306) t=49718ms lane=1 judge=NONE
+[TP] #13 DOWN (188,332) t=50030ms lane=1 judge=NONE
+[TP] #14 DOWN (195,327) t=50406ms lane=2 judge=NONE
+[TP] #15 DOWN (80,330) t=50899ms lane=0 judge=NONE
+[TP] #16 DOWN (260,319) t=51745ms lane=2 judge=NONE
+[TP] #17 DOWN (261,310) t=52014ms lane=2 judge=NONE
+[TP] #18 DOWN (266,307) t=52282ms lane=2 judge=NONE
+[TP] #19 DOWN (85,316) t=52732ms lane=0 judge=NONE
+[TP] #20 DOWN (199,312) t=53740ms lane=2 judge=NONE
+[TP] #21 DOWN (250,327) t=54136ms lane=2 judge=NONE
+[TP] #22 DOWN (326,359) t=54522ms lane=3 judge=NONE
+[TP] #23 DOWN (120,355) t=54897ms lane=1 judge=NONE
+[TP] #24 DOWN (73,336) t=55176ms lane=0 judge=NONE
+[TP] #25 DOWN (251,306) t=55348ms lane=2 judge=NONE
