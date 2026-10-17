@@ -128,6 +128,11 @@ physical_verification:
     executed_at: "2026-10-17T14:3x~14:4x+08:00"
     evidence_path: "evidence/M3/interval_run_2026-10-17.log"
     agent_conclusion: "把 loop_stats() 拆成两组：avg/p95/max_ms（每帧处理耗时）与 avg/p95/max_interval_ms（真正的帧间隔），REQ-101 判据改用后者。实测四轮 [LOOP] 均为 `iv_avg=33ms iv_p95=34ms iv_max=38ms work=31~32ms draw=2ms flush=29ms drop=0`；自检第 3 节 `frame interval avg=33ms p95=34ms max=34ms`、`work per frame avg=31ms`、`dropped frames: 0`、`p95 interval (limit 34ms): PASS`，总结论 PASS。结算时判定延迟直方图 54 样本（0-10=13、11-20=19、21-33=22）。**结论必须按这个口径描述：REQ-101 按 CR-04 判据通过，但零余量——34ms 正好卡在上限，每帧处理已占 31~32ms，flush 的 29ms 等 VSYNC 不可压缩。** 前几轮报的 avg=28ms 是 work 口径，会给人「还剩 5ms 余量」的错觉。局限：打点仍为 1ms 分辨率（R-10）；只跑一局约 1200 帧，未做 10 分钟长跑。"
+  - item: "REQ-103 连续运行与堆趋势（TC-103）"
+    required_action: "学生烧录含 heap_report 的固件后复位一次，之后 10 分钟内不再动 USB；期间可玩几局或停在主界面"
+    executed_at: "2026-10-17T19:1x~19:2x+08:00（抓取 700 秒）"
+    evidence_path: "evidence/M3/stability_10min_2026-10-17.log"
+    agent_conclusion: "**先排除重启干扰**：`SiFli Corporation` / `[APP] init done` / `[LOOP] start` 各出现 1 次，且 [HEAP] 时间戳单调递增（间隔约 60s），证明板子全程只启动一次；抓取中途的端口重连是抓取端问题。**堆使用**：11 个样本 used 全部 371004B、free 全部 86796B，零字节漂移；max_used 恒为 375312B（仅比稳态高 4308B，无二次增长）→ 无内存泄漏。**帧率**：frames=20400（约 11.2 分钟），iv_p95=34ms、iv_max=38ms、drop=0；自检 `p95 interval PASS` / `RESULT: PASS`。**重要局限：本轮是「连续运行」11.2 分钟，不是「连续演奏」——人不可能手打 11 分钟，未做自动演奏脚本，报告不得写成「连续演奏 10min 通过」。另：work 已涨到 33ms（flush 30ms），帧循环已无 delay 余量。**"
 
 physical_verification_note: |
   M2 阶段的烧录（sftool write_flash --verify）与启动复位（CodeKit 串口复位）由 agent 执行、学生确认，
@@ -168,6 +173,8 @@ known_issues:
   - "**自检的注入 FAIL 是编译期开关造出来的**（SELFTEST_INJECT_BAD_CHART=1），不是运行时检测到真实坏数据。真实坏数据场景（例如 TF 卡上的谱面出错）属于 P1 范畴，未验证。"
   - "判定延迟直方图统计的是「触摸中断到判定执行」，**不是「触摸到画面翻转」**；后者仍需 GPIO 打点（对应 REQ-104 未闭合的那一半）。"
   - "自检的三节都在 TITLE 停留期间采样（第 3 节固定在 150 帧触发），**未覆盖长时间演奏下的帧率自检**；如果要看演奏中的自检数据，需要改成多次触发或延后触发时机。"
+  - "**REQ-103 的「连续演奏」实际做成了「连续运行」**：11.2 分钟里学生玩了若干局并停留在主界面，不是从头到尾一直在演奏；未做自动演奏脚本。堆零漂移与不死机的结论成立，但不能写成「连续演奏 10min 通过」。"
+  - "**帧率余量已降到 0~2ms**：11 分钟长跑后 work=33ms（flush 30ms），而目标帧间隔就是 33ms，帧循环已没有任何 rt_thread_delay 余量，靠「刚好赶上」在跑。p95 仍为 34ms 是因为抖动未超 38ms。**这是当前最大的技术风险**，M4 若要加长按条/特效/判定文字动画很可能掉帧。"
 
 self_review: |
   M3「P0 功能」里程碑完成度：四步全部走完，REQ-001~REQ-007 七个 P0 需求均通过上板验证。
