@@ -9,8 +9,8 @@
  * 行为：启动后打印 "Hello world!"，随后 RGB 灯按 红→绿→蓝 依次亮 500ms、灭 500ms，
  *       每个颜色串口打印一行日志。可作为 T0 的编译、烧录和串口取证对象。
  *
- * M2 阶段：额外调用 m2_probe_start()（见 src/m2_probe.c），在保留上述 RGB 心跳的前提下
- *       验证“屏幕点亮 + 刷新帧率 + 触摸事件时间戳”。M3 定稿后再换成 docs/02 的正式模块。
+ * M3 阶段：改为调用 app_start()（见 src/app.h / fb.c / gfx.c / game_loop.c），
+ *       按 docs/02 的模块划分运行固定帧循环；RGB 心跳保留但不再打印。
  *
  * 新增 .c 文件直接放进 src/ 即可，src/SConscript 会自动收集。
  */
@@ -20,6 +20,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "drivers/rt_drv_pwm.h"
+#include "app.h"        /* M3 模块接口（fb / gfx / game_loop / app_start） */
 
 #define APP_NAME        "course_starter"
 #define APP_VERSION     "0.1.0"
@@ -42,9 +43,6 @@ static const struct rgb_color color_table[] =
 };
 
 static struct rt_device *rgbled_device;
-
-/* M2 原型入口（src/m2_probe.c）。不引入头文件，避免改动构建脚本的 include 路径。 */
-extern void m2_probe_start(void);
 
 static void rgb_led_init(void)
 {
@@ -75,14 +73,16 @@ int main(void)
 
     rgb_led_init();
 
-    /* M2 关键技术验证：点亮屏幕、测帧率、打印触摸事件时间戳 */
-    m2_probe_start();
+    /* M3 应用入口：初始化帧缓冲并启动固定帧循环（见 src/app.h） */
+    if (app_start() != 0)
+        rt_kprintf("[%s] ERROR: app_start failed\n", APP_NAME);
 
+    /* RGB 心跳：只做状态指示，不再打印——避免污染帧统计与判定日志的串口输出。
+     * M3 起屏幕会显示游戏画面，RGB 仅用于「板子还活着」的粗略判断。 */
     while (1)
     {
         for (int i = 0; i < (int)(sizeof(color_table) / sizeof(color_table[0])); i++)
         {
-            rt_kprintf("[%s] rgb -> %s\n", APP_NAME, color_table[i].name);
             rgb_led_set_color(color_table[i].value);
             rt_thread_mdelay(BLINK_ON_MS);
             rgb_led_set_color(0x000000);
