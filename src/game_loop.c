@@ -256,8 +256,24 @@ int game_loop_start(void)
 
 int app_start(void)
 {
+    int fail;
+
     if (fb_init() != 0)
         return -1;
+
+    /* 判定引擎：先跑纯逻辑自检 + 批量判定测试
+     * （REQ-007 的一部分；批量测试对应 TC-003 「以已知时刻输入 ≥50 次」） */
+    judge_init();
+    fail = judge_selftest();
+    fail += judge_bulk_test(50u);
+    rt_kprintf("[APP] judge selftest+bulk: %s\n", fail ? "FAIL" : "PASS");
+
+    /* 触摸输入（REQ-003 / REQ-104） */
+    if (touch_init() != 0)
+        rt_kprintf("[APP] WARN: touch init failed, judge will get no input\n");
+
+    /* 临时桥接：第 3 步 scene 接管输入后删除 input_bridge.c */
+    input_bridge_start();
 
     return game_loop_start();
 }

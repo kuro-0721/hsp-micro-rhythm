@@ -53,6 +53,66 @@ void gfx_fill_rect(int x0, int y0, int x1, int y1, uint16_t color);
 void gfx_hline(int x0, int x1, int y, uint16_t color);
 void gfx_vline(int x, int y0, int y1, uint16_t color);
 
+/* ---------------- 触摸输入（src/input_touch.c） ---------------- */
+
+#define TP_QUEUE_LEN    32
+
+struct touch_ev
+{
+    uint32_t t_ms;      /* 中断时刻（rt_tick_get_millisecond，分辨率 1ms） */
+    uint16_t x, y;
+};
+
+/* 打开 "touch" 设备、注册 rx_indicate、启动读点线程。成功返回 0。 */
+int touch_init(void);
+
+/* 取一个已完成读点的事件。0 = 取到，-1 = 队列空。 */
+int touch_pop_event(struct touch_ev *out);
+
+/* 【临时】触摸→判定的桥接线程（src/input_bridge.c，第 3 步删除） */
+int input_bridge_start(void);
+
+/* ---------------- 判定引擎（src/judge.c） ---------------- */
+
+#define JUDGE_PERFECT_MS    60u
+#define JUDGE_GOOD_MS       120u
+#define JUDGE_MAX_NOTES     256u
+
+enum judge_result
+{
+    JUDGE_NONE = 0,     /* 没有可判定的音符 */
+    JUDGE_PERFECT,
+    JUDGE_GOOD,
+    JUDGE_MISS,
+};
+
+struct note
+{
+    uint32_t hit_ms;    /* 该音符应当被命中的时刻 */
+    uint8_t  lane;      /* 0..3 */
+    uint8_t  state;     /* 0 = 待判定，1 = 已判定 */
+};
+
+struct judge_stat
+{
+    uint32_t perfect, good, miss;
+    uint32_t combo, max_combo;
+    uint32_t score;
+    uint32_t judged;    /* 已判定音符数 */
+    uint32_t acc_x100;  /* Acc 百分比 ×100（整数，避免浮点） */
+};
+
+int  judge_init(void);
+int  judge_load(const struct note *notes, uint32_t n);
+enum judge_result judge_touch(uint8_t lane, uint32_t t_ms);
+uint32_t judge_tick(uint32_t now_ms);
+void judge_stats(struct judge_stat *out);
+void judge_reset(void);
+int  judge_selftest(void);          /* 纯逻辑自检：返回 0 = 全部 PASS */
+int  judge_bulk_test(uint32_t count); /* 批量判定测试（TC-003 的 ≥50 次），返回失败数 */
+
+const char *judge_result_name(enum judge_result r);
+
 /* ---------------- game_loop：固定帧循环与统计 ---------------- */
 
 struct loop_stat
