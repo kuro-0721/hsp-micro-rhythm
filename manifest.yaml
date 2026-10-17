@@ -13,11 +13,11 @@
 # ============================================================
 
 submission:
-  student_id: "<学号，例如 S2026001>"
-  student_name: "<姓名>"
-  group_id: "<组别，例如 G3>"
-  milestone: "<里程碑名称，例如 阶段4-AI语音集成 / Capstone-检查点2 / Capstone-终版>"
-  submitted_at: "<ISO时间戳，例如 2026-11-03T21:40:00+08:00>"
+  student_id: "2024211455"
+  student_name: "邬皓帆"
+  group_id: "未定"
+  milestone: "M3-功能完成"
+  submitted_at: "2026-10-17T14:45:00+08:00"
 
 dev_agent:
   tool: "GitHub Copilot in VS Code（Agent 模式，配合 siFli CodeKit 扩展的编译/串口工具）"
