@@ -1,0 +1,2 @@
+[BENCH] notes/lane=5 frames=200 avg=26ms p95=29ms max=29ms draw=2ms flush=24ms miss=0
+[BENCH] notes/lane=10 frames=200 avg=30ms p95=33ms max=34ms draw=3ms flush=27ms miss=0

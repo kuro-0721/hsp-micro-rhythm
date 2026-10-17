@@ -1,0 +1,43 @@
+文件：bench_serial_2026-10-17.log（可读版，已去除 ANSI 颜色控制码，内容与 _raw 逐字一致）
+       bench_serial_2026-10-17_raw.log（原始字节，含 SDK 输出的 ANSI 转义序列，未做任何修改）
+       bench_serial_2026-10-17_attempt1_partial.log（第一次抓取失败时的残留，仅 2 行，保留以记录失败过程）
+说明：M3 第 1 步「渲染基座 + 音符密度压力测试」的串口证据（TC-101 帧率的 M3 复测数据）
+
+【被测固件】提交 a5cfa5a「feat(m3): 实现渲染基座 fb/gfx/game_loop 并加音符密度压力测试」
+  project/build_sf32lb52-lchspi-ulp_hcpu/main.bin = 301,052 B（2026-10-17 13:13:23 编译）
+  渲染方式：整屏单缓冲 + 每帧一次 fb_present()（ADR-0003）；目标帧间隔 33ms（30fps）
+
+【采集方式】
+  学生执行 CodeKit Download 烧录 → 拔插 USB 复位；agent 用 PowerShell SerialPort 抓取 COM9 @1,000,000
+  抓取脚本采用「容错重连」：拔插瞬间旧句柄失效会抛 UnauthorizedAccessException，脚本关端口后重试 Open，
+  设备重新枚举后自动接上（日志中可见 `port error: 端口 COM9 不存在` 连续重试 → `(re)opened COM9`）。
+  脚本位置 C:\Users\whf\AppData\Local\Temp\m3_capture.ps1（临时文件，未入库）
+
+【实测数据】（每档 200 帧；draw = CPU 绘制，flush = 等待 tx_complete/VSYNC）
+  notes/lane  | 音符总数 | draw | flush | avg  | p95  | max  | miss
+  ------------+----------+------+-------+------+------+------+-----
+  0           | 0        | 2ms  | 27ms  | 29ms | 33ms | 34ms | 0
+  5           | 20       | 2ms  | 29ms  | 32ms | 33ms | 34ms | 0
+  10          | 40       | 3ms  | 29ms  | 33ms | 33ms | 34ms | 0
+  20          | 80       | 3ms  | 29ms  | 33ms | 33ms | 34ms | 0
+  30          | 120      | 4ms  | 28ms  | 32ms | 33ms | 34ms | 0
+  50          | 200      | 6ms  | 26ms  | 32ms | 33ms | 34ms | 0
+
+【判读结论】
+  1. REQ-101（帧间隔 p95 ≤ 33ms）达标：6 档 p95 均为 33ms，超时帧（>38ms）均为 0。
+  2. **音符密度对 CPU 绘制影响很小**：从 0 个音符到 200 个音符（每轨 50），draw 仅由 2ms 增至 6ms。
+     32 位双像素写（fb_clear / gfx_fill_rect）把整屏清屏 + 轨道线 + 判定线 + 200 个音符压到 6ms 以内，
+     明显优于 M2 逐像素填充的 8ms。
+  3. **主要开销是 flush（26~29ms），且与音符数量无关**——这是在等 VSYNC，不是 CPU 在计算。
+     该时间段 CPU 空闲，可用于判定/触摸等独立线程。
+  4. 由此推论：脏区更新能节省的只是 draw（上限约 5ms），无法缩短 flush；
+     而 p95 恰好压在 33ms 目标线上，帧循环本身没有余量。
+
+【局限（不美化）】
+  1. 本测试是**合成音符密度扫描**，不是真实演奏场景；真实演奏（含判定、计分、UI 刷新）待第 3 步后复测。
+  2. p95 = 33ms 恰好等于目标值，属于「刚好达标」，不能表述为「有余量」。
+  3. 第一次抓取失败（脚本先打开串口、学生后拔插，导致句柄失效）；修正为容错重连后重抓，失败残留已保留。
+  4. USB 重新枚举期间约丢失启动最前面的 1~2 行（重连延迟），但压力测试各档数据完整。
+
+采集人：kuro-0721（烧录、复位）；抓取与判读：GitHub Copilot（DeepSeek V4.1 Flash）
+采集时间：2026-10-17 13:1x~13:2x

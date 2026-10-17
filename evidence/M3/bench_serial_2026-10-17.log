@@ -1,0 +1,116 @@
+M]0?t?SFBL
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 10 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[I/TOUCH] Regist touch screen driver, probe=1202740d 
+[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.
+[I/FAL] The FAL MTD NOR device (dfu) created successfully
+[I/FAL] The FAL MTD NOR device (ble) created successfully
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2108
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1690
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x200200fc
+[LOOP] start, frame=33ms, bench 6 steps x 200 frames
+[BENCH] notes/lane=0 frames=200 avg=29ms p95=33ms max=34ms draw=2ms flush=27ms miss=0
+SFBL
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 10 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[I/TOUCH] Regist touch screen driver, probe=1202740d 
+[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.
+[I/FAL] The FAL MTD NOR device (dfu) created successfully
+[I/FAL] The FAL MTD NOR device (ble) created successfully
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2107
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1690
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x200200fc
+[LOOP] start, frame=33ms, bench 6 steps x 200 frames
+[BENCH] notes/lane=0 frames=200 avg=27ms p95=33ms max=33ms draw=2ms flush=25ms miss=0
+[BENCH] notes/lane=5 frames=200 avg=32ms p95=33ms max=34ms draw=2ms flush=29ms miss=0
+[BENCH] notes/lane=10 frames=200 avg=33ms p95=33ms max=34ms draw=3ms flush=29ms miss=0
+[BENCH] notes/lane=20 frames=200 avg=33ms p95=33ms max=34ms draw=3ms flush=29ms miss=0
+[BENCH] notes/lane=30 frames=200 avg=32ms p95=33ms max=34ms draw=4ms flush=28ms miss=0
+[BENCH] notes/lane=50 frames=200 avg=32ms p95=33ms max=34ms draw=6ms flush=26ms miss=0
+[BENCH] done -> normal mode (8 notes/lane)

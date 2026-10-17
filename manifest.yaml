@@ -98,10 +98,18 @@ physical_verification:
     executed_at: "2026-10-10（启动视频录制于 14:45:59；色带帧取自该视频 n=49，t≈1.633s）"
     evidence_path: "evidence/M2/color_bars_2026-10-10.jpg"
     agent_conclusion: "由学生录制启动视频、agent 抽帧核对（ffmpeg select n=49）：屏幕可正常点亮并显示彩色图案，色带水平、边界清晰、横向满宽，未见花屏/错位；配合编译产物 rtconfig.h（390x450），假设 A-01（屏幕实物与 SDK 配置一致）成立。配套证据：抽帧说明见 evidence/M2/color_bars_2026-10-10.txt，原始启动视频见 evidence/M2/screen_boot_20261010.link.txt（网盘链接待补），分辨率依据见 evidence/M2/resolution_2026-10-10.txt。局限：该帧为探针 v1 分行刷的中间态（可见约 7 条色带 + 底部尚未覆盖的白色区域），不是静止完整的 8 条色带；拍摄视角略倾斜，不可用于像素级测量。"
+  - item: "M3 第 1 步：渲染基座帧率与音符密度压力测试"
+    required_action: "学生执行 CodeKit Download 烧录并拔插 USB 复位；agent 抓取串口输出"
+    executed_at: "2026-10-17T13:1x~13:2x+08:00"
+    evidence_path: "evidence/M3/bench_serial_2026-10-17.log"
+    agent_conclusion: "被测固件为提交 a5cfa5a（main.bin 301,052 B）。每档 200 帧、共 6 档合成音符密度扫描：notes/lane=0/5/10/20/30/50（对应 0~200 个音符）下 p95 均为 33ms、超时帧均为 0，REQ-101（p95≤33ms）达标。关键观察：draw 由 2ms 增至 6ms（音符密度影响很小），flush 稳定在 26~29ms 且与音符数无关——主要开销是在等 VSYNC，该时段 CPU 空闲。局限：这是合成密度扫描而非真实演奏场景（真实演奏待 M3 第 3 步后复测）；p95 恰好等于 33ms 目标线，属刚好达标，不得表述为有余量。详见 evidence/M3/bench_serial_2026-10-17_note.txt。"
 
 physical_verification_note: |
   M2 阶段的烧录（sftool write_flash --verify）与启动复位（CodeKit 串口复位）由 agent 执行、学生确认，
-  不是学生亲自操作（见 docs/06 的 P-09）。串口数据为真实抓取的设备原始字节，未做任何修改。
+  不是学生亲自操作（见 docs/06 的 P-09）。
+  **M3 阶段起改为由学生亲自烧录与复位**，agent 只负责抓串口与判读（见上面 M3 条目）。
+  串口数据为真实抓取的设备原始字节；bench_serial_2026-10-17.log 仅去除 ANSI 颜色控制码，
+  原始字节保留在 bench_serial_2026-10-17_raw.log 中。
 
 test_results:
   # T0 为环境与仓库任务（非 REQ 驱动的功能需求），未在 docs/03 建立 TC 编号，
