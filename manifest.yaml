@@ -123,6 +123,11 @@ physical_verification:
     executed_at: "2026-10-17T14:2x+08:00"
     evidence_path: "evidence/M3/selftest_badchart_2026-10-17.log"
     agent_conclusion: "同一份代码仅改编译开关。输出：`[INJECT MODE SELFTEST_INJECT_BAD_CHART=1] next item should FAIL` → `builtin chart: FAIL (returned -2)` → `[APP] init done, selftest errors=1` → `RESULT: FAIL（section 1-2 failures: 1, section 3 failures: 0）`，四处一致。第 3 节仍为 PASS（帧率与谱面无关，失败不传染到其他节），总结论按「任一节失败即 FAIL」汇总，符合设计。注入模式下屏幕无可用谱面属预期。局限：该 FAIL 是编译期开关造出来的，不是运行时检测到真实坏数据。"
+  - item: "M3 收口轮：帧统计口径修正（L-11）后的真实帧间隔复测"
+    required_action: "学生烧录后复位；停主界面等 6 秒（自检第 3 节），再玩一局到结算"
+    executed_at: "2026-10-17T14:3x~14:4x+08:00"
+    evidence_path: "evidence/M3/interval_run_2026-10-17.log"
+    agent_conclusion: "把 loop_stats() 拆成两组：avg/p95/max_ms（每帧处理耗时）与 avg/p95/max_interval_ms（真正的帧间隔），REQ-101 判据改用后者。实测四轮 [LOOP] 均为 `iv_avg=33ms iv_p95=34ms iv_max=38ms work=31~32ms draw=2ms flush=29ms drop=0`；自检第 3 节 `frame interval avg=33ms p95=34ms max=34ms`、`work per frame avg=31ms`、`dropped frames: 0`、`p95 interval (limit 34ms): PASS`，总结论 PASS。结算时判定延迟直方图 54 样本（0-10=13、11-20=19、21-33=22）。**结论必须按这个口径描述：REQ-101 按 CR-04 判据通过，但零余量——34ms 正好卡在上限，每帧处理已占 31~32ms，flush 的 29ms 等 VSYNC 不可压缩。** 前几轮报的 avg=28ms 是 work 口径，会给人「还剩 5ms 余量」的错觉。局限：打点仍为 1ms 分辨率（R-10）；只跑一局约 1200 帧，未做 10 分钟长跑。"
 
 physical_verification_note: |
   M2 阶段的烧录（sftool write_flash --verify）与启动复位（CodeKit 串口复位）由 agent 执行、学生确认，
@@ -157,7 +162,8 @@ known_issues:
   - "**HUD 底板会遮挡第 1 轨上部**：M3 第 3 步为修「音符盖住 HUD」加了 132×68 深灰底板（学生选方案 A），底板占 x=0..135、y=0..71，而 lane 0 覆盖 x=0..97，因此 lane 0 音符会先被挡住、下移到 y 大于 72 才重新可见。按落速 300px/s 折算约 280ms 不可见（仍保留约 1s 预读）。**这一条是按几何关系推算的，不是实测观察到的**（当轮 4 帧连续采样中音符都在 lane 2/3）。若后续觉得手感受影响，可缩窄底板或改成两行 HUD。"
   - "重开（RESULT 到 PLAYING）已验证可达并重新从头开始（第二条 `-> PLAYING at 48713ms (notes=58)`），但**重开后的那一局没打完**——串口抓取在 180 秒时结束，因此第二局的结算未被验证。"
   - "M3 两段实机视频（54MB、56MB）均因 .gitignore 的 *.mp4 规则未入库，链接文件见 evidence/M3/VID_20261017_134448.link.txt 与 VID_20261017_135523.link.txt，网盘链接与提取码仍为待填占位。"
-  - "**帧率统计口径与 REQ-101 字面不符（L-11）**：loop_stats() 的 avg/p95 统计的是每帧的 draw+flush 耗时，**不是帧间隔**。当 flush 只需 26~29ms 时，帧循环用 rt_thread_delay 补足剩余时间，实际帧间隔仍是 33ms，但 avg 会显示 28~32ms。REQ-101 字面要求是「帧间隔 P95」，严格说应改为记录「本帧开始减上帧开始」。本次未改，避免与 TC-007 的验证混在一起；「超时帧 0」这一项不受影响。"
+  - "**帧率统计口径已在 M3 收口轮修正（L-11 已关闭）**：loop_stats() 现同时提供 avg/p95/max_ms（每帧 draw+flush 耗时）与 avg/p95/max_interval_ms（真正的帧间隔），自检第 3 节与 [LOOP] 行都分开打印，REQ-101 判据一律用后者。**口径修正后暴露出一个重要事实：真实帧间隔 p95=34ms 正好卡在 CR-04 的上限，每帧处理已占 31~32ms（其中 flush 29ms 等 VSYNC），只剩 1~2ms 余量。** 前几轮报的 avg=28ms 是 work 口径，不代表有余地。"
+  - "**帧率余量很紧，是本项目当前最大的技术风险**：iv_max 已经到过 38ms（瞬时约 26fps），只因为占比不到 5% 才没拉高 p95；掉帧计数阈值是 33+5=38ms（需严格大于），也就是说**目前卡在边界上，拖到 39ms 就会开始计 drop**。后续若要加长按条、特效或判定文字动画，这 1~2ms 大概率不够。"
   - "**自检的注入 FAIL 是编译期开关造出来的**（SELFTEST_INJECT_BAD_CHART=1），不是运行时检测到真实坏数据。真实坏数据场景（例如 TF 卡上的谱面出错）属于 P1 范畴，未验证。"
   - "判定延迟直方图统计的是「触摸中断到判定执行」，**不是「触摸到画面翻转」**；后者仍需 GPIO 打点（对应 REQ-104 未闭合的那一半）。"
   - "自检的三节都在 TITLE 停留期间采样（第 3 节固定在 150 帧触发），**未覆盖长时间演奏下的帧率自检**；如果要看演奏中的自检数据，需要改成多次触发或延后触发时机。"
