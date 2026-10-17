@@ -1,0 +1,175 @@
+[LOOP] frames=300 iv_avg=33ms iv_p95=34ms iv_max=39ms work=31ms draw=2ms flush=29ms drop=1
+SFBL
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 10 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[32m[I/TOUCH] Regist touch screen driver, probe=1202740d [0m
+[32;22m[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.[0m
+[32;22m[I/FAL] The FAL MTD NOR device (dfu) created successfully[0m
+[32;22m[I/FAL] The FAL MTD NOR device (ble) created successfully[0m
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2106
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1689
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x2002012c
+
+==================== [SELFTEST] REQ-007 boot self-test ====================
+
+--- [SELFTEST] section 2/3: judge engine (REQ-003) ---
+[SELFTEST] judge: PASS (window/combo/acc/score/lane)
+  judge edge cases (window/one-per-tap/combo/acc/lane): PASS
+[BULK] judge: 50 notes, click offset sweep -119..+119ms
+[BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+  bulk judge (50 known click offsets): PASS
+  judge latency histogram (touch IRQ to judge): 0 samples
+    no real touch at boot - normal; printed again at RESULT
+
+--- [SELFTEST] section 1/3: chart parsing (REQ-006) ---
+  bad chart (lane 9 on line 2): PASS (returned -2, reported line 2)
+[CHART] builtin loaded: 58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14
+  builtin chart: PASS (58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14)
+  builtin chart summary (58 notes / last 29500ms): PASS
+
+  sections 1-2 done, 0 failure(s); section 3 (frame rate) in 150 frames (~4s)
+[32m[I/TOUCH] Open[0m
+[32m[I/TOUCH] Opened.[0m
+[TP] touch ready (queue=32, only DOWN events are queued)
+[SCENE] -> TITLE at 305ms (boot)
+[APP] init done, selftest errors=0 -> TITLE
+[32m[I/TOUCH] Find touch screen driver...[0m
+[32m[I/TOUCH] Probe 1202740d[0m
+[32m[I/TOUCH] touch screen found driver  2000b220, ft6146[0m
+[LOOP] start, frame=33ms
+[E/drv.ft6146] ft6146 id_H=64
+[E/drv.ft6146] ft6146 id_L=56
+
+--- [SELFTEST] section 3/3: frame rate (REQ-101) ---
+  frames=150 target=33ms
+  frame interval (REQ-101 uses this): avg=33ms p95=34ms max=34ms
+  work per frame: avg=31ms draw=2ms flush=29ms
+  dropped frames: 0
+  p95 interval (limit 34ms): PASS
+
+==================== [SELFTEST] RESULT: PASS ====================
+  section 1-2 failures: 0, section 3 failures: 0
+  note: p95 limit widened 33ms to 34ms by CR-04; tick resolution 1ms, see docs/06 R-10
+
+[LOOP] frames=300 iv_avg=33ms iv_p95=34ms iv_max=38ms work=31ms draw=2ms flush=29ms drop=0
+[LOOP] frames=600 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=29ms drop=0
+[LOOP] frames=900 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=29ms drop=0
+[LOOP] frames=1200 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=1500 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=1800 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[HEAP] t=59851ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=2100 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=2400 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=2700 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=3000 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=3300 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=3600 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[HEAP] t=119417ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=3900 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=4200 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=4500 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=4800 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=5100 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=5400 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[HEAP] t=178998ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=5700 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=6000 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=6300 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=6600 iv_avg=33ms iv_p95=34ms iv_max=38ms work=32ms draw=2ms flush=30ms drop=0
+[LOOP] frames=6900 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=7200 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HEAP] t=238547ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=7500 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=7800 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=8100 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=8400 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=8700 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=9000 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HEAP] t=298089ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=9300 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=9600 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=9900 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=10200 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=10500 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=10800 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HEAP] t=357618ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=11100 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=11400 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=11700 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=12000 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=12300 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=12600 iv_avg=33ms iv_p95=33ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HEAP] t=417144ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=12900 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=13200 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=13500 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=13800 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=14100 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=14400 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HEAP] t=476697ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=14700 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=15000 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=15300 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=15600 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=15900 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=16200 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HEAP] t=536243ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=16500 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=16800 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=17100 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=17400 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=17700 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=18000 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HEAP] t=595833ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=18300 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=18600 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=18900 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=19200 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=19500 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=19800 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HEAP] t=655451ms total=457800B used=371004B free=86796B max_used=375312B
+[LOOP] frames=20100 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=20400 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0

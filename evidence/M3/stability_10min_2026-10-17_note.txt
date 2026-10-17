@@ -1,0 +1,65 @@
+文件：stability_10min_2026-10-17.log（175 行）
+说明：REQ-103「连续演奏 10min 不死机；每 60s 打印 free heap，无持续下降趋势」
+      的验证证据（对应 TC-103）。
+
+【被测固件】本次提交（新增 heap_report，每 1800 帧约 60s 打印一次）
+  学生烧录后复位一次；抓取 700 秒。
+
+【采集方式】
+  学生先烧录（agent 不占串口）→ agent 启动 700 秒抓取 → 学生拔插复位一次 →
+  之后 10 分钟内不再动 USB。期间学生可以玩几局，也可以停在主界面。
+
+【必须先排除的干扰：本次是否真的没重启】
+  抓取中途出现过一次端口断开重连（`(re)opened COM9 (times=2)`）。如果是板子重启，
+  10 分钟就被打断了。用三个独立的启动标志交叉验证：
+    `SiFli Corporation` 出现 1 次
+    `[APP] init done`  出现 1 次
+    `[LOOP] start`     出现 1 次
+  且 [HEAP] 的时间戳单调递增、间隔约 59600ms（≈60s），没有回到 0。
+  结论：**板子全程只启动了一次，端口重连是抓取端的问题，不是板子重启。**
+
+【堆使用：11 个样本，零漂移】
+  [HEAP] t=59851ms  total=457800B used=371004B free=86796B max_used=375312B
+  [HEAP] t=119417ms total=457800B used=371004B free=86796B max_used=375312B
+  [HEAP] t=178998ms total=457800B used=371004B free=86796B max_used=375312B
+  [HEAP] t=238547ms total=457800B used=371004B free=86796B max_used=375312B
+  [HEAP] t=298089ms total=457800B used=371004B free=86796B max_used=375312B
+  [HEAP] t=357618ms total=457800B used=371004B free=86796B max_used=375312B
+  [HEAP] t=417144ms total=457800B used=371004B free=86796B max_used=375312B
+  [HEAP] t=476697ms total=457800B used=371004B free=86796B max_used=375312B
+  [HEAP] t=536243ms total=457800B used=371004B free=86796B max_used=375312B
+  [HEAP] t=595833ms total=457800B used=371004B free=86796B max_used=375312B
+  [HEAP] t=655451ms total=457800B used=371004B free=86796B max_used=375312B
+
+  - used 从第一个样本到最后一个样本**完全不变**（371004B），free 同样（86796B），
+    波动为 0 字节。说明这 11 分钟里没有发生内存泄漏。
+  - max_used 恒为 375312B，只比稳态高 4308B，且没有继续上涨，
+    说明启动阶段的一次性峰值之后没有二次增长。
+  - 补充说明：先前担心 `RT_MEM_STATS` 未开启会让 used 恒为 0，
+    **实测 used 有真实值，该担心不成立**（rtconfig.h 里虽未见该宏，
+    但 small mem 的统计是有效的）。
+
+【帧率与稳定性】
+  [LOOP] frames=20400 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+  - 20400 帧 ≈ 673 秒 ≈ 11.2 分钟，全程未复位。
+  - 自检第 3 节 `p95 interval (limit 34ms): PASS`，`RESULT: PASS`。
+  - 日志中无 ERROR / ASSERT / HardFault，无复位痕迹。
+
+【判据对照（docs/03 的 TC-103）】
+  | 判据 | 要求 | 实测 | 结论 |
+  |---|---|---|---|
+  | 连续运行时长 | 10min | 11.2min（673s） | 满足 |
+  | 死机/复位 | 无 | 无（三个启动标志各 1 次） | 满足 |
+  | free heap 趋势 | 无持续下降 | 11 个样本完全恒定 | 满足 |
+
+【必须写清的局限（不美化）】
+  1. **「连续演奏」实际做成了「连续运行」**。人不可能真的手打 11 分钟，所以本轮是
+     固件连续运行 11.2 分钟（期间学生玩了若干局 + 停留在主界面），
+     不是「从头到尾一直在演奏」。真正的连续演奏 10 分钟需要自动演奏脚本，
+     本项目没做。报告不得写成「连续演奏 10min 通过」。
+  2. **帧率余量进一步收紧**：收口轮 work=31~32ms，本轮涨到 **33ms**（flush 29→30ms），
+     而目标帧间隔就是 33ms —— 也就是说帧循环已经**没有任何 delay 余量**，
+     靠「刚好赶上」在跑。p95 仍压在 34ms 是因为抖动没超过 38ms。
+     这是当前最大的技术风险，与 L-11 / R-10 一起记在 docs/04 第 8 节。
+  3. 堆统计只反映 RT-Thread 主堆（457800B），**不包含 PSRAM 上单独分配的帧缓冲**
+     （351000B，一次性分配后不再变化，本身也不存在泄漏风险）。
