@@ -176,26 +176,28 @@ void selftest_frame_stats(void)
     rt_kprintf("\n--- [SELFTEST] section 3/3: frame rate (REQ-101) ---\n");
 
     loop_stats(&st);
-    rt_kprintf("  frames=%u target=%ums avg=%ums p95=%ums max=%ums\n",
-               (unsigned)st.frames, (unsigned)st.target_ms,
-               (unsigned)st.avg_ms, (unsigned)st.p95_ms, (unsigned)st.max_ms);
-    rt_kprintf("  draw=%ums flush=%ums overrun_frames=%u\n",
-               (unsigned)st.avg_draw_ms, (unsigned)st.avg_flush_ms,
-               (unsigned)st.miss);
+    rt_kprintf("  frames=%u target=%ums\n",
+               (unsigned)st.frames, (unsigned)st.target_ms);
+    rt_kprintf("  frame interval (REQ-101 uses this): avg=%ums p95=%ums max=%ums\n",
+               (unsigned)st.avg_interval_ms, (unsigned)st.p95_interval_ms,
+               (unsigned)st.max_interval_ms);
+    rt_kprintf("  work per frame: avg=%ums draw=%ums flush=%ums\n",
+               (unsigned)st.avg_ms, (unsigned)st.avg_draw_ms, (unsigned)st.avg_flush_ms);
+    rt_kprintf("  dropped frames: %u\n", (unsigned)st.miss);
 
-    if (st.p95_ms == 0u)
+    if (st.p95_interval_ms == 0u)
     {
-        rt_kprintf("  p95: no samples (frame count too low), skipped\n");
+        rt_kprintf("  p95 interval: no samples (frame count too low), skipped\n");
     }
-    else if (st.p95_ms <= SELFTEST_P95_LIMIT_MS)
+    else if (st.p95_interval_ms <= SELFTEST_P95_LIMIT_MS)
     {
-        rt_kprintf("  p95 (limit %ums): PASS\n",
+        rt_kprintf("  p95 interval (limit %ums): PASS\n",
                    (unsigned)SELFTEST_P95_LIMIT_MS);
     }
     else
     {
-        rt_kprintf("  p95 (limit %ums): FAIL (measured %ums)\n",
-                   (unsigned)SELFTEST_P95_LIMIT_MS, (unsigned)st.p95_ms);
+        rt_kprintf("  p95 interval (limit %ums): FAIL (measured %ums)\n",
+                   (unsigned)SELFTEST_P95_LIMIT_MS, (unsigned)st.p95_interval_ms);
         fail++;
     }
 

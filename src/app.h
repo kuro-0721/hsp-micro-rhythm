@@ -186,13 +186,23 @@ enum scene_id scene_current(void);
 struct loop_stat
 {
     uint32_t frames;        /* 累计帧数 */
-    uint32_t avg_ms;        /* 平均单帧耗时（draw + flush） */
-    uint32_t p95_ms;        /* 95 分位单帧耗时 */
-    uint32_t max_ms;        /* 最长单帧 */
+    uint32_t avg_ms;        /* 平均单帧处理耗时（draw + flush） */
+    uint32_t p95_ms;        /* 95 分位单帧处理耗时 */
+    uint32_t max_ms;        /* 最长单帧处理耗时 */
     uint32_t avg_draw_ms;   /* 平均 CPU 绘制耗时 */
     uint32_t avg_flush_ms;  /* 平均提交等待耗时 */
-    uint32_t miss;          /* 超时帧数（单帧 > FRAME_MS + 容差） */
+    uint32_t miss;          /* 掉帧数（帧间隔超过 FRAME_MS + 容差） */
     uint32_t target_ms;     /* 目标帧间隔 */
+
+    /*
+     * 以下是**真正的帧间隔**（本帧开始减上帧开始），才是 REQ-101 说的「帧间隔」。
+     * 上面的 avg_ms/p95_ms 只是处理耗时：flush 只需 26ms 时帧循环会用
+     * rt_thread_delay 补足到 33ms，两者会差出一个可观的量。
+     * 首帧没有「上一帧」，不计入这三项（见 docs/04 的 L-11）。
+     */
+    uint32_t avg_interval_ms;
+    uint32_t p95_interval_ms;
+    uint32_t max_interval_ms;
 };
 
 /* 初始化（依赖 fb_init 已成功）并启动帧循环线程。 */
