@@ -19,9 +19,10 @@
 #include <stdlib.h>
 
 #define FRAME_MS            33u     /* 目标帧间隔：30fps */
-#define MISS_TOLERANCE      5u      /* 超过 33+5ms 记一次超时帧 */
+#define MISS_TOLERANCE      5u      /* 超过 33+5ms 记一次掉帧 */
 #define RING_LEN            256u    /* 统计环形缓冲 */
 #define REPORT_EVERY_FRAMES 300u    /* 约 10s 打印一次帧统计 */
+#define HEAP_EVERY_FRAMES   1800u   /* 约 60s 打印一次堆使用（REQ-103 要求） */
 
 struct stats
 {
@@ -144,6 +145,25 @@ static void stats_report(void)
 
 /* ---------------- 帧循环 ---------------- */
 
+/*
+ * REQ-103 要求「每 60s 打印 free heap，无持续下降趋势」。
+ * 用 RT-Thread 的 rt_memory_info()；若该配置下 used/max_used 没有被统计
+ * （需要 RT_MEM_STATS），它们会一直是 0——这种情况会如实写进测试报告，
+ * 不会拿 0 当成“无泄漏”的证据。
+ */
+static void heap_report(uint32_t now_ms)
+{
+    rt_uint32_t total = 0u, used = 0u, max_used = 0u;
+    rt_uint32_t free_b;
+
+    rt_memory_info(&total, &used, &max_used);
+    free_b = (total >= used) ? (total - used) : 0u;
+
+    rt_kprintf("[HEAP] t=%ums total=%uB used=%uB free=%uB max_used=%uB\n",
+               (unsigned)now_ms, (unsigned)total, (unsigned)used,
+               (unsigned)free_b, (unsigned)max_used);
+}
+
 static void game_thread(void *param)
 {
     uint32_t frame = 0;
@@ -189,6 +209,10 @@ static void game_thread(void *param)
         /* 约 10s 打印一次帧统计，供现场观察与 REQ-103 长期运行验证 */
         if ((frame % REPORT_EVERY_FRAMES) == 0u)
             stats_report();
+
+        /* REQ-103：约 60s 打印一次堆使用，用于判断是否存在持续下降 */
+        if ((frame % HEAP_EVERY_FRAMES) == 0u)
+            heap_report(t0);
 
         /* 4) 固定节拍：把本帧剩余时间补满 */
         used = t2 - t0;
