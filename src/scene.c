@@ -26,6 +26,19 @@
 #define NOTE_FADE_MS        200         /* 过判定线后继续画多久（视觉余韵） */
 #define RESULT_TIMEOUT_MS   30000u      /* 结算页 30s 无操作回主界面 */
 
+/*
+ * HUD 底板（docs/02 §7 决策，2026-10-17 上板后由学生选定方案 A）：
+ * 390px 宽被 4 轨铺满，没侧边可放 HUD；判定线下方只剩 69px 且是手指点击区。
+ * 所以 HUD 留在左上角，但加一块比背景亮一档的底板，音符从板下穿过，
+ * 这样文字永远可读，不会像上板时那样被绿色音符盖住。
+ */
+#define HUD_PAD             4
+#define HUD_TEXT_X          8
+#define HUD_TEXT_Y          8
+#define HUD_LINE_H          22          /* 行距：字高 7*2=14 + 间隙 8 */
+#define HUD_W               132         /* 底板宽：能容纳 "SCORE 5800" / "ACC 100.00" */
+#define HUD_H               68          /* 底板高：3 行文字（8..66） + 上下留白 */
+
 static enum scene_id s_scene = SCENE_TITLE;
 static uint32_t s_play_start_ms;
 static uint32_t s_result_ms;
@@ -40,18 +53,29 @@ static void enter_title(void)
                (unsigned)rt_tick_get_millisecond());
 }
 
-static void enter_playing(uint32_t now_ms)
+/*
+ * tap_ms：触发本次切换的触摸中断时刻（无触摸触发时传 0）。
+ * 必须记录它，否则 TC-001 的「点击后 1s 内进入演奏」只靠切换时刻是无法验证的
+ * （只能看到"什么时候切了"，不知道"什么时候点的"）。
+ */
+static void enter_playing(uint32_t now_ms, uint32_t tap_ms)
 {
+    int32_t latency = (int32_t)(now_ms - tap_ms);
+
+    if (latency < 0)
+        latency = 0;    /* 事件入队可能在帧开始之后，防下溢 */
+
     /*
      * judge_reset() 只把音符 state 与统计清零，不动音符本身，
-     * 所以重开一局不需要重新解析谱面（频谱解析只在启动时做一次）。
+     * 所以重开一局不需要重新解析谱面（谱面解析只在启动时做一次）。
      */
     judge_reset();
     s_play_start_ms = now_ms;
     s_chart_ms = 0;
     s_scene = SCENE_PLAYING;
-    rt_kprintf("[SCENE] -> PLAYING at %ums (notes=%u)\n",
-               (unsigned)now_ms, (unsigned)chart_note_count());
+    rt_kprintf("[SCENE] -> PLAYING at %ums (notes=%u, tap=%ums, latency=%dms)\n",
+               (unsigned)now_ms, (unsigned)chart_note_count(),
+               (unsigned)tap_ms, (int)latency);
 }
 
 static void enter_result(uint32_t now_ms)
@@ -93,7 +117,7 @@ void scene_update(uint32_t now_ms)
         {
         case SCENE_TITLE:
             /* P0 主界面只有「开始」一个可点元素，整屏任意位置都算 */
-            enter_playing(now_ms);
+            enter_playing(now_ms, ev.t_ms);
             break;
 
         case SCENE_PLAYING:
@@ -124,7 +148,7 @@ void scene_update(uint32_t now_ms)
 
         case SCENE_RESULT:
             /* P0 结算页只有「重开」一个可点元素 */
-            enter_playing(now_ms);
+            enter_playing(now_ms, ev.t_ms);
             break;
 
         default:
@@ -182,16 +206,20 @@ static void render_hud(void)
 
     judge_stats(&st);
 
+    /* 先铺底板，再写文字：音符会从板下穿过，文字不会被盖住 */
+    gfx_fill_rect(HUD_PAD, HUD_PAD, HUD_PAD + HUD_W - 1, HUD_PAD + HUD_H - 1,
+                  COL_HUD_BG);
+
     rt_snprintf(buf, sizeof(buf), "SCORE %u", (unsigned)st.score);
-    gfx_text(8, 8, buf, COL_TEXT, 2);
+    gfx_text(HUD_TEXT_X, HUD_TEXT_Y, buf, COL_TEXT, 2);
 
     rt_snprintf(buf, sizeof(buf), "COMBO %u", (unsigned)st.combo);
-    gfx_text(8, 8 + 22, buf, COL_TEXT, 2);
+    gfx_text(HUD_TEXT_X, HUD_TEXT_Y + HUD_LINE_H, buf, COL_TEXT, 2);
 
     rt_snprintf(buf, sizeof(buf), "ACC %u.%02u",
                 (unsigned)(st.acc_x100 / 100u),
                 (unsigned)(st.acc_x100 % 100u));
-    gfx_text(8, 8 + 44, buf, COL_TEXT, 2);
+    gfx_text(HUD_TEXT_X, HUD_TEXT_Y + HUD_LINE_H * 2, buf, COL_TEXT, 2);
 }
 
 static void render_playing(void)
@@ -321,6 +349,10 @@ void scene_init(void)
     s_play_start_ms = 0;
     s_result_ms = 0;
     s_chart_ms = 0;
+
+    /* TC-001 要求「串口打印状态切换时间戳」，上电进入主界面也算一次切换 */
+    rt_kprintf("[SCENE] -> TITLE at %ums (boot)\n",
+               (unsigned)rt_tick_get_millisecond());
 }
 
 enum scene_id scene_current(void)
