@@ -410,3 +410,74 @@ int judge_bulk_test(uint32_t count)
     judge_init();   /* 不留测试状态 */
     return (int)bad;
 }
+
+/* ---------------- 判定延迟直方图（REQ-003 / REQ-007 第 2 节） ---------------- */
+
+/*
+ * 统计的是「触摸中断时刻 → 判定执行时刻」的延迟，由 scene.c 在每次成功判定后
+ * 调 judge_latency_add(now_ms - ev.t_ms) 上报。
+ *
+ * 注意两点：
+ *   1. 这**不是**「触摸 → 画面翻转」的整链路延迟（那个还需要 GPIO 打点）。
+ *   2. 直方图是跨局累计的统计量，**不受 judge_init()/judge_reset() 影响**——
+ *      这两个函数只清判定状态，不清统计，否则每局重开都会丢掉已有样本。
+ */
+static uint32_t s_lat_bucket[JUDGE_LAT_BUCKETS];
+static uint32_t s_lat_count;
+
+/* 各桶上界；最后一桶用 101 表示「超过 100ms」，便于打印时区分 */
+static const uint32_t s_lat_upper[JUDGE_LAT_BUCKETS] = { 10u, 20u, 33u, 50u, 100u, 101u };
+
+void judge_latency_reset(void)
+{
+    memset(s_lat_bucket, 0, sizeof(s_lat_bucket));
+    s_lat_count = 0;
+}
+
+void judge_latency_add(uint32_t lag_ms)
+{
+    int i;
+
+    for (i = 0; i < JUDGE_LAT_BUCKETS - 1; i++)
+    {
+        if (lag_ms <= s_lat_upper[i])
+            break;
+    }
+
+    s_lat_bucket[i]++;
+    s_lat_count++;
+}
+
+void judge_latency_hist(uint32_t *out, int n_buckets)
+{
+    if (!out || n_buckets <= 0)
+        return;
+
+    for (int i = 0; i < n_buckets; i++)
+        out[i] = (i < JUDGE_LAT_BUCKETS) ? s_lat_bucket[i] : 0u;
+}
+
+uint32_t judge_latency_count(void)
+{
+    return s_lat_count;
+}
+
+uint32_t judge_latency_p95_ms(void)
+{
+    uint32_t need, acc = 0;
+
+    if (s_lat_count == 0u)
+        return 0u;
+
+    /* 向上取整，保证至少取到 1 个样本 */
+    need = (s_lat_count * 95u + 99u) / 100u;
+
+    for (int i = 0; i < JUDGE_LAT_BUCKETS; i++)
+    {
+        acc += s_lat_bucket[i];
+        if (acc >= need)
+            return s_lat_upper[i];
+    }
+
+    return s_lat_upper[JUDGE_LAT_BUCKETS - 1];
+}

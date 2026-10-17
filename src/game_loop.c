@@ -140,6 +140,10 @@ static void game_thread(void *param)
         stats_add(t1 - t0, t2 - t1);
         frame++;
 
+        /* REQ-007 第 3 节：跑够样本后输出一次帧率自检与总结论 */
+        if (frame == SELFTEST_FRAME_WINDOW)
+            selftest_frame_stats();
+
         /* 约 10s 打印一次帧统计，供现场观察与 REQ-103 长期运行验证 */
         if ((frame % REPORT_EVERY_FRAMES) == 0u)
             stats_report();
@@ -184,26 +188,14 @@ int app_start(void)
     /* 判定引擎：先跑纯逻辑自检 + 批量判定测试
      * （REQ-007 的一部分；批量测试对应 TC-003 「以已知时刻输入 ≥50 次」） */
     judge_init();
-    fail = judge_selftest();
-    fail += judge_bulk_test(50u);
-    rt_kprintf("[APP] judge selftest+bulk: %s\n", fail ? "FAIL" : "PASS");
 
     /*
-     * REQ-006 冒烟：故意写错的谱面必须被拒（第 2 行轨号 9 越界）。
-     * 必须在 chart_load_builtin() 之前做——chart_parse() 成功时会覆盖内部音符池，
-     * 放在后面会把好谱面冲掉。正式的三节自检在第 4 步的 selftest.c 里汇总。
+     * REQ-007 启动自检第 1~2 节（判定 + 谱面）。
+     * 内部顺序是「先判定、后谱面」：judge_bulk_test() 结尾会 judge_init()
+     * 清空音符池，所以谱面必须最后加载；而错误谱面测试又必须在加载之前，
+     * 否则会把好谱面冲掉。这一串顺序由 selftest.c 负责，这里只管调用。
      */
-    {
-        int bad = chart_parse("# 冒烟：故意错误的谱面\n1500 9\n", -1);
-
-        rt_kprintf("[CHART] bad chart -> %d (%s, expect -2)\n",
-                   bad, (bad < 0) ? "REJECTED" : "NOT REJECTED");
-        fail += (bad == -2) ? 0 : 1;
-    }
-
-    /* 谱面（REQ-006）：解析内置谱面并装入判定引擎 */
-    if (chart_load_builtin() <= 0)
-        fail++;
+    fail = selftest_startup();
 
     /* 触摸输入（REQ-003 / REQ-104） */
     if (touch_init() != 0)
@@ -212,7 +204,7 @@ int app_start(void)
     /* 场景状态机（REQ-001）：上电进入 TITLE */
     scene_init();
 
-    rt_kprintf("[APP] init done, errors=%d -> TITLE\n", fail);
+    rt_kprintf("[APP] init done, selftest errors=%d -> TITLE\n", fail);
 
     return game_loop_start();
 }

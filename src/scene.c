@@ -93,6 +93,9 @@ static void enter_result(uint32_t now_ms)
                (unsigned)st.score, (unsigned)st.max_combo,
                (unsigned)(st.acc_x100 / 100u), (unsigned)(st.acc_x100 % 100u),
                (unsigned)st.perfect, (unsigned)st.good, (unsigned)st.miss);
+
+    /* 一局结束才有真实触摸样本，在这里补打实测的判定延迟直方图 */
+    selftest_latency_report();
 }
 
 /* ---------------- 更新（逻辑） ---------------- */
@@ -123,12 +126,16 @@ void scene_update(uint32_t now_ms)
         case SCENE_PLAYING:
         {
             int lane = (int)ev.x / lane_w;
+            int32_t lag = (int32_t)(now_ms - ev.t_ms);
             enum judge_result r;
 
             if (lane >= LANE_COUNT)
                 lane = LANE_COUNT - 1;
             if (lane < 0)
                 lane = 0;
+
+            if (lag < 0)
+                lag = 0;    /* 事件入队可能晚于帧开始，防下溢 */
 
             /* 用谱面时间判定：note.hit_ms 与 s_chart_ms 同一坐标系 */
             r = judge_touch((uint8_t)lane, s_chart_ms);
@@ -139,9 +146,12 @@ void scene_update(uint32_t now_ms)
              */
             if (r != JUDGE_NONE)
             {
-                rt_kprintf("[HIT] lane=%d tap=%ums chart=%ums -> %s\n",
+                /* 判定延迟直方图：触摸中断到判定执行（REQ-003 / REQ-007 第 2 节） */
+                judge_latency_add((uint32_t)lag);
+
+                rt_kprintf("[HIT] lane=%d tap=%ums chart=%ums lag=%dms -> %s\n",
                            lane, (unsigned)ev.t_ms, (unsigned)s_chart_ms,
-                           judge_result_name(r));
+                           (int)lag, judge_result_name(r));
             }
             break;
         }

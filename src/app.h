@@ -121,6 +121,19 @@ int  judge_bulk_test(uint32_t count); /* 批量判定测试（TC-003 的 ≥50 �
 
 const char *judge_result_name(enum judge_result r);
 
+/*
+ * 判定延迟直方图（REQ-003 的验收口径 / REQ-007 第 2 节）。
+ * 这里统计的是「触摸中断时刻 → 判定执行时刻」的延迟，**不是**「触摸→画面翻转」。
+ * 由 scene 在每次成功判定后调用 judge_latency_add()。
+ */
+#define JUDGE_LAT_BUCKETS   6       /* 0-10 / 11-20 / 21-33 / 34-50 / 51-100 / >100 ms */
+
+void     judge_latency_add(uint32_t lag_ms);
+void     judge_latency_reset(void);
+void     judge_latency_hist(uint32_t *out, int n_buckets);  /* 不足的桶补 0 */
+uint32_t judge_latency_count(void);
+uint32_t judge_latency_p95_ms(void);                        /* 无样本时返回 0 */
+
 /* ---------------- chart：文本谱面（src/chart.c，REQ-006） ---------------- */
 
 struct chart_info
@@ -187,6 +200,20 @@ int  game_loop_start(void);
 
 /* 读取统计快照。 */
 void loop_stats(struct loop_stat *out);
+
+/* ---------------- selftest：启动自检（src/selftest.c，REQ-007） ---------------- */
+
+#define SELFTEST_FRAME_WINDOW   150u    /* 约 5s（150 帧 × 33ms），第 3 节就绪的帧数 */
+#define SELFTEST_P95_LIMIT_MS   34u     /* REQ-101 判据（CR-04 放宽后的值） */
+
+/* 第 1~2 节（谱面 + 判定）：启动时调用一次，返回失败的节数。 */
+int  selftest_startup(void);
+
+/* 第 3 节（帧率）+ 总结论：由帧循环在累计帧数达到 SELFTEST_FRAME_WINDOW 后调一次。 */
+void selftest_frame_stats(void);
+
+/* 判定延迟直方图的实测报告：由 scene 在进入 RESULT 时调用（无样本则不打印）。 */
+void selftest_latency_report(void);
 
 /* ---------------- 应用入口 ---------------- */
 
