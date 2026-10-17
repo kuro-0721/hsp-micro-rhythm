@@ -1,0 +1,51 @@
+文件：judge_run3_2026-10-17.log（可读版，已去除 ANSI 颜色控制码）
+说明：M3 第 2 步第 3 轮上板验证——专门用来验证「input_bridge 线程优先级是否是
+      p95 由 33ms 变 34ms 的原因」。本轮的**唯一改动**是把 bridge 优先级 19 改为 25。
+
+【被测固件】在 run2 基础上只改 src/input_bridge.c 的 rt_thread_create 优先级参数
+  改动前：rt_thread_create("inbr", bridge_thread, RT_NULL, 2048, 19, 10)
+  改动后：rt_thread_create("inbr", bridge_thread, RT_NULL, 2048, 25, 10)
+  启动横幅可自证固件版本：`[INPUT] bridge ready (touch -> judge, prio 25 < game 20)`
+
+【优先级背景】
+  RT-Thread 里数字越小优先级越高。帧循环线程 game 为 20。
+  run2 时 bridge 为 19 → 比帧循环更高，理论上每帧都会抢先；
+  run3 时 bridge 为 25 → 低于帧循环，不再抢先。
+
+【采集方式】同前两轮：学生烧录 + 拔插 USB 复位，agent 抓 COM9 @1,000,000（带容错重连）。
+
+【本轮操作】明确要求学生「**全程不要碰屏幕**」，目的是把"触摸事件突发"这个变量
+  彻底排除掉。日志可验证：`[TP] #n DOWN` 真实触摸事件 **0 条**。
+
+【关键数据】
+  BENCH（每档 200 帧）
+    notes/lane = 0 / 5 / 10 / 20 / 30 / 50
+    avg = 33ms（全档）  p95 = 34ms（全档）  max = 34ms（全档）  miss = 0（全档）
+    draw = 2~5ms        flush = 27~30ms
+
+  [SELFTEST] judge: PASS (window/combo/acc/score/lane)
+  [BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+
+【日志不完整说明】
+  本文件第一条 BENCH 是 notes/lane=5，0 档那条被 CodeKit 串口监视器的环形缓冲
+  冲掉了（该问题已在 docs/06 的 P-05 登记，不是数据异常）。
+
+【判读结论 —— 优先级假设被证伪】
+                       run2                run3
+  bridge 优先级        19（高于帧循环）    25（低于帧循环）
+  真实触摸事件          25 条               0 条
+  p95（全档）           34ms                34ms
+  avg / draw / flush    33 / 2~5 / 27~30    33 / 2~5 / 27~30
+
+  三轮数据（第 1 步 33ms、run2 34ms、run3 34ms）说明：
+  1. **线程优先级不是原因**：19 与 25 两轮数据完全一致，说明 bridge 抢占帧循环
+     并不能解释这 1ms。
+  2. **触摸事件突发不是原因**：run3 全程 0 条触摸事件，p95 依然是 34ms。
+  3. 真正原因**未查清**。当前剩下的主要嫌疑是触摸驱动自身的周期采样：
+     SDK 的 drv_touch.c 定义 BSP_TOUCH_SAMPLE_HZ = 120，即约每 8.3ms 主动
+     读一次 I2C（33ms 一帧内约 4 次），而 project/build_.../rtconfig.h 里
+     **没有覆盖**这个值。这一点**未做实验验证**，只是代码阅读得到的假设。
+  4. 因为打点用 rt_tick_get_millisecond()，分辨率只有 1ms，"34ms"可能是 33.x
+     的量化结果，也可能是真的 34.x，现有手段分辨不出来。
+     → 学生决定不追加测量投入，按 CR-04 把 REQ-101 判据放宽到 34ms；
+       该不确定性已如实登记为 docs/06 的 R-10。
