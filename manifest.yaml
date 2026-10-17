@@ -22,8 +22,8 @@ submission:
 dev_agent:
   tool: "GitHub Copilot in VS Code（Agent 模式，配合 siFli CodeKit 扩展的编译/串口工具）"
   model: "DeepSeek V4.1 Flash"
-  session_log_path: "logs/agent-session-2026-10-17.jsonl（2026-10-17 14:42 的原始导出快照；若之后继续开发，需在收工时重新导出并更新本行与下面的 hash）"
-  session_log_hash: "SHA256 3039A0DBD8D59265371FE1873EBB1DBCE4768CFC18CAD9B3C411050EDAD9961D（对应上面 14:42 的快照）"
+  session_log_path: "logs/agent-session-2026-10-17.jsonl"
+  session_log_hash: "SHA256 3039A0DBD8D59265371FE1873EBB1DBCE4768CFC18CAD9B3C411050EDAD9961D（对应 2026-10-17 14:42 的原始导出快照；若之后继续开发，需在收工时重新导出并同时更新 path 与 hash）"
 
 requirements:
   prd_path: "docs/01-需求规格说明.md"
