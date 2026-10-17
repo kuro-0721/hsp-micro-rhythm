@@ -1,0 +1,78 @@
+文件：scene_run2_2026-10-17.log（可读版，已去除 ANSI 颜色控制码）
+      photo_title_2026-10-17.jpg   学生手机拍摄的主界面照片（原文件名 1792216607383.jpg，已重命名）
+      scene_hud_2026-10-17.jpg     演奏中 HUD 区域抽帧（视频 t=10.0s，裁剪屏幕 2 倍放大）
+      VID_20261017_135523.mp4      原始视频 32.52s（56MB，受 .gitignore 的 *.mp4 规则限制未入库，
+                                   见 VID_20261017_135523.link.txt）
+说明：M3 第 3 步修复轮（提交 fab7e80）的上板验证证据——验证 HUD 加深色底板、
+      TITLE 启动时间戳、点击延迟时间戳、以及 RESULT 到 PLAYING 的重开路径。
+
+【被测固件】提交 fab7e80「fix(m3): HUD 加深色底板，补 TITLE 与点击延迟时间戳」
+  main.bin 308,052 B（与上一版同大小，改动只在 scene.c/app.h 的布局与打印）
+
+【采集方式】
+  学生先在 CodeKit 里烧录（此时 agent **不占用串口**），烧录完成后再由 agent 启动 120/180 秒
+  串口抓取，学生拔插 USB 复位。
+  **流程教训**：本轮第一次尝试失败——agent 先启动了 180 秒抓取占住 COM9，紧接着让学生烧录，
+  CodeKit 抢不到串口，烧录失败。正确顺序是「先烧录、再抓串口、最后复位」。
+  该次失败留下的 evidence/M3/scene_run2_2026-10-17.log 只有旧固件的 [LOOP] 输出（frames 7500~9900），
+  已删除并在开发日志中如实记录。
+
+【本轮复位了两次】
+  日志中 `SiFli Corporation` 与 `Reason:` 各出现 2 次，`SFBL` 在第 2 行与第 72 行，
+  说明是两次真实上电，不是抓取重复读取（两次的 `[SCENE] -> TITLE at 299ms` 时间戳相同，
+  是因为同一固件从复位到进入主界面的耗时稳定在 299ms）。
+  第一次启动后学生没有操作；第二次启动才是下面记录的完整一局 + 重开。
+
+【关键日志（第二次启动）】
+  [SELFTEST] judge: PASS (window/combo/acc/score/lane)
+  [BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+  [APP] judge selftest+bulk: PASS
+  [CHART] bad chart -> -2 (REJECTED, expect -2)
+  [CHART] builtin loaded: 58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14
+  [SCENE] -> TITLE at 299ms (boot)                                      ← 本次新增
+  [APP] init done, errors=0 -> TITLE
+  [LOOP] start, frame=33ms
+  [SCENE] -> PLAYING at 9128ms (notes=58, tap=9114ms, latency=14ms)      ← tap/latency 本次新增
+  ...（[HIT] 共 42 条）
+  [SCENE] -> RESULT at 38565ms score=3350 maxcombo=13 acc=57.75% P=25 G=17 M=16
+  [SCENE] -> PLAYING at 48713ms (notes=58, tap=48696ms, latency=17ms)    ← 重开，上一轮没测到
+  [LOOP] frames=2100 avg=32ms p95=33ms max=34ms draw=2ms flush=30ms miss=0   ← 抓取结束时最后一条
+
+【数据自洽校验】
+  P+G+M = 25+17+16 = 58 = 谱面音符数 ✓
+  [HIT] 条数 = 42 = P+G = 25+17 ✓（MISS 不产生 [HIT]，符合设计）
+  25*100 + 17*50 = 3350 = SCORE ✓
+  (25*10000 + 17*5000)/58 = 5775 → ACC 57.75% ✓
+  重开那局的 RESULT 未出现在日志里（抓取在 180 秒时结束，重开仅玩了约 20 秒），
+  但第二条 -> PLAYING 存在，足以证明重开路径可达。
+
+【判读结论】
+  1. TC-001 主界面：`[SCENE] -> TITLE at 299ms (boot)`，299ms 远小于 5s 的判据。**通过**。
+     照片 photo_title_2026-10-17.jpg 可见白色「HSP RHYTHM」、绿色「TAP TO START」、
+     底部「SF32LB52 390X450」，5×7 点阵字模逐字可辨。
+  2. TC-001 点击到进入演奏：两次切换的 latency 分别为 14ms 与 17ms（远小于 1s 判据），
+     且**没有出现无符号下溢的大数**，说明 ev.t_ms 与帧时间基准一致。**通过**。
+  3. TC-005 结算页：末音符 29500ms，PLAYING 起点 9128ms，RESULT 在 38565ms，即
+     chart_ms≈29437ms 时已判完 58 个音符（末音符被提前约 63ms 命中）。四项数据与手算一致。**通过**。
+  4. TC-005 重开：`[SCENE] -> PLAYING at 48713ms (notes=58, tap=48696ms, latency=17ms)`，
+     notes 仍为 58、latency 正常、谱面时间由 s_play_start_ms 重新归零。**通过**。
+  5. HUD 底板（学生选的方案 A）：scene_hud_2026-10-17.jpg 与视频 t=13.0~13.75s 的连续 4 帧
+     都显示左上角有一块比背景亮一档的深灰底板，三行 `SCORE` / `COMBO` / `ACC` 始终清晰可读，
+     数值随判定实时刷新（1500→1600、8→9、68.18→69.56），未见音符压在文字上。**通过**。
+  6. REQ-101 帧率：本轮 [LOOP] 汇总 avg=32~33ms、p95=33~34ms、max=34ms、超时帧 0。
+     按 CR-04 判据（p95 ≤ 34ms）**达标**，draw 仍为 2ms，说明底板只是多了一次
+     132×68 的矩形填充，对 CPU 绘制没有可测影响。
+
+【方案 A 的已知副作用（如实记录）】
+  底板覆盖屏幕左上角 132×68 像素，即 x=0..135、y=0..71 的区域。
+  第 1 轨（x=0..97）的音符从 y 约 -12 开始下落，会先被底板挡住，直到 y 大于 72 才重新可见。
+  按落速 300px/s 折算，lane 0 的音符有约 (72+12)/300 ≈ 280ms 处于被遮挡状态。
+  也就是说 lane 0 的"预读时间"比其他轨短约 0.28s，但仍保留约 1s 的可视预读。
+  本轮截图/视频中未拍到 lane 0 音符穿过底板的瞬间（4 帧连续采样里音符都在右侧轨道），
+  **这一条是按几何关系推算的，不是实测观察到的现象**，若要确认需专门录一段只看 lane 0 的画面。
+
+【局限（不美化）】
+  ① 视频为手持拍摄，抖动明显，屏幕外框与手指多次入镜（`SCORE` 的首字母在部分帧被手指挡住）；
+  ② 学生点击靠肉眼跟节奏，P/G 比例反映手感而非判定精度上限；
+  ③ 重开后的那一局没打完（抓取时长限制），只验证了"能重开并重新开始"，未验证第二局的结算；
+  ④ 56MB 视频受 .gitignore 的 *.mp4 规则限制未入库，仓库内只保留照片与抽帧图。
