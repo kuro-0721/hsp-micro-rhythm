@@ -53,6 +53,16 @@ void gfx_fill_rect(int x0, int y0, int x1, int y1, uint16_t color);
 void gfx_hline(int x0, int x1, int y, uint16_t color);
 void gfx_vline(int x, int y0, int y1, uint16_t color);
 
+/*
+ * 5×7 点阵文字。scale 为整数倍缩放（1..4）。
+ * 字符集 0x20-0x5A（空格、数字、标点、大写字母）；小写自动转大写，其余字符显示为空格。
+ * 只写背缓冲，不提交；超出屏幕的像素自动裁剪。
+ */
+void gfx_text(int x, int y, const char *s, uint16_t color, int scale);
+
+/* 计算 gfx_text() 画出的像素宽度（不含右侧字距）。空串返回 0。 */
+int  gfx_text_width(const char *s, int scale);
+
 /* ---------------- 触摸输入（src/input_touch.c） ---------------- */
 
 #define TP_QUEUE_LEN    32
@@ -68,9 +78,6 @@ int touch_init(void);
 
 /* 取一个已完成读点的事件。0 = 取到，-1 = 队列空。 */
 int touch_pop_event(struct touch_ev *out);
-
-/* 【临时】触摸→判定的桥接线程（src/input_bridge.c，第 3 步删除） */
-int input_bridge_start(void);
 
 /* ---------------- 判定引擎（src/judge.c） ---------------- */
 
@@ -112,6 +119,53 @@ int  judge_selftest(void);          /* 纯逻辑自检：返回 0 = 全部 PASS 
 int  judge_bulk_test(uint32_t count); /* 批量判定测试（TC-003 的 ≥50 次），返回失败数 */
 
 const char *judge_result_name(enum judge_result r);
+
+/* ---------------- chart：文本谱面（src/chart.c，REQ-006） ---------------- */
+
+struct chart_info
+{
+    uint32_t notes;         /* 音符数 */
+    uint32_t first_ms;      /* 首个音符时刻（无音符时为 0） */
+    uint32_t last_ms;       /* 末个音符时刻 */
+    uint32_t per_lane[4];   /* 各轨音符数 */
+};
+
+/*
+ * 解析谱面文本（格式见 docs/02 §4.2）。
+ * 返回：>0 = 音符数；0 = 语法合法但无音符；负 = -(出错行号)，行号从 1 起算。
+ * 注意：解析成功会覆盖内部音符池；失败时请把它当作“当前谱面无效”。
+ */
+int  chart_parse(const char *text, int len);   /* len < 0 表示按 '\0' 结尾处理 */
+
+/* 解析内置谱面并装入判定引擎。返回音符数（>0）或负错误码。 */
+int  chart_load_builtin(void);
+
+/* 当前已解析的谱面（供 scene 渲染用）。未加载时 chart_note_count() 为 0。 */
+const struct note *chart_notes(void);
+uint32_t chart_note_count(void);
+
+/* 谱面摘要（音符数 / 首末时刻 / 轨道分布），供串口打印与第 4 步自检。 */
+const struct chart_info *chart_summary(void);
+
+/* ---------------- scene：场景状态机（src/scene.c，REQ-001/003/004/005） ---------------- */
+
+enum scene_id
+{
+    SCENE_TITLE = 0,    /* 主界面：显示曲名与「开始」提示 */
+    SCENE_PLAYING,      /* 演奏中 */
+    SCENE_RESULT,       /* 结算页 */
+};
+
+/* 重置到 TITLE（上电即主界面，REQ-001）。 */
+void scene_init(void);
+
+/* 每帧调用一次（帧循环线程）：出队触摸事件并分派、推进判定、判是否进结算。 */
+void scene_update(uint32_t now_ms);
+
+/* 每帧调用一次：只写背缓冲，不提交（提交由 game_loop 统一做）。 */
+void scene_render(void);
+
+enum scene_id scene_current(void);
 
 /* ---------------- game_loop：固定帧循环与统计 ---------------- */
 

@@ -3,17 +3,16 @@
  *
  * 对应 docs/02 §3 的 game_loop 模块与 §4.1 的 loop_stats()。
  *
- * 帧结构（每帧一次）：
- *   1) CPU 绘制：清屏 → 轨道分隔线 → 判定线 → 音符（全部写进背缓冲，不提交）
- *   2) 提交：fb_present()（整屏单次提交 + 等 tx_complete）
- *   3) 补足到 FRAME_MS：若本帧耗时不足 33ms，用 rt_thread_delay 补满，形成固定节拍
+ * 帧结构（每帧一次，固定 33ms 节拍）：
+ *   1) 逻辑：scene_update()——出队触摸、推进判定、状态切换
+ *   2) 绘制：scene_render()——只写背缓冲，不提交
+ *   3) 提交：fb_present()（整屏单次提交 + 等 tx_complete）
+ *   4) 补足到 FRAME_MS：若本帧耗时不足 33ms，用 rt_thread_delay 补满
  *
- * 【临时】音符密度压力测试：
- *   M2 留下的问题是「整屏刷 p95 31ms 已达标，但 CPU 填充占 8ms，30fps 下只剩 4ms 余量，
- *   音符多了会不会掉帧没人测过」。所以本文件在启动后先自动跑一轮密度扫描：
- *     每轨 0 → 5 → 10 → 20 → 30 → 50 个音符，每档 200 帧，逐档打印帧统计。
- *   用数据决定「要不要立刻做脏区更新」，而不是靠猜。
- *   扫描结束后进入正常模式（每轨 8 个音符），压力测试代码在 M3 收口时删除。
+ * 【历史】M3 第 1~2 步曾在本文件里放了一段「音符密度压力测试」（6 档 × 200 帧），
+ * 用来回答「200 个音符时 draw 会不会拖慢帧率」。数据已入库
+ * （evidence/M3/bench_serial_2026-10-17.log）：draw 2→6ms、主体开销是等 VSYNC。
+ * 第 3 步场景接管渲染后，那段临时代码已删除，需要复现时用 git 历史回退。
  */
 #include "app.h"
 #include <string.h>
@@ -22,17 +21,7 @@
 #define FRAME_MS            33u     /* 目标帧间隔：30fps */
 #define MISS_TOLERANCE      5u      /* 超过 33+5ms 记一次超时帧 */
 #define RING_LEN            256u    /* 统计环形缓冲 */
-
-#define LANE_COUNT          4
-#define NOTE_H              12
-#define NOTE_MARGIN         4
-#define JUDGE_LINE_OFFSET   70      /* 判定线距屏幕底部的高度 */
-#define NORMAL_NOTES        8       /* 正常模式下每轨音符数 */
-
-/* 压力测试参数（M3 收口时连同 bench_* 一起删除） */
-static const int s_bench_density[] = { 0, 5, 10, 20, 30, 50 };
-#define BENCH_STEPS         ((int)(sizeof(s_bench_density) / sizeof(s_bench_density[0])))
-#define BENCH_FRAMES        200u
+#define REPORT_EVERY_FRAMES 300u    /* 约 10s 打印一次帧统计 */
 
 struct stats
 {
@@ -45,7 +34,6 @@ struct stats
 
 static struct stats s_st;
 static struct rt_mutex s_lock;
-static uint32_t s_frames;
 
 static int cmp_u32(const void *a, const void *b)
 {
@@ -90,13 +78,6 @@ static void stats_add(uint32_t draw_ms, uint32_t flush_ms)
     rt_mutex_release(&s_lock);
 }
 
-static void stats_reset(void)
-{
-    rt_mutex_take(&s_lock, RT_WAITING_FOREVER);
-    memset(&s_st, 0, sizeof(s_st));
-    rt_mutex_release(&s_lock);
-}
-
 void loop_stats(struct loop_stat *out)
 {
     if (!out)
@@ -114,118 +95,57 @@ void loop_stats(struct loop_stat *out)
     rt_mutex_release(&s_lock);
 }
 
-/* ---------------- 绘制一帧 ---------------- */
+/* ---------------- 帧统计打印 ---------------- */
 
-static void render_scene(uint32_t frame, int notes_per_lane)
-{
-    int w = fb_width();
-    int h = fb_height();
-    int lane_w = w / LANE_COUNT;
-    int judge_y = h - JUDGE_LINE_OFFSET;
-
-    fb_clear(COL_BG);
-
-    /* 轨道分隔线 */
-    for (int i = 1; i < LANE_COUNT; i++)
-        gfx_vline(i * lane_w, 0, h - 1, COL_LANE);
-
-    /* 判定线（两像素高，便于肉眼定位） */
-    gfx_hline(0, w - 1, judge_y, COL_JUDGE);
-    gfx_hline(0, w - 1, judge_y + 1, COL_JUDGE);
-
-    if (notes_per_lane <= 0)
-        return;
-
-    /* 音符：同一轨内等间隔排队，整体随时间向下滚动 */
-    int period = h + NOTE_H;                    /* 滚动周期 */
-    int gap = period / notes_per_lane;          /* 同轨相邻音符间隔 */
-    int scroll = (int)((frame * 6u) % (uint32_t)period);
-    int note_w = lane_w - NOTE_MARGIN * 2;
-
-    if (note_w < 2)
-        note_w = 2;
-
-    for (int lane = 0; lane < LANE_COUNT; lane++)
-    {
-        int x0 = lane * lane_w + NOTE_MARGIN;
-        int x1 = x0 + note_w - 1;
-
-        for (int i = 0; i < notes_per_lane; i++)
-        {
-            int y = (i * gap + scroll) % period - NOTE_H;
-
-            if (y + NOTE_H <= 0 || y >= h)
-                continue;
-            gfx_fill_rect(x0, y, x1, y + NOTE_H - 1, COL_NOTE);
-        }
-    }
-}
-
-/* ---------------- 帧循环 ---------------- */
-
-static void bench_report(int step, int notes)
+static void stats_report(void)
 {
     struct loop_stat st;
 
     loop_stats(&st);
-    rt_kprintf("[BENCH] notes/lane=%d frames=%u avg=%ums p95=%ums max=%ums "
-               "draw=%ums flush=%ums miss=%u\n",
-               notes, (unsigned)st.frames, (unsigned)st.avg_ms, (unsigned)st.p95_ms,
-               (unsigned)st.max_ms, (unsigned)st.avg_draw_ms, (unsigned)st.avg_flush_ms,
-               (unsigned)st.miss);
-    (void)step;
+    rt_kprintf("[LOOP] frames=%u avg=%ums p95=%ums max=%ums draw=%ums "
+               "flush=%ums miss=%u\n",
+               (unsigned)st.frames, (unsigned)st.avg_ms, (unsigned)st.p95_ms,
+               (unsigned)st.max_ms, (unsigned)st.avg_draw_ms,
+               (unsigned)st.avg_flush_ms, (unsigned)st.miss);
 }
+
+/* ---------------- 帧循环 ---------------- */
 
 static void game_thread(void *param)
 {
     uint32_t frame = 0;
-    int bench_step = 0;
-    uint32_t bench_frame = 0;
-    int notes = s_bench_density[0];
 
-    rt_kprintf("[LOOP] start, frame=%ums, bench %d steps x %u frames\n",
-               (unsigned)FRAME_MS, BENCH_STEPS, (unsigned)BENCH_FRAMES);
+    (void)param;
+
+    rt_kprintf("[LOOP] start, frame=%ums\n", (unsigned)FRAME_MS);
 
     for (;;)
     {
         uint32_t t0 = rt_tick_get_millisecond();
+        uint32_t t1, t2, used;
 
-        render_scene(frame, notes);
+        /* 1) 逻辑：出队触摸、推进判定、状态切换 */
+        scene_update(t0);
 
-        uint32_t t1 = rt_tick_get_millisecond();
+        /* 2) 绘制：只写背缓冲，不提交 */
+        scene_render();
+
+        t1 = rt_tick_get_millisecond();
+
+        /* 3) 提交整屏并等 tx_complete */
         fb_present();
-        uint32_t t2 = rt_tick_get_millisecond();
+
+        t2 = rt_tick_get_millisecond();
 
         stats_add(t1 - t0, t2 - t1);
         frame++;
-        s_frames = frame;
 
-        /* 临时压力测试：逐档统计并打印 */
-        if (bench_step >= 0 && bench_step < BENCH_STEPS)
-        {
-            if (++bench_frame >= BENCH_FRAMES)
-            {
-                bench_report(bench_step, notes);
-                stats_reset();
-                bench_frame = 0;
+        /* 约 10s 打印一次帧统计，供现场观察与 REQ-103 长期运行验证 */
+        if ((frame % REPORT_EVERY_FRAMES) == 0u)
+            stats_report();
 
-                if (bench_step + 1 >= BENCH_STEPS)
-                {
-                    bench_step = -1;
-                    notes = NORMAL_NOTES;
-                    rt_kprintf("[BENCH] done -> normal mode (%d notes/lane)\n",
-                               notes);
-                }
-                else
-                {
-                    bench_step++;
-                    notes = s_bench_density[bench_step];
-                }
-            }
-        }
-
-        /* 固定节拍：把本帧剩余时间补满 */
-        uint32_t used = t2 - t0;
+        /* 4) 固定节拍：把本帧剩余时间补满 */
+        used = t2 - t0;
         if (used < FRAME_MS)
             rt_thread_delay(rt_tick_from_millisecond(FRAME_MS - used));
     }
@@ -268,12 +188,31 @@ int app_start(void)
     fail += judge_bulk_test(50u);
     rt_kprintf("[APP] judge selftest+bulk: %s\n", fail ? "FAIL" : "PASS");
 
+    /*
+     * REQ-006 冒烟：故意写错的谱面必须被拒（第 2 行轨号 9 越界）。
+     * 必须在 chart_load_builtin() 之前做——chart_parse() 成功时会覆盖内部音符池，
+     * 放在后面会把好谱面冲掉。正式的三节自检在第 4 步的 selftest.c 里汇总。
+     */
+    {
+        int bad = chart_parse("# 冒烟：故意错误的谱面\n1500 9\n", -1);
+
+        rt_kprintf("[CHART] bad chart -> %d (%s, expect -2)\n",
+                   bad, (bad < 0) ? "REJECTED" : "NOT REJECTED");
+        fail += (bad == -2) ? 0 : 1;
+    }
+
+    /* 谱面（REQ-006）：解析内置谱面并装入判定引擎 */
+    if (chart_load_builtin() <= 0)
+        fail++;
+
     /* 触摸输入（REQ-003 / REQ-104） */
     if (touch_init() != 0)
-        rt_kprintf("[APP] WARN: touch init failed, judge will get no input\n");
+        rt_kprintf("[APP] WARN: touch init failed, player will get no input\n");
 
-    /* 临时桥接：第 3 步 scene 接管输入后删除 input_bridge.c */
-    input_bridge_start();
+    /* 场景状态机（REQ-001）：上电进入 TITLE */
+    scene_init();
+
+    rt_kprintf("[APP] init done, errors=%d -> TITLE\n", fail);
 
     return game_loop_start();
 }
