@@ -103,11 +103,23 @@ physical_verification:
     executed_at: "2026-10-17T13:1x~13:2x+08:00"
     evidence_path: "evidence/M3/bench_serial_2026-10-17.log"
     agent_conclusion: "被测固件为提交 a5cfa5a（main.bin 301,052 B）。每档 200 帧、共 6 档合成音符密度扫描：notes/lane=0/5/10/20/30/50（对应 0~200 个音符）下 p95 均为 33ms、超时帧均为 0，REQ-101（p95≤33ms）达标。关键观察：draw 由 2ms 增至 6ms（音符密度影响很小），flush 稳定在 26~29ms 且与音符数无关——主要开销是在等 VSYNC，该时段 CPU 空闲。局限：这是合成密度扫描而非真实演奏场景（真实演奏待 M3 第 3 步后复测）；p95 恰好等于 33ms 目标线，属刚好达标，不得表述为有余量。详见 evidence/M3/bench_serial_2026-10-17_note.txt。"
+  - item: "M3 第 3 步：谱面解析 + 场景状态机 + 点阵文字（第一轮）"
+    required_action: "学生执行 CodeKit Download 烧录并拔插 USB 复位；agent 抓取串口；学生手机拍摄 32.7s 实机视频"
+    executed_at: "2026-10-17T13:46~13:50+08:00"
+    evidence_path: "evidence/M3/scene_run1_2026-10-17.log"
+    agent_conclusion: "被测固件为提交 cc8fc7d（main.bin 308,052 B）。[CHART] 内置谱面 58 音符、首 1000ms、末 29500ms、跨度 28500ms、轨道分布 15/14/15/14；错误谱面返回 -2 被拒。[SCENE] -> PLAYING at 4632ms、-> RESULT at 34173ms score=3350 maxcombo=8 acc=57.75% P=23 G=21 M=14。视频一局为 SCORE=3150 / MAX COMBO=12 / ACC=54.31% / P=19 G=25 M=14。两局算术均自洽（19+25+14=58、19×100+25×50=3150、(19×10000+25×5000)/58=5431）。[LOOP] 5 次汇总 avg=32~33ms、p95=33~34ms、max=34ms、选时帧 0。**注意：视频是学生第一局、日志是复位后第二局，两局数据不同，不可混作同一局对比。** 本轮发现三个缺口：HUD 被音符遮挡、TITLE 无状态时间戳、点击→切换延迟无法验证；重开未测。详见 evidence/M3/scene_run1_2026-10-17_note.txt。"
+  - item: "M3 第 3 步修复轮：HUD 底板 + TITLE/点击延迟时间戳 + 重开路径"
+    required_action: "学生先在 CodeKit 里烧录（此时 agent 不得占用串口），烧录完成后 agent 启动串口抓取，学生再拔插复位并完成一整局 + 重开；另拍主界面照片与 32.5s 视频"
+    executed_at: "2026-10-17T13:55~14:0x+08:00"
+    evidence_path: "evidence/M3/scene_run2_2026-10-17.log"
+    agent_conclusion: "被测固件为提交 fab7e80。[SCENE] -> TITLE at 299ms (boot) 满足 5s 判据；两次 [SCENE] -> PLAYING 的 latency 分别为 14ms 与 17ms（判据 1s）且未出现无符号下溢大数；[SCENE] -> RESULT at 38565ms score=3350 maxcombo=13 acc=57.75% P=25 G=17 M=16，[HIT] 共 42 条 = P25+G17，与结算完全对应；**第二条 -> PLAYING at 48713ms (notes=58, tap=48696ms, latency=17ms) 证明重开路径可用**。帧率 p95=33~34ms、超时帧 0、draw 仍 2ms（底板只多一次 132×68 矩形填充）。HUD 底板经 photo_title_2026-10-17.jpg 与 scene_hud_2026-10-17.jpg 确认：底板比背景亮一档、三行文字始终可读、未再见音符压在文字上。日志中 SiFli Corporation / Reason: 各出现 2 次（学生复位了两次），属真实两次上电而非抓取重复。**流程教训：本轮第一次尝试失败——agent 先启动抓取占住 COM9，导致学生烧录失败；正确顺序是先烧录、再抓串口、最后复位。** 遗留：方案 A 底板按几何推算会遮挡 lane 0 上部约 280ms（未实测）；重开那局未打完。详见 evidence/M3/scene_run2_2026-10-17_note.txt。"
 
 physical_verification_note: |
   M2 阶段的烧录（sftool write_flash --verify）与启动复位（CodeKit 串口复位）由 agent 执行、学生确认，
   不是学生亲自操作（见 docs/06 的 P-09）。
   **M3 阶段起改为由学生亲自烧录与复位**，agent 只负责抓串口与判读（见上面 M3 条目）。
+  **串口占用冲突**：M3 第 3 步修复轮第一次尝试时，agent 先启动串口抓取占住 COM9、紧接着要求学生烧录，
+  导致 CodeKit 抢不到串口、烧录失败（code 记为 docs/06 的 P-10）。正确顺序是「学生先烧录 → agent 再抓串口 → 学生复位」。
   串口数据为真实抓取的设备原始字节；bench_serial_2026-10-17.log 仅去除 ANSI 颜色控制码，
   原始字节保留在 bench_serial_2026-10-17_raw.log 中。
 
@@ -132,6 +144,9 @@ known_issues:
   - "启动日志窗口不完整：CodeKit 串口监视器只保留最近 20~60 条记录，本次从 SDK 启动中期开始，不含 ROM / 引导阶段输出；如需完整引导日志需在缓冲区为空时重做一次采集。"
   - "板载无 RESET 键，复位只能靠拔插 USB；且要捕获上电瞬间的启动横幅，必须先建立串口监听再复位，否则横幅会错过。"
   - "本次烧录与启动由学生在 SiFli CodeKit 图形界面完成，终端侧未留下 sftool 原始 stdout；烧录证据取自 CodeKit 输出通道日志的逐字摘录（文件头已注明来源与行号）。"
+  - "**HUD 底板会遮挡第 1 轨上部**：M3 第 3 步为修「音符盖住 HUD」加了 132×68 深灰底板（学生选方案 A），底板占 x=0..135、y=0..71，而 lane 0 覆盖 x=0..97，因此 lane 0 音符会先被挡住、下移到 y 大于 72 才重新可见。按落速 300px/s 折算约 280ms 不可见（仍保留约 1s 预读）。**这一条是按几何关系推算的，不是实测观察到的**（当轮 4 帧连续采样中音符都在 lane 2/3）。若后续觉得手感受影响，可缩窄底板或改成两行 HUD。"
+  - "重开（RESULT 到 PLAYING）已验证可达并重新从头开始（第二条 `-> PLAYING at 48713ms (notes=58)`），但**重开后的那一局没打完**——串口抓取在 180 秒时结束，因此第二局的结算未被验证。"
+  - "M3 两段实机视频（54MB、56MB）均因 .gitignore 的 *.mp4 规则未入库，链接文件见 evidence/M3/VID_20261017_134448.link.txt 与 VID_20261017_135523.link.txt，网盘链接与提取码仍为待填占位。"
 
 self_review: |
   <agent生成的自我复盘，包括：本次里程碑完成度如何、哪些地方agent自己也不确定、
