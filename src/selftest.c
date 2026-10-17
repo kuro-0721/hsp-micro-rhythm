@@ -16,6 +16,11 @@
  *
  * TC-007 的「注入错误谱面时对应项显示 FAIL」用编译开关演示，见下方
  * SELFTEST_INJECT_BAD_CHART。默认 0，正常启动。
+ *
+ * 【硬性约束】本文件所有 rt_kprintf 的格式串**必须只用 ASCII 英文**。
+ * 2026-10-17 上板实测：往 rt_kprintf 里写中文会在串口输出中全部变成 '?'，
+ * 因为 GCC 对源文件的字符集转换会把非 ASCII 字符字面量替掉。
+ * 注释里写中文没问题（不参与编译），但**打进二进制的字符串不行**。
  */
 #include "app.h"
 #include <string.h>
@@ -44,25 +49,25 @@ static void print_latency_hist(void)
 
     judge_latency_hist(hist, JUDGE_LAT_BUCKETS);
 
-    rt_kprintf("  判定延迟直方图（触摸中断到判定执行）: %u 个样本\n", (unsigned)n);
+    rt_kprintf("  judge latency histogram (touch IRQ to judge): %u samples\n", (unsigned)n);
 
     if (n == 0u)
     {
-        rt_kprintf("    启动阶段还没有真实触摸，属正常情况；进结算时会再打印一次实测分布\n");
+        rt_kprintf("    no real touch at boot - normal; printed again at RESULT\n");
         return;
     }
 
-    rt_kprintf("    0-10ms=%u  11-20ms=%u  21-33ms=%u  34-50ms=%u  51-100ms=%u  over100ms=%u\n",
+    rt_kprintf("    0-10=%u  11-20=%u  21-33=%u  34-50=%u  51-100=%u  over100=%u (ms)\n",
                (unsigned)hist[0], (unsigned)hist[1], (unsigned)hist[2],
                (unsigned)hist[3], (unsigned)hist[4], (unsigned)hist[5]);
 
     p95 = judge_latency_p95_ms();
     if (p95 > 100u)
-        rt_kprintf("    P95 超过 100ms（判据 50ms）: FAIL\n");
+        rt_kprintf("    p95 above 100ms (limit 50ms): FAIL\n");
     else if (p95 <= 50u)
-        rt_kprintf("    P95 = %ums（判据 50ms）: PASS\n", (unsigned)p95);
+        rt_kprintf("    p95 = %ums (limit 50ms): PASS\n", (unsigned)p95);
     else
-        rt_kprintf("    P95 = %ums（判据 50ms）: FAIL\n", (unsigned)p95);
+        rt_kprintf("    p95 = %ums (limit 50ms): FAIL\n", (unsigned)p95);
 }
 
 /* 第 2 节：判定引擎（REQ-003） */
@@ -71,15 +76,15 @@ static int section_judge(void)
     int fail = 0;
     int f;
 
-    rt_kprintf("\n--- [SELFTEST] 第 2 节：判定引擎（REQ-003）---\n");
+    rt_kprintf("\n--- [SELFTEST] section 2/3: judge engine (REQ-003) ---\n");
 
     f = judge_selftest();
-    rt_kprintf("  判定边界用例（窗口/一次一符/Combo/Acc/分轨）: %s\n",
+    rt_kprintf("  judge edge cases (window/one-per-tap/combo/acc/lane): %s\n",
                f ? "FAIL" : "PASS");
     fail += f;
 
     f = judge_bulk_test(50u);
-    rt_kprintf("  批量判定（50 次已知时刻扫频）: %s\n", f ? "FAIL" : "PASS");
+    rt_kprintf("  bulk judge (50 known click offsets): %s\n", f ? "FAIL" : "PASS");
     fail += f;
 
     print_latency_hist();
@@ -93,21 +98,21 @@ static int section_chart(void)
     int fail = 0;
     int bad, good;
 
-    rt_kprintf("\n--- [SELFTEST] 第 1 节：谱面解析（REQ-006）---\n");
+    rt_kprintf("\n--- [SELFTEST] section 1/3: chart parsing (REQ-006) ---\n");
 
     /* 错误谱面先测：chart_parse 失败会把内部状态置为无效，
        若放在加载好谱面之后，会把好谱面冲掉。 */
     bad = chart_parse(s_bad_chart, -1);
     if (bad == -2)
-        rt_kprintf("  错误谱面（第 2 行轨号 9 越界）: PASS（返回 -2，正确定位到第 2 行）\n");
+        rt_kprintf("  bad chart (lane 9 on line 2): PASS (returned -2, reported line 2)\n");
     else
     {
-        rt_kprintf("  错误谱面（第 2 行轨号 9 越界）: FAIL（期望 -2，实际 %d）\n", bad);
+        rt_kprintf("  bad chart (lane 9 on line 2): FAIL (expect -2, got %d)\n", bad);
         fail++;
     }
 
 #if SELFTEST_INJECT_BAD_CHART
-    rt_kprintf("  [注入模式 SELFTEST_INJECT_BAD_CHART=1] 下面这项应当 FAIL\n");
+    rt_kprintf("  [INJECT MODE SELFTEST_INJECT_BAD_CHART=1] next item should FAIL\n");
     good = chart_parse(s_bad_chart, -1);
 #else
     good = chart_load_builtin();
@@ -117,7 +122,7 @@ static int section_chart(void)
     {
         const struct chart_info *info = chart_summary();
 
-        rt_kprintf("  内置谱面: PASS（%d 音符，首 %ums，末 %ums，跨度 %ums，轨道 %u/%u/%u/%u）\n",
+        rt_kprintf("  builtin chart: PASS (%d notes, first=%ums last=%ums span=%ums lanes=%u/%u/%u/%u)\n",
                    good,
                    (unsigned)info->first_ms, (unsigned)info->last_ms,
                    (unsigned)(info->last_ms - info->first_ms),
@@ -127,15 +132,15 @@ static int section_chart(void)
         /* 摘要与内置谱面内容一致性：58 个音符、末音符 29500ms 是已知值 */
         if (info->notes != 58u || info->last_ms != 29500u)
         {
-            rt_kprintf("  内置谱面摘要一致性（期望 58 音符 / 末 29500ms）: FAIL\n");
+            rt_kprintf("  builtin chart summary (expect 58 notes / last 29500ms): FAIL\n");
             fail++;
         }
         else
-            rt_kprintf("  内置谱面摘要一致性（58 音符 / 末 29500ms）: PASS\n");
+            rt_kprintf("  builtin chart summary (58 notes / last 29500ms): PASS\n");
     }
     else
     {
-        rt_kprintf("  内置谱面: FAIL（返回 %d）\n", good);
+        rt_kprintf("  builtin chart: FAIL (returned %d)\n", good);
         fail++;
     }
 
@@ -147,7 +152,7 @@ int selftest_startup(void)
     int fail = 0;
 
     rt_kprintf("\n");
-    rt_kprintf("==================== [SELFTEST] REQ-007 板上自检 ====================\n");
+    rt_kprintf("==================== [SELFTEST] REQ-007 boot self-test ====================\n");
 
     /* 先判定、后谱面，理由见文件头注释 */
     fail += section_judge();
@@ -155,7 +160,8 @@ int selftest_startup(void)
 
     s_early_fail = fail;
 
-    rt_kprintf("\n  第 1~2 节完成，失败 %d 项；第 3 节（帧率）将在 %u 帧（约 %us）后输出\n",
+    rt_kprintf("\n  sections 1-2 done, %d failure(s); "
+               "section 3 (frame rate) in %u frames (~%us)\n",
                fail, (unsigned)SELFTEST_FRAME_WINDOW,
                (unsigned)(SELFTEST_FRAME_WINDOW * 33u / 1000u));
 
@@ -167,37 +173,38 @@ void selftest_frame_stats(void)
     struct loop_stat st;
     int fail = 0;
 
-    rt_kprintf("\n--- [SELFTEST] 第 3 节：帧率统计（REQ-101）---\n");
+    rt_kprintf("\n--- [SELFTEST] section 3/3: frame rate (REQ-101) ---\n");
 
     loop_stats(&st);
-    rt_kprintf("  帧数 %u，目标 %ums/帧；平均 %ums，P95 %ums，最长 %ums\n",
+    rt_kprintf("  frames=%u target=%ums avg=%ums p95=%ums max=%ums\n",
                (unsigned)st.frames, (unsigned)st.target_ms,
                (unsigned)st.avg_ms, (unsigned)st.p95_ms, (unsigned)st.max_ms);
-    rt_kprintf("  其中绘制 %ums、提交等待 %ums；超时帧 %u\n",
+    rt_kprintf("  draw=%ums flush=%ums overrun_frames=%u\n",
                (unsigned)st.avg_draw_ms, (unsigned)st.avg_flush_ms,
                (unsigned)st.miss);
 
     if (st.p95_ms == 0u)
     {
-        rt_kprintf("  帧率 P95: 无样本（帧数不足），本次不判定\n");
+        rt_kprintf("  p95: no samples (frame count too low), skipped\n");
     }
     else if (st.p95_ms <= SELFTEST_P95_LIMIT_MS)
     {
-        rt_kprintf("  帧率 P95（判据不超过 %ums）: PASS\n",
+        rt_kprintf("  p95 (limit %ums): PASS\n",
                    (unsigned)SELFTEST_P95_LIMIT_MS);
     }
     else
     {
-        rt_kprintf("  帧率 P95（判据不超过 %ums）: FAIL（实测 %ums）\n",
+        rt_kprintf("  p95 (limit %ums): FAIL (measured %ums)\n",
                    (unsigned)SELFTEST_P95_LIMIT_MS, (unsigned)st.p95_ms);
         fail++;
     }
 
-    rt_kprintf("\n==================== [SELFTEST] 总结论: %s ====================\n",
+    rt_kprintf("\n==================== [SELFTEST] RESULT: %s ====================\n",
                (s_early_fail + fail) ? "FAIL" : "PASS");
-    rt_kprintf("  第 1~2 节失败 %d 项，第 3 节失败 %d 项\n",
+    rt_kprintf("  section 1-2 failures: %d, section 3 failures: %d\n",
                s_early_fail, fail);
-    rt_kprintf("  注：帧率判据已按 CR-04 由 33ms 放宽到 34ms，打点分辨率 1ms，见 docs/06 的 R-10\n\n");
+    rt_kprintf("  note: p95 limit widened 33ms to 34ms by CR-04; "
+               "tick resolution 1ms, see docs/06 R-10\n\n");
 }
 
 void selftest_latency_report(void)
@@ -205,6 +212,6 @@ void selftest_latency_report(void)
     if (judge_latency_count() == 0u)
         return;     /* 这一局没产生样本，不打印，避免刷屏 */
 
-    rt_kprintf("[SELFTEST] 判定延迟实测（本局结束）:\n");
+    rt_kprintf("[SELFTEST] measured judge latency (this run ended):\n");
     print_latency_hist();
 }
