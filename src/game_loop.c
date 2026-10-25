@@ -270,6 +270,13 @@ int app_start(void)
     /* 场景状态机（REQ-001）：上电进入 TITLE */
     scene_init();
 
+    /*
+     * REQ-009 命中音效：合成音效走 audio_server，在独立线程播放。
+     * 初始化失败只意味着「命中时没声音」，不影响判定与显示，所以只打 WARN。
+     */
+    if (sfx_init() != 0)
+        rt_kprintf("[APP] WARN: sfx init failed, hits will be silent\n");
+
     rt_kprintf("[APP] init done, selftest errors=%d -> TITLE\n", fail);
 
     return game_loop_start();

@@ -211,8 +211,44 @@ int  game_loop_start(void);
 /* 读取统计快照。 */
 void loop_stats(struct loop_stat *out);
 
-/* ---------------- selftest：启动自检（src/selftest.c，REQ-007） ---------------- */
+/* ---------------- sfx：命中音效（src/sfx.c，REQ-009 / ADR-0005） ---------------- */
 
+/*
+ * 音效是**代码合成**的（440Hz 方波 + 一阶低通 + 指数衰减），不依赖任何音频文件
+ * 或 TF 卡，因此 P0/P1 阶段都能用，也天然满足 REQ-105 的素材合规。
+ * 播放走 audio_server（需 CONFIG_AUDIO_USING_MANAGER=y + AUDIO_PATH_USING_HCPU=y）。
+ * 数据由 audio_server 的缓存半空回调驱动：callback 里持续补数据（音效或静音），
+ * 不是独立线程主动写 —— 详见 src/sfx.c 文件头。
+ *
+ * 合成、打开音频 client。成功返回 0。
+ * 失败不会影响游戏逻辑，只是命中时没有声音（调用方应打 WARN 继续）。
+ */
+int  sfx_init(void);
+
+/* 开关：关闭后 sfx_trigger() 只记时间戳、不发声（REQ-009 的「可开关」）。 */
+void sfx_set_enabled(int on);
+int  sfx_enabled(void);
+
+/*
+ * 触发一次命中音效，返回调用时刻（ms）供 REQ-009 的客观判据使用。
+ * **本函数不阻塞**：只重置播放位置并置标志，实际的 audio_write 发生在音频回调里，
+ * 因此可以安全地在判定路径里调用。
+ */
+uint32_t sfx_trigger(void);
+
+/* 最近一次触发的时刻（ms），无触发时返回 0。 */
+uint32_t sfx_last_trigger_ms(void);
+
+/*
+ * 最近一次触发中「音效第一个样本进入音频缓存」与 trigger 时刻的差（ms）。
+ * 这是比 sfx_trigger() 本身更接近真实发声的度量，但仍不含 DAC 与喇叭的时延。
+ */
+uint32_t sfx_feed_latency_ms(void);
+
+/* 诊断：回调次数 / 写入成功次数 / 最近一次 audio_write 返回值（0 = 成功）。 */
+void sfx_get_diag(uint32_t *cb_count, uint32_t *feed_ok, int *last_write_ret);
+
+/* ---------------- selftest：启动自检（src/selftest.c，REQ-007） ---------------- */
 #define SELFTEST_FRAME_WINDOW   150u    /* 约 5s（150 帧 × 33ms），第 3 节就绪的帧数 */
 #define SELFTEST_P95_LIMIT_MS   34u     /* REQ-101 判据（CR-04 放宽后的值） */
 

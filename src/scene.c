@@ -146,12 +146,46 @@ void scene_update(uint32_t now_ms)
              */
             if (r != JUDGE_NONE)
             {
+                uint32_t judge_at, trigger_at, feed_prev;
+
                 /* 判定延迟直方图：触摸中断到判定执行（REQ-003 / REQ-007 第 2 节） */
                 judge_latency_add((uint32_t)lag);
+
+                /*
+                 * REQ-009：命中触发音效，并打印客观判据需要的两个时间戳。
+                 * judge_at 是判定执行时刻，trigger_at 是决定发声的时刻，
+                 * 两者之差就是「判定→音效触发」的延迟（判据 ≤20ms）。
+                 * feed_prev 是**上一次**触发的「首样本进音频缓存」延迟 —— 本次的要等
+                 * 下一次缓存半空回调才产生，所以这里取旧值。
+                 * 注意：仍不含 DAC 与喇叭的时延，详见 src/sfx.c 文件头的局限说明。
+                 */
+                feed_prev = sfx_feed_latency_ms();
+                judge_at = rt_tick_get_millisecond();
+                trigger_at = sfx_trigger();
 
                 rt_kprintf("[HIT] lane=%d tap=%ums chart=%ums lag=%dms -> %s\n",
                            lane, (unsigned)ev.t_ms, (unsigned)s_chart_ms,
                            (int)lag, judge_result_name(r));
+                rt_kprintf("[SFX] judge_at=%ums trigger_at=%ums delta=%ums feed_prev=%ums enabled=%d\n",
+                           (unsigned)judge_at, (unsigned)trigger_at,
+                           (unsigned)(trigger_at - judge_at), (unsigned)feed_prev,
+                           sfx_enabled());
+
+                /* 第一次命中时打一条音频链路诊断，用来区分「没声音」的两种原因 */
+                {
+                    static int diag_done = 0;
+
+                    if (!diag_done)
+                    {
+                        uint32_t cb = 0, ok = 0;
+                        int lr = 0;
+
+                        diag_done = 1;
+                        sfx_get_diag(&cb, &ok, &lr);
+                        rt_kprintf("[SFX] diag: cb=%u feed_ok=%u last_write_ret=%d\n",
+                                   (unsigned)cb, (unsigned)ok, lr);
+                    }
+                }
             }
             break;
         }
