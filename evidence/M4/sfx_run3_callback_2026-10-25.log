@@ -1,0 +1,198 @@
+﻿[device] [HIT] lane=1 tap=41453ms chart=1
+[device] 0065ms lag=23ms -> GOOD
+[SFX] judge_at=41476ms trigger_at=41476ms delta=0ms feed_prev=12ms enabled=1
+
+[device] [HIT] lane=3 tap=41918ms chart=10534ms lag=27ms -> PERFECT
+[SFX] judge_at=41945ms trigger_at=41
+[device] 945ms delta=0ms feed_prev=20ms e
+[device] nabled=1
+
+[device] [HIT] lane=1 tap=42393ms chart=11002ms lag=20ms -> PERFECT
+[SFX
+[device] ] judge_at=42413ms trigger_at=42413ms delta=0ms feed_prev=0ms en
+[device] abled=1
+
+[device] [HIT] lane=3 tap=42942ms chart=11537ms lag=6ms -> PERFECT
+[SFX] judge_at=42948ms trigger_at=429
+[device] 48ms delta=0ms feed_prev=11ms en
+[device] abled=1
+
+[device] [HIT] lane=0 tap=43343ms chart=11939ms lag=7ms -> GOOD
+[SFX] judge_at=43350ms trigger_at=43350m
+[device] s delta=0ms feed_prev=14ms enabl
+[device] ed=1
+
+[device] [HIT] lane=2 tap=43797ms chart=1
+[device] 2407ms lag=21ms -> GOOD
+[SFX] judge_at=43818ms trigger_at=43818ms delta=0ms feed_prev=1ms enabl
+[device] ed=1
+
+[device] [HIT] lane=0 tap=44811ms chart=13410ms lag=10ms -> GOOD
+[SFX] judge_at=44821ms trigger_at=44821
+[device] ms delta=0ms feed_prev=12ms enab
+[device] led=1
+
+[device] [HIT] lane=1 tap=45854ms chart=14447ms lag=4ms -> PERFECT
+[SFX] judge_at=45858ms trigger_at=458
+[device] 58ms delta=0ms feed_prev=26ms en
+[device] abled=1
+
+[device] [HIT] lane=3 tap=46350ms chart=14949ms lag=10ms -> PERFECT
+[SFX
+[device] ] judge_at=46360ms trigger_at=46360ms delta=0ms feed_prev=6ms en
+[device] abled=1
+
+[device] [HIT] lane=1 tap=46877ms chart=15484ms lag=18ms -> PERFECT
+[SFX] judge_at=46895ms trigger_at=46
+[device] 895ms delta=0ms feed_prev=13ms e
+[device] nabled=1
+
+[device] [HIT] lane=0 tap=47869ms chart=16488ms lag=30ms -> PERFECT
+[SFX] judge_at=47899ms trigger_at=47
+[device] 899ms delta=0ms feed_prev=16ms e
+[device] nabled=1
+
+[device] [HIT] lane=0 tap=48438ms chart=17056ms lag=29ms -> PERFECT
+[SFX] judge_at=48467ms trigger_at=48
+[device] 467ms delta=0ms feed_prev=29ms e
+[device] nabled=1
+
+[device] [HIT] lane=2 tap=48955ms chart=1
+[device] 7558ms lag=14ms -> PERFECT
+[SFX] judge_at=48969ms trigger_at=48969ms delta=0ms feed_prev=30ms e
+[device] nabled=1
+
+[device] [HIT] lane=1 tap=49419ms chart=18027ms lag=19ms -> PERFECT
+[SFX
+[device] ] judge_at=49438ms trigger_at=49438ms delta=0ms feed_prev=7ms en
+[device] abled=1
+
+[device] [HIT] lane=3 tap=49842ms chart=18462ms lag=31ms -> PERFECT
+[SFX] judge_at=49873ms trigger_at=49
+[device] 873ms delta=0ms feed_prev=16ms e
+[device] nabled=1
+
+[device] [HIT] lane=1 tap=50422ms chart=19031ms lag=20ms -> PERFECT
+[SFX
+[device] ] judge_at=50442ms trigger_at=50442ms delta=0ms feed_prev=0ms en
+[device] abled=1
+
+[device] [LOOP] frames=1500 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms
+[device]  draw=2ms flush=30ms drop=1
+
+[device] [HIT] lane=3 tap=50812ms chart=19432ms lag=31ms -> GOOD
+[SFX] judge_at=50843ms trigger_at=50843
+[device] ms delta=0ms feed_prev=30ms enab
+[device] led=1
+
+[device] [HIT] lane=0 tap=51287ms chart=1
+[device] 9901ms lag=25ms -> GOOD
+[SFX] judge_at=51312ms trigger_at=51312
+[device] ms delta=0ms feed_prev=18ms enab
+[device] led=1
+
+[device] [HIT] lane=2 tap=52403ms chart=21004ms lag=12ms -> PERFECT
+[SFX] judge_at=52415ms trigger_at=52
+[device] 415ms delta=0ms feed_prev=27ms e
+[device] nabled=1
+
+[device] [HIT] lane=0 tap=52847ms chart=2
+[device] 1439ms lag=3ms -> GOOD
+[SFX] judge_at=52850ms trigger_at=52850ms delta=0ms feed_prev=2ms enable
+[device] d=1
+
+[device] [HIT] lane=3 tap=53331ms chart=21941ms lag=21ms -> PERFECT
+[SFX] judge_at=53352ms trigger_at=53
+[device] 352ms delta=0ms feed_prev=15ms e
+[device] nabled=1
+
+[device] [HIT] lane=1 tap=53942ms chart=22543ms lag=12ms -> PERFECT
+[SFX] judge_at=53954ms trigger_at=53
+[device] 954ms delta=0ms feed_prev=22ms e
+[device] nabled=1
+
+[device] [HIT] lane=3 tap=54301ms chart=22911ms lag=21ms -> GOOD
+[SFX] judge_at=54322ms trigger_at=54322
+[device] ms delta=0ms feed_prev=18ms enab
+[device] led=1
+
+[device] [HIT] lane=1 tap=54851ms chart=23446ms lag=6ms -> PERFECT
+[SFX] judge_at=54857ms trigger_at=548
+[device] 57ms delta=0ms feed_prev=10ms en
+[device] abled=1
+
+[device] [HIT] lane=0 tap=55874ms chart=24483ms lag=20ms -> PERFECT
+[SFX
+[device] ] judge_at=55894ms trigger_at=55894ms delta=0ms feed_prev=13ms e
+[device] nabled=1
+
+[device] [HIT] lane=0 tap=56423ms chart=25019ms lag=7ms -> PERFECT
+[SFX]
+[device]  judge_at=56430ms trigger_at=56430ms delta=0ms feed_prev=23ms en
+[device] abled=1
+
+[device] [HIT] lane=2 tap=56886ms chart=2
+[device] 5487ms lag=12ms -> PERFECT
+[SFX] judge_at=56898ms trigger_at=56898ms delta=0ms feed_prev=26ms e
+[device] nabled=1
+
+[device] [HIT] lane=1 tap=57360ms chart=2
+[device] 5955ms lag=6ms -> PERFECT
+[SFX] judge_at=57366ms trigger_at=573
+[device] 66ms delta=0ms feed_prev=7ms ena
+[device] bled=1
+
+[device] [HIT] lane=1 tap=58308ms chart=26924ms lag=27ms -> GOOD
+[SFX] judge_at=58335ms trigger_at=58335
+[device] ms delta=0ms feed_prev=17ms enab
+[device] led=1
+
+[device] [HIT] lane=3 tap=58865ms chart=27460ms lag=6ms -> PERFECT
+[SFX] judge_at=58871ms trigger_at=588
+[device] 71ms delta=0ms feed_prev=6ms ena
+[device] bled=1
+
+[device] [HIT] lane=0 tap=59359ms chart=2
+[device] 7961ms lag=13ms -> PERFECT
+[SFX] judge_at=59372ms trigger_at=59
+[device] 372ms delta=0ms feed_prev=8ms en
+[device] abled=1
+
+[device] [HIT] lane=2 tap=59856ms chart=2
+[device] 8463ms lag=18ms -> PERFECT
+[SFX] judge_at=59874ms trigger_at=59874ms delta=0ms feed_prev=16ms e
+[device] nabled=1
+
+[device] [HIT] lane=2 tap=60466ms chart=29065ms lag=10ms -> GOOD
+[SFX] judge_at=60476ms trigger_at=60476
+[device] ms delta=0ms feed_prev=22ms enab
+[device] led=1
+
+[device] [LOOP] frames=1800 iv_avg=33ms i
+[device] v_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[HEAP] t=60576ms total=439272B used=376740B free=62532B max_used=39
+[device] 9972B
+
+[device] [HIT] lane=0 tap=60961ms chart=29566ms lag=16ms -> GOOD
+[SFX] judge_at=60977ms trigger_at=60977
+[device] ms delta=0ms feed_prev=19ms enabled=1
+[SCENE] -> RESULT at 60977ms score=4300 maxcombo=12 acc=7
+[device] 4.13% P=35 G=16 M=7
+[SELFTEST] 
+[device] measured judge latency (this run
+[device]  ended):
+  judge latency histog
+[device] ram (touch IRQ to judge): 51 sam
+[device] ples
+    0-10=17  11-20=18  21-
+[device] 33=16  34-50=0  51-100=0  over10
+[device] 0=0 (ms)
+    p95 = 33ms (limit 
+[device] 50ms): PASS
+
+[device] [SCENE] -> PLAYING at 61781ms (notes=58, tap=61753ms, latency=28
+[device] ms)
+
+[device] [LOOP] frames=2100 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms
+[device]  draw=2ms flush=30ms drop=1
+

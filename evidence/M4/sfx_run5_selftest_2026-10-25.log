@@ -1,0 +1,146 @@
+# capture start 2026-10-25 08:25:18 port=COM9 baud=1000000
+# port opened at 08:25:18
+[LOOP] frames=300 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[SCENE] -> PLAYING at 13909ms (notes=58, tap=13901ms, latency=8ms)
+[HIT] lane=0 tap=14894ms chart=1003ms lag=18ms -> PERFECT
+[SFX] judge_at=14912ms trigger_at=14912ms delta=0ms feed_prev=13ms enabled=1
+[SFX] diag: cb=486 feed_ok=30 last_write_ret=1024
+[HIT] lane=2 tap=15465ms chart=1571ms lag=15ms -> GOOD
+[SFX] judge_at=15480ms trigger_at=15480ms delta=0ms feed_prev=24ms enabled=1
+[HIT] lane=1 tap=15877ms chart=1973ms lag=5ms -> PERFECT
+[SFX] judge_at=15882ms trigger_at=15882ms delta=0ms feed_prev=25ms enabled=1
+[HIT] lane=3 tap=16406ms chart=2508ms lag=11ms -> PERFECT
+[SFX] judge_at=16417ms trigger_at=16417ms delta=0ms feed_prev=12ms enabled=1
+[HIT] lane=1 tap=16872ms chart=2976ms lag=13ms -> PERFECT
+[SFX] judge_at=16885ms trigger_at=16885ms delta=0ms feed_prev=15ms enabled=1
+[HIT] lane=3 tap=17410ms chart=3512ms lag=11ms -> PERFECT
+[SFX] judge_at=17421ms trigger_at=17421ms delta=0ms feed_prev=26ms enabled=1
+[HIT] lane=0 tap=17791ms chart=3913ms lag=31ms -> GOOD
+[SFX] judge_at=17822ms trigger_at=17822ms delta=0ms feed_prev=29ms enabled=1
+[HIT] lane=2 tap=18319ms chart=4415ms lag=5ms -> GOOD
+[SFX] judge_at=18324ms trigger_at=18324ms delta=0ms feed_prev=16ms enabled=1
+[HIT] lane=2 tap=18899ms chart=5017ms lag=27ms -> PERFECT
+[SFX] judge_at=18926ms trigger_at=18926ms delta=0ms feed_prev=23ms enabled=1
+[HIT] lane=0 tap=19427ms chart=5519ms lag=1ms -> PERFECT
+[SFX] judge_at=19428ms trigger_at=19428ms delta=0ms feed_prev=19ms enabled=1
+[HIT] lane=3 tap=19998ms chart=6089ms lag=0ms -> GOOD
+[SFX] judge_at=19998ms trigger_at=19998ms delta=0ms feed_prev=26ms enabled=1
+[HIT] lane=1 tap=20440ms chart=6557ms lag=26ms -> PERFECT
+[SFX] judge_at=20466ms trigger_at=20466ms delta=0ms feed_prev=24ms enabled=1
+[LOOP] frames=600 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[HIT] lane=3 tap=20904ms chart=7027ms lag=32ms -> PERFECT
+[SFX] judge_at=20936ms trigger_at=20936ms delta=0ms feed_prev=5ms enabled=1
+[HIT] lane=1 tap=21412ms chart=7528ms lag=25ms -> PERFECT
+[SFX] judge_at=21437ms trigger_at=21437ms delta=0ms feed_prev=14ms enabled=1
+[HIT] lane=2 tap=21971ms chart=8063ms lag=1ms -> GOOD
+[SFX] judge_at=21972ms trigger_at=21972ms delta=0ms feed_prev=21ms enabled=1
+[HIT] lane=0 tap=22393ms chart=8498ms lag=14ms -> PERFECT
+[SFX] judge_at=22407ms trigger_at=22407ms delta=0ms feed_prev=25ms enabled=1
+[HIT] lane=0 tap=22879ms chart=9000ms lag=30ms -> PERFECT
+[SFX] judge_at=22909ms trigger_at=22909ms delta=0ms feed_prev=9ms enabled=1
+[HIT] lane=2 tap=23355ms chart=9468ms lag=22ms -> PERFECT
+[SFX] judge_at=23377ms trigger_at=23377ms delta=0ms feed_prev=15ms enabled=1
+[HIT] lane=1 tap=23872ms chart=9970ms lag=7ms -> PERFECT
+[SFX] judge_at=23879ms trigger_at=23879ms delta=0ms feed_prev=26ms enabled=1
+[HIT] lane=3 tap=24336ms chart=10439ms lag=12ms -> GOOD
+[SFX] judge_at=24348ms trigger_at=24348ms delta=0ms feed_prev=2ms enabled=1
+[HIT] lane=1 tap=24886ms chart=11007ms lag=30ms -> PERFECT
+[SFX] judge_at=24916ms trigger_at=24916ms delta=0ms feed_prev=12ms enabled=1
+[HIT] lane=3 tap=25434ms chart=11543ms lag=18ms -> PERFECT
+[SFX] judge_at=25452ms trigger_at=25452ms delta=0ms feed_prev=12ms enabled=1
+[HIT] lane=0 tap=25867ms chart=11978ms lag=20ms -> PERFECT
+[SFX] judge_at=25887ms trigger_at=25887ms delta=0ms feed_prev=15ms enabled=1
+[HIT] lane=2 tap=26374ms chart=12480ms lag=15ms -> PERFECT
+[SFX] judge_at=26389ms trigger_at=26389ms delta=0ms feed_prev=29ms enabled=1
+[HIT] lane=2 tap=26933ms chart=13049ms lag=25ms -> PERFECT
+[SFX] judge_at=26958ms trigger_at=26958ms delta=0ms feed_prev=5ms enabled=1
+[HIT] lane=0 tap=27408ms chart=13518ms lag=19ms -> PERFECT
+[SFX] judge_at=27427ms trigger_at=27427ms delta=0ms feed_prev=5ms enabled=1
+[HIT] lane=3 tap=27862ms chart=13953ms lag=0ms -> PERFECT
+[SFX] judge_at=27862ms trigger_at=27862ms delta=0ms feed_prev=14ms enabled=1
+[HIT] lane=1 tap=28412ms chart=14522ms lag=19ms -> PERFECT
+[SFX] judge_at=28431ms trigger_at=28431ms delta=0ms feed_prev=28ms enabled=1
+[HIT] lane=3 tap=28866ms chart=14990ms lag=33ms -> PERFECT
+[SFX] judge_at=28899ms trigger_at=28899ms delta=0ms feed_prev=28ms enabled=1
+[HIT] lane=1 tap=29320ms chart=15426ms lag=15ms -> GOOD
+[SFX] judge_at=29335ms trigger_at=29335ms delta=0ms feed_prev=8ms enabled=1
+[HIT] lane=2 tap=29879ms chart=15994ms lag=24ms -> PERFECT
+[SFX] judge_at=29903ms trigger_at=29903ms delta=0ms feed_prev=21ms enabled=1
+[HIT] lane=0 tap=30385ms chart=16496ms lag=20ms -> PERFECT
+[SFX] judge_at=30405ms trigger_at=30405ms delta=0ms feed_prev=21ms enabled=1
+[HIT] lane=0 tap=30859ms chart=16965ms lag=15ms -> PERFECT
+[SFX] judge_at=30874ms trigger_at=30874ms delta=0ms feed_prev=28ms enabled=1
+[LOOP] frames=900 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[HIT] lane=2 tap=31356ms chart=17467ms lag=20ms -> PERFECT
+[SFX] judge_at=31376ms trigger_at=31376ms delta=0ms feed_prev=8ms enabled=1
+[HIT] lane=1 tap=31862ms chart=17969ms lag=16ms -> PERFECT
+[SFX] judge_at=31878ms trigger_at=31878ms delta=0ms feed_prev=15ms enabled=1
+[HIT] lane=3 tap=32326ms chart=18437ms lag=20ms -> GOOD
+[SFX] judge_at=32346ms trigger_at=32346ms delta=0ms feed_prev=21ms enabled=1
+[HIT] lane=1 tap=32906ms chart=19007ms lag=10ms -> PERFECT
+[SFX] judge_at=32916ms trigger_at=32916ms delta=0ms feed_prev=2ms enabled=1
+[HIT] lane=3 tap=33413ms chart=19509ms lag=5ms -> PERFECT
+[SFX] judge_at=33418ms trigger_at=33418ms delta=0ms feed_prev=0ms enabled=1
+[HIT] lane=0 tap=33856ms chart=19977ms lag=30ms -> PERFECT
+[SFX] judge_at=33886ms trigger_at=33886ms delta=0ms feed_prev=7ms enabled=1
+[HIT] lane=2 tap=34383ms chart=20479ms lag=5ms -> PERFECT
+[SFX] judge_at=34388ms trigger_at=34388ms delta=0ms feed_prev=18ms enabled=1
+[HIT] lane=2 tap=34953ms chart=21047ms lag=3ms -> PERFECT
+[SFX] judge_at=34956ms trigger_at=34956ms delta=0ms feed_prev=24ms enabled=1
+[HIT] lane=0 tap=35437ms chart=21549ms lag=21ms -> PERFECT
+[SFX] judge_at=35458ms trigger_at=35458ms delta=0ms feed_prev=24ms enabled=1
+[HIT] lane=3 tap=35901ms chart=22018ms lag=26ms -> PERFECT
+[SFX] judge_at=35927ms trigger_at=35927ms delta=0ms feed_prev=1ms enabled=1
+[HIT] lane=1 tap=36460ms chart=22553ms lag=2ms -> PERFECT
+[SFX] judge_at=36462ms trigger_at=36462ms delta=0ms feed_prev=11ms enabled=1
+[HIT] lane=3 tap=36860ms chart=22955ms lag=4ms -> PERFECT
+[SFX] judge_at=36864ms trigger_at=36864ms delta=0ms feed_prev=14ms enabled=1
+[HIT] lane=1 tap=37429ms chart=23524ms lag=4ms -> PERFECT
+[SFX] judge_at=37433ms trigger_at=37433ms delta=0ms feed_prev=1ms enabled=1
+[HIT] lane=2 tap=37903ms chart=24026ms lag=32ms -> PERFECT
+[SFX] judge_at=37935ms trigger_at=37935ms delta=0ms feed_prev=0ms enabled=1
+[HIT] lane=0 tap=38369ms chart=24461ms lag=1ms -> PERFECT
+[SFX] judge_at=38370ms trigger_at=38370ms delta=0ms feed_prev=7ms enabled=1
+[HIT] lane=0 tap=38843ms chart=24963ms lag=29ms -> PERFECT
+[SFX] judge_at=38872ms trigger_at=38872ms delta=0ms feed_prev=21ms enabled=1
+[HIT] lane=1 tap=39856ms chart=25966ms lag=19ms -> PERFECT
+[SFX] judge_at=39875ms trigger_at=39875ms delta=0ms feed_prev=27ms enabled=1
+[HIT] lane=3 tap=40341ms chart=26435ms lag=3ms -> GOOD
+[SFX] judge_at=40344ms trigger_at=40344ms delta=0ms feed_prev=12ms enabled=1
+[HIT] lane=1 tap=40846ms chart=26970ms lag=33ms -> PERFECT
+[SFX] judge_at=40879ms trigger_at=40879ms delta=0ms feed_prev=21ms enabled=1
+[LOOP] frames=1200 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[HIT] lane=3 tap=41372ms chart=27472ms lag=9ms -> PERFECT
+[SFX] judge_at=41381ms trigger_at=41381ms delta=0ms feed_prev=25ms enabled=1
+[HIT] lane=0 tap=41783ms chart=27907ms lag=33ms -> GOOD
+[SFX] judge_at=41816ms trigger_at=41816ms delta=0ms feed_prev=1ms enabled=1
+[HIT] lane=2 tap=42362ms chart=28475ms lag=22ms -> PERFECT
+[SFX] judge_at=42384ms trigger_at=42384ms delta=0ms feed_prev=15ms enabled=1
+[HIT] lane=2 tap=42931ms chart=29044ms lag=22ms -> PERFECT
+[SFX] judge_at=42953ms trigger_at=42953ms delta=0ms feed_prev=15ms enabled=1
+[HIT] lane=0 tap=43385ms chart=29479ms lag=3ms -> PERFECT
+[SFX] judge_at=43388ms trigger_at=43388ms delta=0ms feed_prev=15ms enabled=1
+[SCENE] -> RESULT at 43388ms score=5200 maxcombo=49 acc=89.65% P=47 G=10 M=1
+[SELFTEST] measured judge latency (this run ended):
+  judge latency histogram (touch IRQ to judge): 57 samples
+    0-10=18  11-20=19  21-33=20  34-50=0  51-100=0  over100=0 (ms)
+    p95 = 33ms (limit 50ms): PASS
+[SCENE] -> PLAYING at 44124ms (notes=58, tap=44113ms, latency=11ms)
+[LOOP] frames=1500 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[LOOP] frames=1800 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[HEAP] t=61045ms total=439272B used=376740B free=62532B max_used=399972B
+[LOOP] frames=2100 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[SCENE] -> RESULT at 73758ms score=0 maxcombo=0 acc=0.00% P=0 G=0 M=58
+[SELFTEST] measured judge latency (this run ended):
+  judge latency histogram (touch IRQ to judge): 57 samples
+    0-10=18  11-20=19  21-33=20  34-50=0  51-100=0  over100=0 (ms)
+    p95 = 33ms (limit 50ms): PASS
+[LOOP] frames=2400 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[LOOP] frames=2700 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[LOOP] frames=3000 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[SCENE] -> TITLE at 103759ms
+[LOOP] frames=3300 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[LOOP] frames=3600 iv_avg=33ms iv_p95=34ms iv_max=39ms work=33ms draw=2ms flush=30ms drop=1
+[HEAP] t=121242ms total=439272B used=376740B free=62532B max_used=399972B
+
+# capture end 2026-10-25 08:27:18

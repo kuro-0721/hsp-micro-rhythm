@@ -1,0 +1,13 @@
+# capture start 2026-10-25 08:13:37 port=COM9 baud=1000000
+# port opened at 08:13:37
+[LOOP] frames=4800 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=5100 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=5400 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HEAP] t=181587ms total=440288B used=379076B free=61212B max_used=400096B
+[LOOP] frames=5700 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=6000 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=6300 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=6600 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=6900 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+
+# capture end 2026-10-25 08:14:53

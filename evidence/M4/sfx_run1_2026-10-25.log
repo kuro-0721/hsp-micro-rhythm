@@ -1,0 +1,67 @@
+# capture start 2026-10-25 08:11:32 port=COM9 baud=1000000
+# port opened at 08:11:32
+481ms lag=15ms -> PERFECT
+[SFX] judge_at=34627ms trigger_at=34627ms delta=0ms enabled=1
+[HIT] lane=1 tap=35109ms chart=2984ms lag=21ms -> PERFECT
+[SFX] judge_at=35130ms trigger_at=35130ms delta=0ms enabled=1
+[HIT] lane=3 tap=35542ms chart=3420ms lag=24ms -> GOOD
+[SFX] judge_at=35566ms trigger_at=35566ms delta=0ms enabled=1
+[HIT] lane=2 tap=37203ms chart=5063ms lag=6ms -> GOOD
+[SFX] judge_at=37209ms trigger_at=37209ms delta=0ms enabled=1
+[HIT] lane=0 tap=37699ms chart=5566ms lag=13ms -> GOOD
+[SFX] judge_at=37712ms trigger_at=37712ms delta=0ms enabled=1
+[HIT] lane=3 tap=38037ms chart=5901ms lag=10ms -> GOOD
+[SFX] judge_at=38047ms trigger_at=38047ms delta=0ms enabled=1
+[HIT] lane=1 tap=38639ms chart=6504ms lag=11ms -> PERFECT
+[SFX] judge_at=38650ms trigger_at=38650ms delta=0ms enabled=1
+[HIT] lane=3 tap=39135ms chart=7007ms lag=18ms -> PERFECT
+[SFX] judge_at=39153ms trigger_at=39153ms delta=0ms enabled=1
+[HIT] lane=1 tap=39674ms chart=7544ms lag=16ms -> PERFECT
+[SFX] judge_at=39690ms trigger_at=39690ms delta=0ms enabled=1
+[HIT] lane=2 tap=40160ms chart=8047ms lag=33ms -> PERFECT
+[SFX] judge_at=40193ms trigger_at=40193ms delta=0ms enabled=1
+[HIT] lane=0 tap=40571ms chart=8449ms lag=24ms -> PERFECT
+[SFX] judge_at=40595ms trigger_at=40595ms delta=0ms enabled=1
+[LOOP] frames=1200 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HIT] lane=0 tap=41174ms chart=9053ms lag=25ms -> PERFECT
+[SFX] judge_at=41199ms trigger_at=41199ms delta=0ms enabled=1
+[HIT] lane=2 tap=41627ms chart=9489ms lag=8ms -> PERFECT
+[SFX] judge_at=41635ms trigger_at=41635ms delta=0ms enabled=1
+[HIT] lane=1 tap=42112ms chart=9991ms lag=25ms -> PERFECT
+[SFX] judge_at=42137ms trigger_at=42137ms delta=0ms enabled=1
+[HIT] lane=3 tap=42534ms chart=10394ms lag=6ms -> GOOD
+[SFX] judge_at=42540ms trigger_at=42540ms delta=0ms enabled=1
+[HIT] lane=3 tap=46228ms chart=14116ms lag=34ms -> GOOD
+[SFX] judge_at=46262ms trigger_at=46262ms delta=0ms enabled=1
+[HIT] lane=1 tap=46682ms chart=14552ms lag=16ms -> PERFECT
+[SFX] judge_at=46698ms trigger_at=46698ms delta=0ms enabled=1
+[HIT] lane=3 tap=47188ms chart=15055ms lag=13ms -> PERFECT
+[SFX] judge_at=47201ms trigger_at=47201ms delta=0ms enabled=1
+[HIT] lane=1 tap=47630ms chart=15491ms lag=7ms -> PERFECT
+[SFX] judge_at=47637ms trigger_at=47637ms delta=0ms enabled=1
+[HIT] lane=2 tap=48148ms chart=16028ms lag=26ms -> PERFECT
+[SFX] judge_at=48174ms trigger_at=48174ms delta=0ms enabled=1
+[HIT] lane=0 tap=48600ms chart=16464ms lag=10ms -> PERFECT
+[SFX] judge_at=48610ms trigger_at=48610ms delta=0ms enabled=1
+[HIT] lane=0 tap=49127ms chart=17001ms lag=20ms -> PERFECT
+[SFX] judge_at=49147ms trigger_at=49147ms delta=0ms enabled=1
+[HIT] lane=2 tap=49558ms chart=17437ms lag=25ms -> GOOD
+[SFX] judge_at=49583ms trigger_at=49583ms delta=0ms enabled=1
+[HIT] lane=1 tap=50147ms chart=18008ms lag=7ms -> PERFECT
+[SFX] judge_at=50154ms trigger_at=50154ms delta=0ms enabled=1
+[LOOP] frames=1500 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=1800 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[HEAP] t=60724ms total=440288B used=379076B free=61212B max_used=400096B
+[HIT] lane=2 tap=61146ms chart=29014ms lag=14ms -> PERFECT
+[SFX] judge_at=61160ms trigger_at=61160ms delta=0ms enabled=1
+[SCENE] -> RESULT at 61798ms score=2250 maxcombo=12 acc=38.79% P=18 G=9 M=31
+[SELFTEST] measured judge latency (this run ended):
+  judge latency histogram (touch IRQ to judge): 27 samples
+    0-10=8  11-20=9  21-33=9  34-50=1  51-100=0  over100=0 (ms)
+    p95 = 33ms (limit 50ms): PASS
+[LOOP] frames=2100 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=2400 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[LOOP] frames=2700 iv_avg=33ms iv_p95=34ms iv_max=38ms work=33ms draw=2ms flush=30ms drop=0
+[SCENE] -> TITLE at 91806ms
+
+# capture end 2026-10-25 08:12:32
