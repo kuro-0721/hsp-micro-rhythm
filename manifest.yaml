@@ -234,22 +234,24 @@ self_review: |
     决定不再补拍——相关判据按「未判定」记录，未判为通过。
 
 human_checkpoints:
-  # 说明：以下 decision_point 是**实际发生过**的决策（已核对 docs/06 与提交记录），
-  # student_confirmation 统一留空，由学生本人填写「你当时为什么这么选/为什么否决 agent」。
-  # 这些是评审关注的重点：用来区分「学生自己做的决策」和「agent 建议、学生只是同意」。
+  # 以下 decision_point 均为实际发生过的决策；student_confirmation 由学生本人在
+  # 2026-10-31 逐条回答后填入（agent 只做整理，未代写理由）。
   - decision_point: "REQ-009 由马达震动改为特殊音效反馈（CR-03）"
-    student_confirmation: "<待学生填写：为什么同意改音效（马达需外购焊接未采购）；是否考虑过其他反馈方式>"
+    student_confirmation: "马达需要外购并自行焊接，项目周期内来不及，所以同意改为音效反馈。"
   - decision_point: "REQ-101 判据由 P95<=33ms 放宽到 <=34ms（CR-04）"
-    student_confirmation: "<待学生填写：agent 建议先用 DWT 做亚毫秒测量，你为什么选择直接放宽；是否接受『这 1ms 未被证伪』>"
+    student_confirmation: "优先保进度：不想为了 1ms 的疑问再去投入 DWT 亚毫秒测量的时间。"
   - decision_point: "放弃 TF 卡、改为 MP3 内存嵌入（CR-05）"
-    student_confirmation: "<待学生填写：TF 卡路线因启动期死锁放弃，你为什么选内存嵌入而不是继续排查 SD 卡>"
+    student_confirmation: "内存嵌入同样能满足需求目标（音频播放进度作为谱面时间基准），所以不再在 SD 卡启动期死锁上继续投入。"
   - decision_point: "帧缓冲由 SRAM 系统堆迁到 PSRAM（CR-06）"
-    student_confirmation: "<待学生填写：是否了解 PSRAM 写入比 SRAM 慢、并接受由此带来的帧率代价>"
+    student_confirmation: "知道 PSRAM 比 SRAM 慢，但内存不腾出来第二个 audio client 根本装不下，内存优先。"
   - decision_point: "BGM 与音效共存方案：选 SDK 官方软件混音（方案 A）"
-    student_confirmation: "<待学生填写：为什么选官方混音而不是自己接管解码流（方案 B）或降低功能（方案 C）>"
+    student_confirmation: "官方方案更可靠——自研路径（PCM 钩子）风险高，SDK 自带的混音是设计内的能力。"
   - decision_point: "帧率优化（脏区渲染）因出现音符拖影而整体回退"
-    student_confirmation: "<待学生填写：你上板看到的残影是什么样；同意『画面正确优先于帧率指标』的理由>"
+    student_confirmation: "上板看到音符后面拖绿尾巴。选择整体回退、保留每帧全屏清屏，即画面正确优先于帧率指标。"
   - decision_point: "TC-008 音画对齐不再补拍校准片，该项记为『未判定』"
-    student_confirmation: "<待学生填写：为什么在进度压力下决定不补拍；是否接受该判据不能判为通过>"
-  - decision_point: "REQ-101 在真实演奏负载下不达标（40ms）后续如何处理"
-    student_confirmation: "<待学生填写：选择继续优化、接受不达标如实记录、还是走 CR 调整判据>"
+    student_confirmation: "认为软件侧（串口日志）已经能证明时间基准是对的，所以不再补拍校准片。"
+    # agent 备注：软件侧证据只覆盖「谱面时间轴由音频进度驱动」（play to end 8039~8050ms，
+    # 误差 <=11ms），不含 DAC/功放/喇叭输出延迟；账面 +82.2ms 仍含手机录像自身偏置，
+    # 故该判据仍记为「未判定」，见 docs/04 L-15 与 known_issues。
+  - decision_point: "REQ-101 在真实演奏负载下不达标（p95=40ms，判据 34ms）后续处理"
+    student_confirmation: "接受不达标，如实记录：不因为指标不好看而放宽判据，也不把静止画面上的 34ms 当作演奏负载的证据。"
