@@ -280,6 +280,13 @@ int  audio_is_mounted(void);
 void audio_boot_test(void);
 
 /*
+ * 异步启动 BGM 播放（REQ-008 场景接入）。
+ * mp3ctrl_play() 是阻塞的，**不能在帧循环里直接调 audio_play()**，
+ * 这里用短命线程去播，创建成功返回 0。
+ */
+int  audio_play_async(void);
+
+/*
  * 异步启动 TF 卡初始化（独立线程，优先级 22）。
  *
  * **必须用这个而不是直接调 audio_init()**：msd_init 是阻塞的卡握手，卡不通时会

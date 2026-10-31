@@ -78,12 +78,12 @@
  */
 #define AUDIO_MUSIC_VOLUME  4u
 
-/* 上电自测播放开关：1 = 开（调试用，上电播 5 轮×8 秒），0 = 关（正常启动不发声）
+/* 上电自测播放开关：1 = 开（调试用，上电循环播 5 轮×8 秒），0 = 关
  *
- * 2026-10-31：临时置 1。帧缓冲已迁到 PSRAM（腾出 351KB 系统堆），
- * 本次开机验证两件事：mp3 client 能否正常 open、PSRAM 帧缓冲会不会拖慢帧率。
+ * 2026-10-31：REQ-008 阶段 2 接入场景后必须置 0 —— BGM 已改为在点击进入 PLAYING 时
+ * 由 audio_play_async() 启动，自测再抢一次会让两者互相 close/open。
  */
-#define AUDIO_BOOT_TEST     1
+#define AUDIO_BOOT_TEST     0
 
 /* 由 src/mp3_sample.c 提供（自动生成，见该文件头注释） */
 extern const unsigned char g_mp3_sample[];
@@ -193,6 +193,37 @@ int audio_play(void)
 
     rt_kprintf("[AUDIO] playing in-memory mp3 (%u bytes)\n", g_mp3_sample_len);
     memprobe("after mp3 play");
+    return 0;
+}
+
+/*
+ * 异步启动播放（REQ-008 场景接入用）。
+ *
+ * **必须异步**：mp3ctrl_play() 内部是 rt_event_recv(RT_WAITING_FOREVER)，
+ * 一直阻塞到音频真的开播才返回（见 audio_mp3ctrl.c:2012-2025）。
+ * 如果直接在帧循环里调 audio_play()，整个帧会被卡住，连画面都不刷。
+ * 所以这里起一个短命线程去播，线程入口返回后由 RT-Thread 自动回收。
+ */
+static void audio_play_thread(void *param)
+{
+    (void)param;
+    audio_play();
+}
+
+int audio_play_async(void)
+{
+    rt_thread_t tid;
+
+    if (!s_inited)
+        return -1;
+
+    tid = rt_thread_create("aplay", audio_play_thread, RT_NULL, 2048, 22, 10);
+    if (!tid)
+    {
+        rt_kprintf("[AUDIO] ERROR: create play thread failed\n");
+        return -1;
+    }
+    rt_thread_startup(tid);
     return 0;
 }
 

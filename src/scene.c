@@ -44,6 +44,54 @@ static uint32_t s_play_start_ms;
 static uint32_t s_result_ms;
 static uint32_t s_chart_ms;             /* 当前谱面时间（只在 PLAYING 有意义） */
 
+/*
+ * REQ-008：谱面时间轴以音频播放进度为基准。
+ *
+ * s_chart_use_audio 在进入 PLAYING 时定一次：音频子系统初始化成功就用
+ * audio_pos_ms()，否则退回 tick 计时（保证 audio 挂了游戏也能玩）。
+ *
+ * 为什么要 s_chart_audio_gone：测试曲目只有 8.05s，而内置谱面到 29500ms。
+ * 音频一播完 audio_is_playing() 就为 0，若还继续取 audio_pos_ms() 会永远
+ * 停在 8050ms，谱面不再前进、判 MISS 也不会发生。所以检测到音频结束后，
+ * 从那个谱面时刻起改用 tick 续算，并在日志里明确告知。
+ */
+static int      s_chart_use_audio;
+static int      s_chart_audio_gone;
+static uint32_t s_chart_fallback_base;
+static uint32_t s_chart_fallback_tick;
+
+#define CHART_AUDIO_GRACE_MS    1500u   /* BGM 线程起动宽限，期间 pos=0 不算“音频没了” */
+
+/*
+ * 算出本帧的谱面时间。只在 PLAYING 调用。
+ */
+static uint32_t chart_time_compute(uint32_t now_ms)
+{
+    if (!s_chart_use_audio)
+        return now_ms - s_play_start_ms;
+
+    if (!s_chart_audio_gone)
+    {
+        if (audio_is_playing())
+        {
+            s_chart_ms = audio_pos_ms();
+            return s_chart_ms;
+        }
+
+        /* 刚进 PLAYING 时 BGM 线程还没起来，pos 仍为 0，先等等不要误判 */
+        if (s_chart_ms == 0u && (uint32_t)(now_ms - s_play_start_ms) < CHART_AUDIO_GRACE_MS)
+            return 0u;
+
+        s_chart_audio_gone = 1;
+        s_chart_fallback_base = s_chart_ms;
+        s_chart_fallback_tick = now_ms;
+        rt_kprintf("[SCENE] WARN: audio ended at chart=%ums, continue on tick\n",
+                   (unsigned)s_chart_ms);
+    }
+
+    return s_chart_fallback_base + (now_ms - s_chart_fallback_tick);
+}
+
 /* ---------------- 状态切换 ---------------- */
 
 static void enter_title(void)
@@ -72,10 +120,26 @@ static void enter_playing(uint32_t now_ms, uint32_t tap_ms)
     judge_reset();
     s_play_start_ms = now_ms;
     s_chart_ms = 0;
+    s_chart_audio_gone = 0;
+    s_chart_fallback_base = 0;
+    s_chart_fallback_tick = now_ms;
+
+    /* 音频子系统就绪才把谱面挂在音频上（REQ-008），否则退回 tick 计时 */
+    s_chart_use_audio = audio_is_mounted();
+
     s_scene = SCENE_PLAYING;
-    rt_kprintf("[SCENE] -> PLAYING at %ums (notes=%u, tap=%ums, latency=%dms)\n",
+    rt_kprintf("[SCENE] -> PLAYING at %ums (notes=%u, tap=%ums, latency=%dms, timebase=%s)\n",
                (unsigned)now_ms, (unsigned)chart_note_count(),
-               (unsigned)tap_ms, (int)latency);
+               (unsigned)tap_ms, (int)latency,
+               s_chart_use_audio ? "audio" : "tick");
+
+    /*
+     * 起 BGM。异步：mp3ctrl_play() 会阻塞到真正开播，不能在帧循环里同步调。
+     * 晚启动几百毫秒也不影响同步 —— 谱面时间是直接从音频进度读的，
+     * 音频走到哪、音符就落到哪。
+     */
+    if (s_chart_use_audio)
+        audio_play_async();
 }
 
 static void enter_result(uint32_t now_ms)
@@ -85,6 +149,13 @@ static void enter_result(uint32_t now_ms)
     judge_stats(&st);
     s_result_ms = now_ms;
     s_scene = SCENE_RESULT;
+
+    /*
+     * 一局结束就停 BGM（REQ-008）。
+     * 测试曲目比谱面短时，音频可能早就播完了，audio_stop() 内部有 s_mp3 判空，
+     * 重复调用也是安全的。
+     */
+    audio_stop();
 
     /* TC-005 要求「结算四项数据与过程日志一致」，这里把四项全部打出来 */
     rt_kprintf("[SCENE] -> RESULT at %ums score=%u maxcombo=%u acc=%u.%02u%% "
@@ -109,9 +180,9 @@ void scene_update(uint32_t now_ms)
     if (lane_w < 1)
         lane_w = 1;
 
-    /* 先把谱面时间推进到本帧，事件分派时用的才是当前时刻 */
+    /* 谱面时间随音频进度推进（REQ-008）；音频不可用时退回 tick */
     if (s_scene == SCENE_PLAYING)
-        s_chart_ms = now_ms - s_play_start_ms;
+        s_chart_ms = chart_time_compute(now_ms);
 
     /* 出队所有积压事件（每帧清空队列，避免延迟累积） */
     while (touch_pop_event(&ev) == 0)
@@ -127,6 +198,7 @@ void scene_update(uint32_t now_ms)
         {
             int lane = (int)ev.x / lane_w;
             int32_t lag = (int32_t)(now_ms - ev.t_ms);
+            uint32_t chart_ev;
             enum judge_result r;
 
             if (lane >= LANE_COUNT)
@@ -137,8 +209,17 @@ void scene_update(uint32_t now_ms)
             if (lag < 0)
                 lag = 0;    /* 事件入队可能晚于帧开始，防下溢 */
 
-            /* 用谱面时间判定：note.hit_ms 与 s_chart_ms 同一坐标系 */
-            r = judge_touch((uint8_t)lane, s_chart_ms);
+            /*
+             * 判定要用「触摸**发生**那一刻」的谱面时间，而不是本帧开始时的。
+             * 触摸事件要等下一帧才被取出，两者最多差一帧（33ms）；
+             * TC-008 判据才 50ms，这 33ms 量化误差不能不算。
+             * 换算：事件发生时刻的谱面时间 = 本帧谱面时间 - 事件已滞后的毫秒数。
+             * lag > s_chart_ms 说明事件早于谱面起点（极端情况），直接取 0。
+             */
+            chart_ev = ((uint32_t)lag <= s_chart_ms) ? (s_chart_ms - (uint32_t)lag) : 0u;
+
+            /* 用谱面时间判定：note.hit_ms 与 chart_ev 同一坐标系 */
+            r = judge_touch((uint8_t)lane, chart_ev);
 
             /*
              * 只打印真正消耗了音符的点击。JUDGE_NONE 是「附近没有可判音符」，
@@ -163,9 +244,9 @@ void scene_update(uint32_t now_ms)
                 judge_at = rt_tick_get_millisecond();
                 trigger_at = sfx_trigger();
 
-                rt_kprintf("[HIT] lane=%d tap=%ums chart=%ums lag=%dms -> %s\n",
+                rt_kprintf("[HIT] lane=%d tap=%ums chart=%ums chart_ev=%ums lag=%dms -> %s\n",
                            lane, (unsigned)ev.t_ms, (unsigned)s_chart_ms,
-                           (int)lag, judge_result_name(r));
+                           (unsigned)chart_ev, (int)lag, judge_result_name(r));
                 rt_kprintf("[SFX] judge_at=%ums trigger_at=%ums delta=%ums feed_prev=%ums enabled=%d\n",
                            (unsigned)judge_at, (unsigned)trigger_at,
                            (unsigned)(trigger_at - judge_at), (unsigned)feed_prev,
