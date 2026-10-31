@@ -537,3 +537,12 @@ enum scene_id scene_current(void)
 {
     return s_scene;
 }
+
+/*
+ * 当前谱面时间（毫秒）。只在 SCENE_PLAYING 有意义。
+ * 自动演奏（src/autoplay.c）靠它与谱面节点的 hit_ms 对齐。
+ */
+uint32_t scene_chart_ms(void)
+{
+    return s_chart_ms;
+}

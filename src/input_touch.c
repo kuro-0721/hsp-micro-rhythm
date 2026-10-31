@@ -72,6 +72,21 @@ int touch_pop_event(struct touch_ev *out)
     return 0;
 }
 
+/*
+ * 自动演奏用的合成点击注入（见 src/autoplay.c）。
+ *
+ * 这里必须加临界区：tp_push() 原本只有一个生产者（tpread 线程，从不主动让步），
+ * 所以自身没做保护；现在多了一个生产者（autoplay 线程），
+ * 两个线程在同一核上仍可能被抢占打断，导致 head/tail 错乱。
+ */
+int touch_inject(uint32_t t_ms, uint16_t x, uint16_t y)
+{
+    rt_enter_critical();
+    tp_push(t_ms, x, y);
+    rt_exit_critical();
+    return 0;
+}
+
 static void tp_thread(void *param)
 {
     (void)param;

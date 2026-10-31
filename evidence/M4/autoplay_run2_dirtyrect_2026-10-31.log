@@ -1,0 +1,343 @@
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 31 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[32m[I/TOUCH] Regist touch screen driver, probe=120274a5 [0m
+[32;22m[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.[0m
+[32;22m[I/FAL] The FAL MTD NOR device (dfu) created successfully[0m
+[32;22m[I/FAL] The FAL MTD NOR device (ble) created successfully[0m
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2114
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1697
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] framebuffer in PSRAM @0x60100000 (351000 bytes)
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x60100000
+[MEM] after fb_init        total=435444 used=9256 free=426188 max=43604
+
+==================== [SELFTEST] REQ-007 boot self-test ====================
+
+--- [SELFTEST] section 2/3: judge engine (REQ-003) ---
+[SELFTEST] judge: PASS (window/combo/acc/score/lane)
+  judge edge cases (window/one-per-tap/combo/acc/lane): PASS
+[BULK] judge: 50 notes, click offset sweep -119..+119ms
+[BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+  bulk judge (50 known click offsets): PASS
+  judge latency histogram (touch IRQ to judge): 0 samples
+    no real touch at boot - normal; printed again at RESULT
+
+--- [SELFTEST] section 1/3: chart parsing (REQ-006) ---
+  bad chart (lane 9 on line 2): PASS (returned -2, reported line 2)
+[CHART] builtin loaded: 58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14
+  builtin chart: PASS (58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14)
+  builtin chart summary (58 notes / last 29500ms): PASS
+
+  sections 1-2 done, 0 failure(s); section 3 (frame rate) in 150 frames (~4s)
+[32m[I/TOUCH] Open[0m
+[32m[I/TOUCH] Opened.[0m
+[TP] touch ready (queue=32, only DOWN events are queued)
+[SCENE] -> TITLE at 314ms (boot)
+[MEM] after scene_init     total=435444 used=11568 free=423876 max=43604
+[AUDIO] ready: in-memory mp3, 237443 bytes, volume=4, 10ms DMA callback registered
+[MEM] after audio_init     total=435444 used=11568 free=423876 max=43604
+[AUDIO] init ok, boot test thread started
+[MEM] after audio_start    total=435444 used=15828 free=419616 max=43604
+[I/drv.audprc] set g_eq_enable=0
+[I/drv.audprc] set g_eq_enable=1
+[I/drv.audcodec] dac set volume: prc=0 codec=-56
+
+[I/drv.audcodec] codec dac mute set:1
+
+[I/drv.audprc] samplerate = 44100, select music eq
+
+[I/drv.audprc] -----tx dma size = 320
+enable pll 
+new PLL_ENABLE vco:8, freq_type:3
+pll lock! freq_type:3
+[I/drv.audcodec] pll config state:2, samplerate:44100 
+
+[32m[I/TOUCH] Find touch screen driver...[0m
+[32m[I/TOUCH] Probe 120274a5[0m
+[32m[I/TOUCH] touch screen found driver  2000b4b8, ft6146[0m
+sifli_aw8155 to do power handle 
+sifli_aw8155_start,mode:1 42
+[E/drv.ft6146] ft6146 id_H=64
+[E/drv.ft6146] ft6146 id_L=56
+[I/drv.audcodec] codec dac mute set:0
+
+[SFX] ready: 440Hz 50ms 2205 samples, cache=4096B block=441/10ms, volume=4, enabled=1
+[MEM] after sfx_open       total=435444 used=36744 free=398700 max=44200
+[MEM] after sfx_init       total=435444 used=36744 free=398700 max=44200
+[AUTO] enabled: taps are injected by software, not by touch IRQ
+[APP] init done, selftest errors=0 -> TITLE
+[LOOP] start, frame=33ms
+[I/drv.audcodec] dac set volume: prc=0 codec=-56
+
+[SCENE] -> PLAYING at 1208ms (notes=58, tap=1204ms, latency=4ms, timebase=audio)
+[MEM] after mp3 open       total=435444 used=86552 free=348892 max=86552
+[AUDIO] playing in-memory mp3 (237443 bytes)
+[MEM] after mp3 play       total=435444 used=119540 free=315904 max=119568
+[AUTO] play round start, notes=58
+[SFX] vol=4 triggers=1 skipped=0
+[HIT] lane=0 tap=2243ms chart=1052ms chart_ev=1022ms lag=30ms -> PERFECT
+[SFX] judge_at=2273ms trigger_at=2273ms delta=0ms feed_prev=0ms enabled=1
+[SFX] diag: cb=171 feed_ok=0 last_write_ret=882
+[HIT] lane=2 tap=2744ms chart=1556ms chart_ev=1526ms lag=30ms -> PERFECT
+[SFX] judge_at=2774ms trigger_at=2774ms delta=0ms feed_prev=3ms enabled=1
+[HIT] lane=1 tap=3242ms chart=2053ms chart_ev=2024ms lag=29ms -> PERFECT
+[SFX] judge_at=3271ms trigger_at=3271ms delta=0ms feed_prev=8ms enabled=1
+[HIT] lane=3 tap=3736ms chart=2550ms chart_ev=2518ms lag=32ms -> PERFECT
+[SFX] judge_at=3768ms trigger_at=3768ms delta=0ms feed_prev=8ms enabled=1
+[HIT] lane=1 tap=4236ms chart=3051ms chart_ev=3019ms lag=32ms -> PERFECT
+[SFX] judge_at=4268ms trigger_at=4268ms delta=0ms feed_prev=8ms enabled=1
+[HIT] lane=3 tap=4738ms chart=3548ms chart_ev=3518ms lag=30ms -> PERFECT
+[SFX] judge_at=4768ms trigger_at=4768ms delta=0ms feed_prev=6ms enabled=1
+[HIT] lane=0 tap=5233ms chart=4045ms chart_ev=4015ms lag=30ms -> PERFECT
+[SFX] judge_at=5263ms trigger_at=5263ms delta=0ms feed_prev=5ms enabled=1
+
+--- [SELFTEST] section 3/3: frame rate (REQ-101) ---
+  frames=150 target=33ms
+  frame interval (REQ-101 uses this): avg=33ms p95=35ms max=39ms
+  work per frame: avg=24ms draw=2ms flush=22ms
+  dropped frames: 1
+  p95 interval (limit 34ms): FAIL (measured 35ms)
+
+==================== [SELFTEST] RESULT: FAIL ====================
+  section 1-2 failures: 0, section 3 failures: 1
+  note: p95 limit widened 33ms to 34ms by CR-04; tick resolution 1ms, see docs/06 R-10
+
+[HIT] lane=2 tap=5733ms chart=4546ms chart_ev=4516ms lag=30ms -> PERFECT
+[SFX] judge_at=5763ms trigger_at=5763ms delta=0ms feed_prev=7ms enabled=1
+[HIT] lane=2 tap=6230ms chart=5043ms chart_ev=5011ms lag=32ms -> PERFECT
+[SFX] judge_at=6262ms trigger_at=6262ms delta=0ms feed_prev=3ms enabled=1
+[HIT] lane=0 tap=6731ms chart=5543ms chart_ev=5513ms lag=30ms -> PERFECT
+[SFX] judge_at=6761ms trigger_at=6761ms delta=0ms feed_prev=3ms enabled=1
+[SFX] vol=4 triggers=11 skipped=0
+[HIT] lane=3 tap=7228ms chart=6040ms chart_ev=6010ms lag=30ms -> PERFECT
+[SFX] judge_at=7258ms trigger_at=7258ms delta=0ms feed_prev=3ms enabled=1
+SFBL
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 31 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[32m[I/TOUCH] Regist touch screen driver, probe=120274a5 [0m
+[32;22m[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.[0m
+[32;22m[I/FAL] The FAL MTD NOR device (dfu) created successfully[0m
+[32;22m[I/FAL] The FAL MTD NOR device (ble) created successfully[0m
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2115
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1697
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] framebuffer in PSRAM @0x60100000 (351000 bytes)
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x60100000
+[MEM] after fb_init        total=435444 used=9256 free=426188 max=43604
+
+==================== [SELFTEST] REQ-007 boot self-test ====================
+
+--- [SELFTEST] section 2/3: judge engine (REQ-003) ---
+[SELFTEST] judge: PASS (window/combo/acc/score/lane)
+  judge edge cases (window/one-per-tap/combo/acc/lane): PASS
+[BULK] judge: 50 notes, click offset sweep -119..+119ms
+[BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+  bulk judge (50 known click offsets): PASS
+  judge latency histogram (touch IRQ to judge): 0 samples
+    no real touch at boot - normal; printed again at RESULT
+
+--- [SELFTEST] section 1/3: chart parsing (REQ-006) ---
+  bad chart (lane 9 on line 2): PASS (returned -2, reported line 2)
+[CHART] builtin loaded: 58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14
+  builtin chart: PASS (58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14)
+  builtin chart summary (58 notes / last 29500ms): PASS
+
+  sections 1-2 done, 0 failure(s); section 3 (frame rate) in 150 frames (~4s)
+[32m[I/TOUCH] Open[0m
+[32m[I/TOUCH] Opened.[0m
+[TP] touch ready (queue=32, only DOWN events are queued)
+[SCENE] -> TITLE at 314ms (boot)
+[MEM] after scene_init     total=435444 used=11568 free=423876 max=43604
+[AUDIO] ready: in-memory mp3, 237443 bytes, volume=4, 10ms DMA callback registered
+[MEM] after audio_init     total=435444 used=11568 free=423876 max=43604
+[AUDIO] init ok, boot test thread started
+[MEM] after audio_start    total=435444 used=15828 free=419616 max=43604
+[I/drv.audprc] set g_eq_enable=0
+[I/drv.audprc] set g_eq_enable=1
+[I/drv.audcodec] dac set volume: prc=0 codec=-56
+
+[I/drv.audcodec] codec dac mute set:1
+
+[I/drv.audprc] samplerate = 44100, select music eq
+
+[I/drv.audprc] -----tx dma size = 320
+enable pll 
+new PLL_ENABLE vco:8, freq_type:3
+pll lock! freq_type:3
+[I/drv.audcodec] pll config state:2, samplerate:44100 
+
+[32m[I/TOUCH] Find touch screen driver...[0m
+[32m[I/TOUCH] Probe 120274a5[0m
+[32m[I/TOUCH] touch screen found driver  2000b4b8, ft6146[0m
+sifli_aw8155 to do power handle 
+sifli_aw8155_start,mode:1 42
+[E/drv.ft6146] ft6146 id_H=64
+[E/drv.ft6146] ft6146 id_L=56
+[I/drv.audcodec] codec dac mute set:0
+
+[SFX] ready: 440Hz 50ms 2205 samples, cache=4096B block=441/10ms, volume=4, enabled=1
+[MEM] after sfx_open       total=435444 used=36744 free=398700 max=44200
+[MEM] after sfx_init       total=435444 used=36744 free=398700 max=44200
+[AUTO] enabled: taps are injected by software, not by touch IRQ
+[APP] init done, selftest errors=0 -> TITLE
+[LOOP] start, frame=33ms
+[I/drv.audcodec] dac set volume: prc=0 codec=-56
+
+[SCENE] -> PLAYING at 1209ms (notes=58, tap=1205ms, latency=4ms, timebase=audio)
+[MEM] after mp3 open       total=435444 used=86552 free=348892 max=86552
+[AUDIO] playing in-memory mp3 (237443 bytes)
+[MEM] after mp3 play       total=435444 used=119540 free=315904 max=119568
+[AUTO] play round start, notes=58
+[SFX] vol=4 triggers=1 skipped=0
+[HIT] lane=0 tap=2244ms chart=1055ms chart_ev=1025ms lag=30ms -> PERFECT
+[SFX] judge_at=2274ms trigger_at=2274ms delta=0ms feed_prev=0ms enabled=1
+[SFX] diag: cb=171 feed_ok=0 last_write_ret=882
+[HIT] lane=2 tap=2745ms chart=1552ms chart_ev=1523ms lag=29ms -> PERFECT
+[SFX] judge_at=2774ms trigger_at=2774ms delta=0ms feed_prev=4ms enabled=1
+[HIT] lane=1 tap=3242ms chart=2053ms chart_ev=2022ms lag=31ms -> PERFECT
+[SFX] judge_at=3273ms trigger_at=3273ms delta=0ms feed_prev=9ms enabled=1
+[HIT] lane=3 tap=3737ms chart=2550ms chart_ev=2518ms lag=32ms -> PERFECT
+[SFX] judge_at=3769ms trigger_at=3769ms delta=0ms feed_prev=6ms enabled=1
+[HIT] lane=1 tap=4237ms chart=3051ms chart_ev=3019ms lag=32ms -> PERFECT
+[SFX] judge_at=4269ms trigger_at=4269ms delta=0ms feed_prev=8ms enabled=1
+[HIT] lane=3 tap=4739ms chart=3548ms chart_ev=3518ms lag=30ms -> PERFECT
+[SFX] judge_at=4769ms trigger_at=4769ms delta=0ms feed_prev=6ms enabled=1
+[HIT] lane=0 tap=5234ms chart=4045ms chart_ev=4015ms lag=30ms -> PERFECT
+[SFX] judge_at=5264ms trigger_at=5264ms delta=0ms feed_prev=5ms enabled=1
+
+--- [SELFTEST] section 3/3: frame rate (REQ-101) ---
+  frames=150 target=33ms
+  frame interval (REQ-101 uses this): avg=33ms p95=35ms max=39ms
+  work per frame: avg=24ms draw=2ms flush=22ms
+  dropped frames: 1
+  p95 interval (limit 34ms): FAIL (measured 35ms)
+
+==================== [SELFTEST] RESULT: FAIL ====================
+  section 1-2 failures: 0, section 3 failures: 1
+  note: p95 limit widened 33ms to 34ms by CR-04; tick resolution 1ms, see docs/06 R-10
+
+[HIT] lane=2 tap=5734ms chart=4546ms chart_ev=4516ms lag=30ms -> PERFECT
+[SFX] judge_at=5764ms trigger_at=5764ms delta=0ms feed_prev=6ms enabled=1
+[HIT] lane=2 tap=6231ms chart=5043ms chart_ev=5011ms lag=32ms -> PERFECT
+[SFX] judge_at=6263ms trigger_at=6263ms delta=0ms feed_prev=3ms enabled=1
+[HIT] lane=0 tap=6732ms chart=5543ms chart_ev=5512ms lag=31ms -> PERFECT
+[SFX] judge_at=6763ms trigger_at=6763ms delta=0ms feed_prev=3ms enabled=1
+[SFX] vol=4 triggers=11 skipped=0
+[HIT] lane=3 tap=7226ms chart=6040ms chart_ev=6006ms lag=34ms -> PERFECT
+[SFX] judge_at=7260ms trigger_at=7260ms delta=0ms feed_prev=3ms enabled=1
+[HIT] lane=1 tap=7728ms chart=6541ms chart_ev=6511ms lag=30ms -> PERFECT
+[SFX] judge_at=7758ms trigger_at=7758ms delta=0ms feed_prev=3ms enabled=1
+[HIT] lane=3 tap=8228ms chart=7038ms chart_ev=7008ms lag=30ms -> PERFECT
+[SFX] judge_at=8258ms trigger_at=8258ms delta=0ms feed_prev=3ms enabled=1
+[HIT] lane=1 tap=8726ms chart=7539ms chart_ev=7510ms lag=29ms -> PERFECT
+[SFX] judge_at=8755ms trigger_at=8755ms delta=0ms feed_prev=9ms enabled=1
+[HIT] lane=2 tap=9220ms chart=8036ms chart_ev=8004ms lag=32ms -> PERFECT
+[SFX] judge_at=9252ms trigger_at=9252ms delta=0ms feed_prev=8ms enabled=1
+[HIT] lane=0 tap=9720ms chart=8533ms chart_ev=8501ms lag=32ms -> PERFECT
+[SFX] judge_at=9752ms trigger_at=9752ms delta=0ms feed_prev=8ms enabled=1
+[HIT] lane=0 tap=10223ms chart=9034ms chart_ev=9005ms lag=29ms -> PERFECT
+[SFX] judge_at=10252ms trigger_at=10252ms delta=0ms feed_prev=6ms enabled=1
+[LOOP] frames=300 iv_avg=33ms iv_p95=35ms iv_max=39ms work=24ms draw=1ms flush=22ms drop=1
+[HIT] lane=2 tap=10718ms chart=9531ms chart_ev=9501ms lag=30ms -> PERFECT
+[SFX] judge_at=10748ms trigger_at=10748ms delta=0ms feed_prev=6ms enabled=1
+[HIT] lane=1 tap=11217ms chart=10031ms chart_ev=10001ms lag=30ms -> PERFECT
+[SFX] judge_at=11247ms trigger_at=11247ms delta=0ms feed_prev=6ms enabled=1
+[HIT] lane=3 tap=11715ms chart=10532ms chart_ev=10500ms lag=32ms -> PERFECT
+[SFX] judge_at=11747ms trigger_at=11747ms delta=0ms feed_prev=3ms enabled=1
+[SFX] vol=4 triggers=21 skipped=0
+[HIT] lane=1 tap=12215ms chart=11029ms chart_ev=10997ms lag=32ms -> PERFECT
+[SFX] judge_at=12247ms trigger_at=12247ms delta=0ms feed_prev=3ms enabled=1
+[HIT] lane=3 tap=12744ms chart=11559ms chart_ev=11527ms lag=32ms -> PERFECT
+[SFX] judge_at=12776ms trigger_at=12776ms delta=0ms feed_prev=3ms enabled=1
+[HIT] lane=0 tap=13242ms chart=12059ms chart_ev=12027ms lag=32ms -> PERFECT
+[SFX] judge_at=13274ms trigger_at=13274ms delta=0ms feed_prev=8ms enabled=1
+[HIT] lane=2 tap=13743ms chart=12560ms chart_ev=12528ms lag=32ms -> PERFECT
+[SFX] judge_at=13775ms trigger_at=13775ms delta=0ms feed_prev=8ms enabled=1
+[HIT] lane=2 tap=14240ms chart=13057ms chart_ev=13025ms lag=32ms -> PERFECT
+[SFX] judge_at=14272ms trigger_at=14272ms delta=0ms feed_prev=5ms enabled=1
+[HIT] lane=0 tap=14739ms chart=13554ms chart_ev=13524ms lag=30ms -> PERFECT
+[SFX] judge_at=14769ms trigger_at=14769ms delta=0ms feed_prev=3ms enabled=1

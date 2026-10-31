@@ -299,6 +299,13 @@ int app_start(void)
 
     memprobe("after sfx_init");
 
+    /*
+     * 自动演奏（测试用，src/autoplay.c）：按谱面自动注入点击，
+     * 让 TC-101「连续演奏 30s」与 TC-103「连续演奏 10min」有真实负载可测。
+     * 正式演示前把 src/autoplay.c 的 AUTOPLAY_ENABLE 置 0。
+     */
+    autoplay_start();
+
     rt_kprintf("[APP] init done, selftest errors=%d -> TITLE\n", fail);
 
     return game_loop_start();

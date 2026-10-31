@@ -80,6 +80,13 @@ int touch_init(void);
 /* 取一个已完成读点的事件。0 = 取到，-1 = 队列空。 */
 int touch_pop_event(struct touch_ev *out);
 
+/*
+ * 把一个**合成**点击注入触摸事件队列（仅供 src/autoplay.c 的自动演奏使用）。
+ * 下游路径与真实触摸完全一致，但不经过 FT6146 中断与 I2C 读点，
+ * 所以用本接口测出的延迟**不能**当 TC-104 的端到端延迟。
+ */
+int touch_inject(uint32_t t_ms, uint16_t x, uint16_t y);
+
 /* ---------------- 判定引擎（src/judge.c） ---------------- */
 
 #define JUDGE_PERFECT_MS    60u
@@ -180,6 +187,17 @@ void scene_update(uint32_t now_ms);
 void scene_render(void);
 
 enum scene_id scene_current(void);
+
+/* 当前谱面时间（毫秒，只在 PLAYING 有意义）；供自动演奏对齐节点使用。 */
+uint32_t scene_chart_ms(void);
+
+/* ---------------- autoplay：自动演奏（测试用，src/autoplay.c） ---------------- */
+
+/*
+ * 启动自动演奏线程：按谱面节点自动注入点击，用于 TC-101（连续演奏 30s）
+ * 与 TC-103（连续演奏 10min）的负载。AUTOPLAY_ENABLE=0 时本函数为空。
+ */
+int autoplay_start(void);
 
 /* ---------------- game_loop：固定帧循环与统计 ---------------- */
 
