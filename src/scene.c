@@ -40,6 +40,26 @@
 #define HUD_H               68          /* 底板高：3 行文字（8..66） + 上下留白 */
 
 static enum scene_id s_scene = SCENE_TITLE;
+
+/*
+ * REQ-009 要求命中音效「可开关」。TITLE 页提供一个按钮：
+ * 点它切换开关，点其它任意位置才是开始游戏。
+ * 矩形由下面这个函数统一算，渲染与命中判定共用，避免两处坐标对不上。
+ */
+#define SFX_BTN_W       160
+#define SFX_BTN_H       34
+
+static void title_sfx_btn(int *x0, int *y0, int *x1, int *y1)
+{
+    int w = fb_width();
+    int h = fb_height();
+
+    *x0 = w / 2 - SFX_BTN_W / 2;
+    *x1 = *x0 + SFX_BTN_W - 1;
+    *y0 = h - 96;
+    *y1 = *y0 + SFX_BTN_H - 1;
+}
+
 static uint32_t s_play_start_ms;
 static uint32_t s_result_ms;
 static uint32_t s_chart_ms;             /* 当前谱面时间（只在 PLAYING 有意义） */
@@ -190,9 +210,28 @@ void scene_update(uint32_t now_ms)
         switch (s_scene)
         {
         case SCENE_TITLE:
-            /* P0 主界面只有「开始」一个可点元素，整屏任意位置都算 */
-            enter_playing(now_ms, ev.t_ms);
+        {
+            int bx0, by0, bx1, by1;
+
+            title_sfx_btn(&bx0, &by0, &bx1, &by1);
+
+            /* 点在按钮上 = 切音效开关，不进游戏（REQ-009 的「可开关」） */
+            if ((int)ev.x >= bx0 && (int)ev.x <= bx1 &&
+                    (int)ev.y >= by0 && (int)ev.y <= by1)
+            {
+                int on = sfx_enabled() ? 0 : 1;
+
+                sfx_set_enabled(on);
+                rt_kprintf("[SFX] toggle at %ums -> enabled=%d\n",
+                           (unsigned)ev.t_ms, on);
+            }
+            else
+            {
+                /* P0 主界面只有「开始」一个可点元素，其余任意位置都算 */
+                enter_playing(now_ms, ev.t_ms);
+            }
             break;
+        }
 
         case SCENE_PLAYING:
         {
@@ -322,6 +361,20 @@ static void render_title(uint32_t now_ms)
 
     gfx_text((w - gfx_text_width("SF32LB52 390X450", 1)) / 2, h - 24,
              "SF32LB52 390X450", COL_DIM, 1);
+
+    /* REQ-009：命中音效开关按钮（点它不会进游戏） */
+    {
+        int bx0, by0, bx1, by1;
+        const char *label;
+
+        title_sfx_btn(&bx0, &by0, &bx1, &by1);
+        gfx_fill_rect(bx0, by0, bx1, by1, COL_HUD_BG);
+
+        label = sfx_enabled() ? "SFX: ON" : "SFX: OFF";
+        gfx_text((w - gfx_text_width(label, 2)) / 2,
+                 by0 + (SFX_BTN_H - 7 * 2) / 2,
+                 label, sfx_enabled() ? COL_NOTE : COL_DIM, 2);
+    }
 }
 
 static void render_hud(void)
