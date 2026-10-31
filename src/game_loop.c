@@ -251,6 +251,9 @@ int app_start(void)
     if (fb_init() != 0)
         return -1;
 
+    /* 帧缓冲 351,000 字节从系统堆分配，是最大的一笔开销，先量一下 */
+    memprobe("after fb_init");
+
     /* 判定引擎：先跑纯逻辑自检 + 批量判定测试
      * （REQ-007 的一部分；批量测试对应 TC-003 「以已知时刻输入 ≥50 次」） */
     judge_init();
@@ -270,12 +273,31 @@ int app_start(void)
     /* 场景状态机（REQ-001）：上电进入 TITLE */
     scene_init();
 
+    memprobe("after scene_init");
+
     /*
-     * REQ-009 命中音效：合成音效走 audio_server，在独立线程播放。
-     * 初始化失败只意味着「命中时没声音」，不影响判定与显示，所以只打 WARN。
+     * REQ-008（P1）：MP3 与音频进度时间基准（CR-05：曲目内置，不用 TF 卡）。
+     *
+     * 2026-10-31 现状：混音暂未启用（堆内存不足，见 proj.conf 注释），
+     * 两个 client 都注册成 AUDIO_TYPE_LOCAL_MUSIC 时 audio_server 会互相挂起，
+     * 所以本函数只做初始化，上电不自动播放。
+     */
+    if (audio_start_async() != 0)
+        rt_kprintf("[APP] WARN: audio start failed, REQ-008 unavailable\n");
+
+    memprobe("after audio_start");
+
+    /*
+     * REQ-009 命中音效：合成 440Hz/50ms 方波，自己开一个 audio client 播放。
+     *
+     * 注意 sfx_init() 内部会调 audio_server_set_private_volume(LOCAL_MUSIC, 14)，
+     * 而 audio_start_async() 先把它设成 4（AUDIO_MUSIC_VOLUME）。
+     * 目前因为两者不会同时播放，各自生效；若将来启用混音，必须统一成一个值。
      */
     if (sfx_init() != 0)
         rt_kprintf("[APP] WARN: sfx init failed, hits will be silent\n");
+
+    memprobe("after sfx_init");
 
     rt_kprintf("[APP] init done, selftest errors=%d -> TITLE\n", fail);
 

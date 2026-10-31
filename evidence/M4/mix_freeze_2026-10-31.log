@@ -1,0 +1,192 @@
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 31 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[32m[I/TOUCH] Regist touch screen driver, probe=120274a5 [0m
+[32;22m[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.[0m
+[32;22m[I/FAL] The FAL MTD NOR device (dfu) created successfully[0m
+[32;22m[I/FAL] The FAL MTD NOR device (ble) created successfully[0m
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2115
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1697
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x20020110
+
+==================== [SELFTEST] REQ-007 boot self-test ====================
+
+--- [SELFTEST] section 2/3: judge engine (REQ-003) ---
+[SELFTEST] judge: PASS (window/combo/acc/score/lane)
+  judge edge cases (window/one-per-tap/combo/acc/lane): PASS
+[BULK] judge: 50 notes, click offset sweep -119..+119ms
+[BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+  bulk judge (50 known click offsets): PASS
+  judge latency histogram (touch IRQ to judge): 0 samples
+    no real touch at boot - normal; printed again at RESULT
+
+--- [SELFTEST] section 1/3: chart parsing (REQ-006) ---
+  bad chart (lane 9 on line 2): PASS (returned -2, reported line 2)
+[CHART] builtin loaded: 58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14
+  builtin chart: PASS (58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14)
+  builtin chart summary (58 notes / last 29500ms): PASS
+
+  sections 1-2 done, 0 failure(s); section 3 (frame rate) in 150 frames (~4s)
+[32m[I/TOUCH] Open[0m
+[32m[I/TOUCH] Opened.[0m
+[TP] touch ready (queue=32, only DOWN events are queued)
+[SCENE] -> TITLE at 305ms (boot)
+[AUDIO] ready: in-memory mp3, 129192 bytes, volume=4, 10ms DMA callback registered
+[AUDIO] init ok, boot test thread started
+[I/drv.audprc] set g_eq_enable=0
+[I/drv.audprc] set g_eq_enable=1
+[I/drv.audcodec] dac set volume: prc=0 codec=-56
+
+[I/drv.audcodec] codec dac mute set:1
+
+[I/drv.audprc] samplerate:48000 unsupport eq
+
+[I/drv.audprc] -----tx dma size = 320
+[I/drv.audcodec] pll config state:1, samplerate:0 
+
+[32m[I/TOUCH] Find touch screen driver...[0m
+[32m[I/TOUCH] Probe 120274a5[0m
+[32m[I/TOUCH] touch screen found driver  2000b4b8, ft6146[0m
+sifli_aw8155 to do power handle 
+sifli_aw8155_start,mode:1 42
+[E/drv.ft6146] ft6146 id_H=64
+[E/drv.ft6146] ft6146 id_L=56
+[I/drv.audcodec] codec dac mute set:0
+
+[SFX] ready: 440Hz 50ms 2400 samples, cache=4096B block=480/10ms, volume=8, enabled=1
+[APP] init done, selftest errors=0 -> TITLE
+[LOOP] start, frame=33ms
+[I/drv.audcodec] dac set volume: prc=0 codec=-40
+
+[AUDIO] boot test: loop play (about 40s window)
+[AUDIO] round 1 start
+Assertion failed at function:audio_client_init, line number:3834 ,(handle->ring_pool)
+Previous ISR enable 0
+===================
+Thread Info        
+===================
+thread   pri  status      sp      top     stack size max used left tick  error
+-------- ---  ------- ---------- ---------- ----------  ------  ---------- ---
+mp3       13  ready   0x200785e8 0x200786d4 0x00000800    30%   0x00000009 000
+game      20  suspend 0x20077dd8 0x20077ec4 0x00002000    05%   0x00000002 000
+sfx       24  ready   0x20018b88 0x20018c20 0x00000800    07%   0x00000004 -02
+audio_te  22  ready   0x2001a448 0x2001a4f4 0x00001000    09%   0x00000009 000
+tp        18  suspend 0x200182f8 0x2001837c 0x00000800    06%   0x0000000a 000
+tpread    10  suspend 0x20009918 0x2000999c 0x00000400    17%   0x0000000a 000
+lcd_task  12  suspend 0x200094a8 0x2000959c 0x00000800    25%   0x00000002 000
+tshell    20  suspend 0x20017838 0x20017930 0x00001000    07%   0x0000000a 000
+bt_downv  11  suspend 0x2000cf48 0x2000cfd4 0x00001598    02%   0x0000000a 000
+audiosvr  11  suspend 0x2000f310 0x2000f3d4 0x00002400    09%   0x00000005 000
+tidle     31  ready   0x20014f80 0x20014fd8 0x00000200    19%   0x00000009 000
+timer      4  suspend 0x20009d20 0x20009d9c 0x00000400    12%   0x00000009 000
+main      10  suspend 0x20016000 0x20016110 0x00000800    33%   0x00000011 000
+===================
+Mailbox Info       
+===================
+mailbox entry size suspend thread
+------- ----  ---- --------------
+===================
+MessageQueue Info  
+===================
+msgqueue entry suspend thread
+-------- ----  --------------
+drv_lcd  0000  0
+===================
+Mutex Info         
+===================
+mutex      owner  hold suspend thread
+-------- -------- ---- --------------
+mp3      (NULL)   0000 0
+loopst   (NULL)   0000 0
+tplck    (NULL)   0000 0
+audio_sv (NULL)   0000 0
+rgb_drv  (NULL)   0000 0
+rtc      (NULL)   0000 0
+fslock   (NULL)   0000 0
+i2c_bus_ (NULL)   0000 0
+i2c_bus_ (NULL)   0000 0
+i2c_bus_ (NULL)   0000 0
+===================
+Semaphore Info     
+===================
+semaphore v   suspend thread
+-------- --- --------------
+tp       000 1:tp
+tp_ctrl  001 0
+fbf      000 1:game
+lcd_msg  000 0
+lcd_draw 000 1:lcd_task�
+drv_lcd  000 0
+shrx     000 0
+epic     001 0
+ft6146   000 1:tpread
+aes_drv  001 0
+drv_eDma 001 0
+gpadc    001 0
+i2c4     000 0
+i2c2     000 0
+i2c1     000 0
+heap     001 0
+flash2   001 0
+===================
+Memory Info     
+===================
+total memory: 435388 used memory : 433244 maximum allocated memory: 433244
+No such directory
+dfs_statfs failed.
+=====================
+PSP: 0x200785a4, MSP: 0x20001fe0
+=====================
+ sp: 0x20078608
+psr: 0x40000000
+r00: 0x00000000
+r01: 0x00000001
+r02: 0x20008d90
+r03: 0x30000000
+r12: 0x12051609
+ lr: 0x12046833
+ pc: 0x12046833
+=====================
+fatal error on thread: mp3

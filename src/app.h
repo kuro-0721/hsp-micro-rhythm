@@ -248,6 +248,46 @@ uint32_t sfx_feed_latency_ms(void);
 /* 诊断：回调次数 / 写入成功次数 / 最近一次 audio_write 返回值（0 = 成功）。 */
 void sfx_get_diag(uint32_t *cb_count, uint32_t *feed_ok, int *last_write_ret);
 
+/* ---------------- audio：内存 MP3 与音频时间基准（src/audio.c，REQ-008 / CR-05） ---------------- */
+/*
+ * 谱面时间轴以**音频播放进度**为基准，而不是进入 PLAYING 时的系统毫秒。
+ * 进度来自 audio_register_10ms_tx_dma_callback()：音频 TX DMA 每 10ms 回调一次，
+ * 回调次数 × 10 = 已真正被 DAC 取走的毫秒数。**分辨率为 10ms**，不是 1ms。
+ *
+ * 曲目以 C 数组形式编入固件（src/mp3_sample.c），用 mp3ctrl_open_buffer() 从内存解码，
+ * **不使用 TF 卡** —— 原因见 CR-05：启用 SPI_MSD 会在 main() 之前自动做卡握手，
+ * 卡不响应会直接把整个系统阻塞在启动阶段（屏幕完全不亮，已实测）。
+ */
+int  audio_init(void);
+
+/* 播放固件内置曲目。成功返回 0。 */
+int  audio_play(void);
+
+/* 当前播放进度（ms），10ms 粒度；未开始播放时返回 0。 */
+uint32_t audio_pos_ms(void);
+
+/* 停止播放并释放解码器。 */
+void audio_stop(void);
+
+int  audio_is_playing(void);
+int  audio_finished(void);
+int  audio_is_mounted(void);
+
+/*
+ * 阶段 1 自测：播放 TF 卡根目录的 /test_beat_120bpm.mp3，每 500ms 打印一次进度。
+ * 只用于验证「挂载 → 播放 → 进度」链路，接入谱面同步后关闭。
+ */
+void audio_boot_test(void);
+
+/*
+ * 异步启动 TF 卡初始化（独立线程，优先级 22）。
+ *
+ * **必须用这个而不是直接调 audio_init()**：msd_init 是阻塞的卡握手，卡不通时会
+ * 永久占住 spi1 互斥量。2026-10-31 实测，同步调用会让 main 线程挂起、整个系统停摆。
+ * 异步后最坏只是音频不可用，游戏照常运行。
+ */
+int  audio_start_async(void);
+
 /* ---------------- selftest：启动自检（src/selftest.c，REQ-007） ---------------- */
 #define SELFTEST_FRAME_WINDOW   150u    /* 约 5s（150 帧 × 33ms），第 3 节就绪的帧数 */
 #define SELFTEST_P95_LIMIT_MS   34u     /* REQ-101 判据（CR-04 放宽后的值） */
@@ -265,5 +305,14 @@ void selftest_latency_report(void);
 
 /* 由 main.c 调用：初始化 LCD → 启动帧循环。成功返回 0。 */
 int app_start(void);
+
+/* ---------------- 内存探针（临时，src/memprobe.c） ---------------- */
+
+/*
+ * 打印一次系统堆的 total/used/free/max，用于定位内存是在哪一步被吃掉的。
+ * 参数 tag 是短标签（如 "after fb_init"），会原样打进日志。
+ * 2026-10-31 为排查混音断言而临时加入，问题定位后可整体删除。
+ */
+void memprobe(const char *tag);
 
 #endif /* APP_H */

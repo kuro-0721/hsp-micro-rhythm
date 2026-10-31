@@ -1,0 +1,191 @@
+[AUDIO] pos=3036ms playing=1
+[AUDIO] pos=3548ms playing=1
+[AUDIO] pos=4048ms playing=1
+[AUDIO] pos=4546ms playing=1
+SFBL
+Serial:c2,Chip:4,Package:3,Rev:3  Reason:00000000
+
+ \ | /
+- SiFli Corporation
+ / | \     build on Oct 31 2026, 2.5.1 build 421126d9
+ 2020 - 2022 Copyright by SiFli team
+aw32001_init ok,  time consum: 0.00 ms.
+mount /dev sucess
+[I/drv.rtc] PSCLR=0x80000100 DivAI=128 DivAF=0 B=256
+[I/drv.rtc] RTC use LXT RTC_CR=00000001
+
+[I/drv.rtc] Init RTC, wake = 0
+
+[I/drv.audprc] init 00 ADC_PATH_CFG0 0x606
+
+[I/drv.audprc] HAL_AUDPRC_Init res 0
+
+[I/drv.audcodec] HAL_AUDCODEC_Init res 0
+
+[I/drv.rgb] rgbled register success, supporting 1 LEDs
+[32m[I/TOUCH] Regist touch screen driver, probe=120274a5 [0m
+[32;22m[I/FAL] Flash Abstraction Layer (V0.5.99) initialize success.[0m
+[32;22m[I/FAL] The FAL MTD NOR device (dfu) created successfully[0m
+[32;22m[I/FAL] The FAL MTD NOR device (ble) created successfully[0m
+call par CFG1(3313)
+fc 9, xtal 2000, pll 2117
+call par CFG1(3313)
+fc 7, xtal 2000, pll 1699
+
+[course_starter] v0.1.0 boot ok
+Hello world!
+[I/DBG] [NONE] -> [OPENING]
+[I/DBG] open
+[I/DBG] drv_gpu opened.
+[I/DBG] HW open
+[I/DBG] Try registered LCD driver...
+msh />
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+
+CO5300_ReadID 0x331100 
+[I/co5300] LCD module use CO5300 IC 
+
+[I/DBG] Found lcd co5300 id:331100h
+[I/DBG] HW open done.
+[I/DBG] [OPENING] -> [INITIALIZED]
+[I/DBG] open done.
+[I/DBG] set brightness 100
+[I/DBG] display on
+[I/DBG] [INITIALIZED] -> [ON]
+[FB] framebuffer in PSRAM @0x60100000 (351000 bytes)
+[FB] lcd 390x450 bpp=16, framebuffer 351000 bytes @0x60100000
+[MEM] after fb_init        total=435856 used=9256 free=426600 max=43964
+
+==================== [SELFTEST] REQ-007 boot self-test ====================
+
+--- [SELFTEST] section 2/3: judge engine (REQ-003) ---
+[SELFTEST] judge: PASS (window/combo/acc/score/lane)
+  judge edge cases (window/one-per-tap/combo/acc/lane): PASS
+[BULK] judge: 50 notes, click offset sweep -119..+119ms
+[BULK] judge: PASS (50/50 ok, P=26 G=24 M=0 score=3800 acc=76.00%)
+  bulk judge (50 known click offsets): PASS
+  judge latency histogram (touch IRQ to judge): 0 samples
+    no real touch at boot - normal; printed again at RESULT
+
+--- [SELFTEST] section 1/3: chart parsing (REQ-006) ---
+  bad chart (lane 9 on line 2): PASS (returned -2, reported line 2)
+[CHART] builtin loaded: 58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14
+  builtin chart: PASS (58 notes, first=1000ms last=29500ms span=28500ms lanes=15/14/15/14)
+  builtin chart summary (58 notes / last 29500ms): PASS
+
+  sections 1-2 done, 0 failure(s); section 3 (frame rate) in 150 frames (~4s)
+[32m[I/TOUCH] Open[0m
+[32m[I/TOUCH] Opened.[0m
+[TP] touch ready (queue=32, only DOWN events are queued)
+[SCENE] -> TITLE at 314ms (boot)
+[MEM] after scene_init     total=435856 used=11568 free=424288 max=43964
+[AUDIO] ready: in-memory mp3, 129192 bytes, volume=4, 10ms DMA callback registered
+[MEM] after audio_init     total=435856 used=11568 free=424288 max=43964
+[AUDIO] init ok, boot test thread started
+[MEM] after audio_start    total=435856 used=15828 free=420028 max=43964
+[I/drv.audprc] set g_eq_enable=0
+[I/drv.audprc] set g_eq_enable=1
+[I/drv.audcodec] dac set volume: prc=0 codec=-56
+
+[I/drv.audcodec] codec dac mute set:1
+
+[I/drv.audprc] samplerate = 44100, select music eq
+
+[I/drv.audprc] -----tx dma size = 320
+enable pll 
+new PLL_ENABLE vco:8, freq_type:3
+pll lock! freq_type:3
+[I/drv.audcodec] pll config state:2, samplerate:44100 
+
+[32m[I/TOUCH] Find touch screen driver...[0m
+[32m[I/TOUCH] Probe 120274a5[0m
+[32m[I/TOUCH] touch screen found driver  2000b4b8, ft6146[0m
+sifli_aw8155 to do power handle 
+sifli_aw8155_start,mode:1 42
+[E/drv.ft6146] ft6146 id_H=64
+[E/drv.ft6146] ft6146 id_L=56
+[I/drv.audcodec] codec dac mute set:0
+
+[SFX] ready: 440Hz 50ms 2205 samples, cache=4096B block=441/10ms, volume=4, enabled=1
+[MEM] after sfx_open       total=435856 used=36744 free=399112 max=44200
+[MEM] after sfx_init       total=435856 used=36744 free=399112 max=44200
+[APP] init done, selftest errors=0 -> TITLE
+[LOOP] start, frame=33ms
+[I/drv.audcodec] dac set volume: prc=0 codec=-56
+
+[AUDIO] boot test: loop play at volume 4/15 (about 40s window)
+[AUDIO] round 1 start
+[MEM] after mp3 open       total=435856 used=82128 free=353728 max=82128
+[AUDIO] playing in-memory mp3 (129192 bytes)
+[MEM] after mp3 play       total=435856 used=115116 free=320740 max=115144
+[AUDIO] pos=529ms playing=1
+[AUDIO] pos=1030ms playing=1
+[AUDIO] pos=1531ms playing=1
+[AUDIO] pos=2031ms playing=1
+
+--- [SELFTEST] section 3/3: frame rate (REQ-101) ---
+  frames=150 target=33ms
+  frame interval (REQ-101 uses this): avg=33ms p95=34ms max=43ms
+  work per frame: avg=32ms draw=9ms flush=23ms
+  dropped frames: 3
+  p95 interval (limit 34ms): PASS
+
+==================== [SELFTEST] RESULT: PASS ====================
+  section 1-2 failures: 0, section 3 failures: 0
+  note: p95 limit widened 33ms to 34ms by CR-04; tick resolution 1ms, see docs/06 R-10
+
+[AUDIO] pos=2532ms playing=1
+[AUDIO] pos=3033ms playing=1
+[AUDIO] pos=3533ms playing=1
+[AUDIO] pos=4034ms playing=1
+[AUDIO] pos=4535ms playing=1
+[AUDIO] pos=5035ms playing=1
+[AUDIO] pos=5536ms playing=1
+[AUDIO] pos=6044ms playing=1
+[AUDIO] pos=6552ms playing=1
+[AUDIO] pos=7053ms playing=1
+[LOOP] frames=300 iv_avg=33ms iv_p95=35ms iv_max=43ms work=32ms draw=9ms flush=22ms drop=5
+[AUDIO] pos=7553ms playing=1
+[AUDIO] play to end at 8050ms
+[AUDIO] pos=8050ms playing=0
+[AUDIO] stopped at 8050ms
+[AUDIO] round 2 start
+[MEM] after mp3 open       total=435856 used=82128 free=353728 max=115144
+[AUDIO] playing in-memory mp3 (129192 bytes)
+[MEM] after mp3 play       total=435856 used=115116 free=320740 max=115144
+[AUDIO] pos=526ms playing=1
+[AUDIO] pos=1026ms playing=1
+[AUDIO] pos=1534ms playing=1
+[AUDIO] pos=2035ms playing=1
+[AUDIO] pos=2536ms playing=1
+[AUDIO] pos=3036ms playing=1
+[AUDIO] pos=3537ms playing=1
+[AUDIO] pos=4038ms playing=1
+[AUDIO] pos=4546ms playing=1
+[AUDIO] pos=5046ms playing=1
+[AUDIO] pos=5547ms playing=1
+[AUDIO] pos=6048ms playing=1
+[AUDIO] pos=6548ms playing=1
+[AUDIO] pos=7049ms playing=1
+[AUDIO] pos=7550ms playing=1
+[AUDIO] pos=8047ms playing=1
+[AUDIO] play to end at 8050ms
+[AUDIO] stopped at 8050ms
+[AUDIO] round 3 start
+[MEM] after mp3 open       total=435856 used=82128 free=353728 max=115144
+[AUDIO] playing in-memory mp3 (129192 bytes)
+[MEM] after mp3 play       total=435856 used=115116 free=320740 max=115144
+[LOOP] frames=600 iv_avg=33ms iv_p95=34ms iv_max=46ms work=32ms draw=9ms flush=22ms drop=7
+[AUDIO] pos=529ms playing=1
+[AUDIO] pos=1030ms playing=1
+[AUDIO] pos=1538ms playing=1
+[AUDIO] pos=2035ms playing=1
+[AUDIO] pos=2536ms playing=1
+[AUDIO] pos=3036ms playing=1
+[AUDIO] pos=3537ms playing=1
+[AUDIO] pos=4038ms playing=1
+[AUDIO] pos=4538ms playing=1
+[AUDIO] pos=5039ms playing=1
+[AUDIO] pos=5547ms playing=1

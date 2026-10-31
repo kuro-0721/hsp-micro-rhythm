@@ -50,24 +50,51 @@
  *   「敲一次响一点，静音后再敲又变小」——这正是 AGC 的典型行为。
  *   改用 48000 走 music EQ，绕开语音 AGC。
  *   代价：PCM 样本数变 3 倍（50ms × 48kHz = 2400 样本，约 4.8KB，RAM 可接受）。
+ *
+ * 2026-10-31 改：48000 → 44100。
+ *   开启软件混音后，audio_server 的混音目标采样率由**第一个打开的 client** 决定
+ *   （audio_server.c:2497），其余 client 都要 sifli_resample 到它。
+ *   sfx 是第一个打开的，原本 48000 会强制 MP3(44100) 每 10ms 重采样一次，
+ *   白白多吃一份 CPU（实测帧间隔 p95 从 34ms 恶化到 36ms）。
+ *   改成 44100 后两路同采样率，走 audio_write_resample 的直通分支，不重采样。
+ *   44100 同样不是 16000/8000，依旧走 music EQ，不会重新引入语音 AGC。
  */
-#define SFX_SAMPLE_RATE     48000u
+#define SFX_SAMPLE_RATE     44100u
 #define SFX_TONE_HZ         440u
 #define SFX_DURATION_MS     50u
-#define SFX_AMPLITUDE       11000       /* 满幅 32767 的约 34%，留削顶余量 */
 /*
- * 0..15 经音量表映射（采样率 16kHz 走电话音量表 g_tel_vol_level[]，见 drv_audprc.c:51）：
- *   8  → -20dB（实测太小）
- *   14 → -6dB
- *   15 → -4dB
+ * 2026-10-31 改：11000 → 30000（配合软件混音）
+ *   开启 CONFIG_SOFTWARE_TX_MIX_ENABLE 后，服务端把两路 PCM 做 (a>>1)+(b>>1)，
+ *   每一路都被砍 6dB；同时 BGM 和音效共用同一个音量槽（见下方 SFX_VOLUME），
+ *   该槽按音乐能接受的档位取（-28dB）。BGM 是正常录音电平，本音效是代码合成的
+ *   小幅度信号，若不同时抬高幅度，命中声会被 BGM 完全盖住。
+ *   30000/32767 ≈ 92%，混音后峰值 ≈ 15000 + BGM 半幅 16384 = 31384 < 32767，不削顶。
+ *   这是首版取值，听感不合适就调本宏，不要去改音量槽。
+ */
+#define SFX_AMPLITUDE       30000
+/*
+ * 0..15 经音量表映射（drv_audprc.c:51/55）：
+ *   g_tel_vol_level  = {-36,-34,-32,-30,-28,-26,-24,-22,-20,-17,-14,-11,-10,-8,-6,-4}
+ *   g_music_vol_level= {-55,-34,-32,-30,-28,-26,-24,-22,-20,-17,-14,-11,-10,-8,-6,-4}
+ * 即 4→-28dB、8→-20dB、14→-6dB、15→-4dB。
  *
  * 注意：**不要用 15（即 AUDIO_MAX_VOLUME）**。
  * audio_server.c:380 有一段只在 vol == AUDIO_MAX_VOLUME 时才执行的特殊处理：
  *   decrease_level = eq_get_decrease_level(...); 然后按位移相加给 PCM 加额外增益。
  * 把音量拉到 15 就会踩进这条分支，实测表现为「每敲一次声音更大一次」；
- * 改成 14 即绕开该分支，且 -6dB 与 -4dB 听感差异很小。
+ * 改成 14 即绕开该分支。
+ *
+ * 2026-10-31 改：14 → 4，因为开启软件混音后 BGM 和音效共用同一个音量槽。
+ *   音量是「按 audio_type 存一份」（private_volume[AUDIO_TYPE_LOCAL_MUSIC]），
+ *   不是按 client 存；两个客户端都是 LOCAL_MUSIC，且 speaker_update_volume()
+ *   取 TX 队列里第一个 client 的 audio_type 定整个混音流的音量。
+ *   最后调 audio_server_set_private_volume 的生效 —— sfx_init() 在
+ *   audio_start_async() 之后跑，所以**真正生效的是本宏，不是 audio.c 的
+ *   AUDIO_MUSIC_VOLUME**。
+ *   取 4（-28dB）是学生 2026-10-31 用 8/6/4 三档试听后选定的 BGM 音量，
+ *   两个宏必须一起改。
  */
-#define SFX_VOLUME          14u
+#define SFX_VOLUME          4u
 #define SFX_PCM_MAX         ((SFX_SAMPLE_RATE * SFX_DURATION_MS) / 1000u)
 /*
  * 与老师验证过的 peripheral_lab/src/lab_audio.c 对齐：
@@ -77,7 +104,7 @@
  * 16000 样本/秒，缓存写满后 audio_write 返回 0，样本被丢弃。
  */
 #define SFX_CACHE_BYTES     4096u
-#define SFX_BLOCK_SAMPLES   480u        /* 10ms @ 48kHz，与 10ms 周期 1:1 */
+#define SFX_BLOCK_SAMPLES   441u        /* 10ms @ 44.1kHz，与 10ms 周期 1:1 */
 #define SFX_BLOCK_MS        10u
 #define SFX_THREAD_PRIO     24          /* 必须低于帧循环 game(20)，见 R-09 */
 /* 上电自检音模式：0 = 关闭（正式版）；1 = 常驻 client + 20 声连击自检；2 = 完整周期对照实验 */
@@ -340,6 +367,8 @@ int sfx_init(void)
                (unsigned)s_pcm_samples, (unsigned)SFX_CACHE_BYTES,
                (unsigned)SFX_BLOCK_SAMPLES, (unsigned)SFX_BLOCK_MS,
                (unsigned)SFX_VOLUME, s_enabled);
+
+    memprobe("after sfx_open");
 
 #if SFX_BOOT_SELFTEST
     /*

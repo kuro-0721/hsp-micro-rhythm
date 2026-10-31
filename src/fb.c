@@ -10,10 +10,28 @@
  *   → SET_BRIGHTNESS → rt_device_set_tx_complete(回调)
  *   提交：mpu_dcache_clean → set_window → draw_rect_async → 等 tx_complete 回调
  *
- * 缓冲大小：390x450x2 = 351,000 字节，由 RT-Thread 堆分配（本板堆在 PSRAM，8MB 余量充足）。
+ * 缓冲大小：390x450x2 = 351,000 字节。
+ *
+ * 2026-10-31 修正（旧注释写错了，留着以免再踩）：
+ *   旧注释说「本板堆在 PSRAM，8MB 余量充足」——**错的**。系统堆就在 SRAM，
+ *   `__bss_end`=0x20015724 到 0x2007fc20，总共只有 435,468 字节，
+ *   这 351,000 字节的帧缓冲一占就占掉 80%，直接导致 REQ-009 的音效 client
+ *   和 REQ-008 的 mp3 client 装不进去（实测断言，见 evidence/M4/memprobe_2026-10-31.log）。
+ *
+ *   正确事实：PSRAM 确实是初始化过的 —— `sf32lb52-lchspi-ulp_base/bsp_init.c` 的
+ *   HAL_PreInit() 在 `#ifdef BSP_USING_PSRAM` 下调用了 rt_psram_init()，
+ *   PSRAM 8MB @ 0x60000000（PSRAM_SIZE = BSP_QSPI1_MEM_SIZE(8) * 1MB）。
+ *   所以帧缓冲改成优先放 PSRAM，腾出 351KB 系统堆。
+ *
+ *   带读写自检：写探子 → 读回比对，失败就回退到 rt_malloc（宁可费堆也别黑屏）。
+ *   提交前已经调 mpu_dcache_clean()（本文件 fb_present / fb_flush_rect 里），
+ *   PSRAM 是可缓存的，走 DMA 刷屏必须清 cache —— 这一步原本就有，无需额外处理。
  */
 #include "app.h"
 #include <string.h>
+
+/* 帧缓冲在 PSRAM 里的位置：偏移 1MB，避开 PSRAM 尾部的 NMI 保留区 */
+#define FB_PSRAM_ADDR        (0x60000000u + 0x00100000u)
 
 static rt_device_t s_lcd;
 static struct rt_device_graphic_info s_info;
@@ -27,6 +45,30 @@ static rt_err_t lcd_tx_done(rt_device_t dev, void *buffer)
 {
     rt_sem_release(&s_flush_sema);
     return RT_EOK;
+}
+
+/*
+ * PSRAM 读写自检：首尾各写一个探子读回比对。
+ * 返回 0 = 可用。不能相信「BSP_USING_PSRAM 有定义」就等于这块板上真焊了片子。
+ */
+static int fb_psram_selftest(uint16_t *p, rt_uint32_t bytes)
+{
+    volatile uint16_t *head = p;
+    volatile uint16_t *tail = (volatile uint16_t *)((rt_uint8_t *)p + bytes - sizeof(uint16_t));
+    uint16_t old_head = *head;
+    uint16_t old_tail = *tail;
+    int ok;
+
+    *head = 0x5AA5u;
+    *tail = 0xA55Au;
+    __DSB();
+    ok = (*head == 0x5AA5u) && (*tail == 0xA55Au);
+
+    *head = old_head;
+    *tail = old_tail;
+    __DSB();
+
+    return ok ? 0 : -1;
 }
 
 int fb_init(void)
@@ -60,7 +102,20 @@ int fb_init(void)
     rt_device_control(s_lcd, RTGRAPHIC_CTRL_SET_BRIGHTNESS, &brightness);
 
     s_buf_bytes = (rt_uint32_t)s_info.width * s_info.height * sizeof(uint16_t);
-    s_buf = (uint16_t *)rt_malloc(s_buf_bytes);
+
+    /* 先试 PSRAM，自检不过再回退到系统堆 */
+    s_buf = (uint16_t *)FB_PSRAM_ADDR;
+    if (fb_psram_selftest(s_buf, s_buf_bytes) == 0)
+    {
+        rt_kprintf("[FB] framebuffer in PSRAM @0x%08x (%u bytes)\n",
+                   (unsigned)FB_PSRAM_ADDR, (unsigned)s_buf_bytes);
+    }
+    else
+    {
+        rt_kprintf("[FB] WARN: PSRAM selftest failed, falling back to system heap\n");
+        s_buf = (uint16_t *)rt_malloc(s_buf_bytes);
+    }
+
     if (!s_buf)
     {
         rt_kprintf("[FB] ERROR: malloc %u bytes for framebuffer failed\n",
