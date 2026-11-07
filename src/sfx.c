@@ -368,8 +368,6 @@ int sfx_init(void)
                (unsigned)SFX_BLOCK_SAMPLES, (unsigned)SFX_BLOCK_MS,
                (unsigned)SFX_VOLUME, s_enabled);
 
-    memprobe("after sfx_open");
-
 #if SFX_BOOT_SELFTEST
     /*
      * 连续触发 20 次（每次 50ms 音效、间隔 50ms）= 约 2 秒的连续「咚咚」声。

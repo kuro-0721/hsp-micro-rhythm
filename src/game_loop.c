@@ -252,7 +252,6 @@ int app_start(void)
         return -1;
 
     /* 帧缓冲 351,000 字节从系统堆分配，是最大的一笔开销，先量一下 */
-    memprobe("after fb_init");
 
     /* 判定引擎：先跑纯逻辑自检 + 批量判定测试
      * （REQ-007 的一部分；批量测试对应 TC-003 「以已知时刻输入 ≥50 次」） */
@@ -273,8 +272,6 @@ int app_start(void)
     /* 场景状态机（REQ-001）：上电进入 TITLE */
     scene_init();
 
-    memprobe("after scene_init");
-
     /*
      * REQ-008（P1）：MP3 与音频进度时间基准（CR-05：曲目内置，不用 TF 卡）。
      *
@@ -285,8 +282,6 @@ int app_start(void)
     if (audio_start_async() != 0)
         rt_kprintf("[APP] WARN: audio start failed, REQ-008 unavailable\n");
 
-    memprobe("after audio_start");
-
     /*
      * REQ-009 命中音效：合成 440Hz/50ms 方波，自己开一个 audio client 播放。
      *
@@ -296,8 +291,6 @@ int app_start(void)
      */
     if (sfx_init() != 0)
         rt_kprintf("[APP] WARN: sfx init failed, hits will be silent\n");
-
-    memprobe("after sfx_init");
 
     /*
      * 自动演奏（测试用，src/autoplay.c）：按谱面自动注入点击，

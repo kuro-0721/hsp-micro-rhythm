@@ -22,7 +22,7 @@
  */
 #include "app.h"
 
-#define AUTOPLAY_ENABLE     1
+#define AUTOPLAY_ENABLE     0
 #define AUTOPLAY_LANES      4       /* 与 scene.c 的 LANE_COUNT 一致 */
 #define AUTOPLAY_PERIOD_MS  5       /* 轮询周期：远小于 ±60ms 的 Perfect 窗口 */
 #define AUTOPLAY_LEAD_MS    5       /* 谱面时间追平判定阈值后就打 */

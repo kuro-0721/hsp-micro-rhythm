@@ -331,13 +331,4 @@ void selftest_latency_report(void);
 /* 由 main.c 调用：初始化 LCD → 启动帧循环。成功返回 0。 */
 int app_start(void);
 
-/* ---------------- 内存探针（临时，src/memprobe.c） ---------------- */
-
-/*
- * 打印一次系统堆的 total/used/free/max，用于定位内存是在哪一步被吃掉的。
- * 参数 tag 是短标签（如 "after fb_init"），会原样打进日志。
- * 2026-10-31 为排查混音断言而临时加入，问题定位后可整体删除。
- */
-void memprobe(const char *tag);
-
 #endif /* APP_H */

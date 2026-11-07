@@ -140,7 +140,6 @@ int audio_init(void)
     s_inited = 1;
     rt_kprintf("[AUDIO] ready: in-memory mp3, %u bytes, volume=%u, 10ms DMA callback registered\n",
                g_mp3_sample_len, (unsigned)AUDIO_MUSIC_VOLUME);
-    memprobe("after audio_init");
     return 0;
 }
 
@@ -172,7 +171,6 @@ int audio_play(void)
     }
 
     /* mp3ctrl_open_buffer 内部会 audio_open2 一个 client，很吃堆，量一下 */
-    memprobe("after mp3 open");
 
     /*
      * 必须显式调用 mp3ctrl_play() 才真正开始播放。
@@ -192,7 +190,6 @@ int audio_play(void)
     }
 
     rt_kprintf("[AUDIO] playing in-memory mp3 (%u bytes)\n", g_mp3_sample_len);
-    memprobe("after mp3 play");
     return 0;
 }
 
