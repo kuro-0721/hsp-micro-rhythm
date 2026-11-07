@@ -16,11 +16,10 @@ submission:
   student_id: "2024211455"
   student_name: "邬皓帆"
   group_id: "未定"
-  # 当前里程碑：M4 仍在进行中（REQ-101 未闭合），尚未正式交件
-  milestone: "M4-测试与交付（进行中）"
-  # 该时间为此交接清单最近一次更新的时刻，不是正式 M4 交件时间；
-  # 正式交件时间待 M4 收口时填写
-  submitted_at: "2026-10-31T15:10:00+08:00"
+  # 当前里程碑：M4 收口（2026-11-07）。REQ-101 不达标已按学生决定如实记录，不作为隐藏项
+  milestone: "M4-测试与交付（收口）"
+  # M4 收口时间
+  submitted_at: "2026-11-07T13:40:00+08:00"
 
 dev_agent:
   tool: "GitHub Copilot in VS Code（Agent 模式，配合 siFli CodeKit 扩展的编译/串口工具）"
@@ -64,7 +63,7 @@ design:
 code:
   repo_url: "https://github.com/kuro-0721/hsp-micro-rhythm.git"
   # M4 阶段提交已纳入；末端为 2026-10-31 收口时的 HEAD
-  commit_range: "3b43aa0..cf36a16"
+  commit_range: "3b43aa0..1251f1f"
   # 说明：覆盖 M1-方案评审 与 M2-关键技术验证 两个里程碑（均在 2026-10-10 收口）。
   # 3b43aa0 = 仓库初始化首提交；dae8ffd = M1 收口提交（即首次推送时 main 分支的末端）。
   # 仓库于 2026-10-10 由学生 kuro-0721 创建并首次推送，含 main 分支与上述两个里程碑标签。
@@ -138,6 +137,17 @@ physical_verification:
     evidence_path: "evidence/M3/stability_10min_2026-10-17.log"
     agent_conclusion: "**先排除重启干扰**：`SiFli Corporation` / `[APP] init done` / `[LOOP] start` 各出现 1 次，且 [HEAP] 时间戳单调递增（间隔约 60s），证明板子全程只启动一次；抓取中途的端口重连是抓取端问题。**堆使用**：11 个样本 used 全部 371004B、free 全部 86796B，零字节漂移；max_used 恒为 375312B（仅比稳态高 4308B，无二次增长）→ 无内存泄漏。**帧率**：frames=20400（约 11.2 分钟），iv_p95=34ms、iv_max=38ms、drop=0；自检 `p95 interval PASS` / `RESULT: PASS`。**重要局限：本轮是「连续运行」11.2 分钟，不是「连续演奏」——人不可能手打 11 分钟，未做自动演奏脚本，报告不得写成「连续演奏 10min 通过」。另：work 已涨到 33ms（flush 30ms），帧循环已无 delay 余量。**"
 
+  - item: "M4 收口：TC-103 连续演奏 11 分钟（自动演奏版固件）+ 交付版固件回归（2026-11-07）"
+    required_action: "学生烧录自动演奏版固件后不碰板子，agent 用独立抓取进程采集 700 秒；随后学生再烧录清理后的交付版（AUTOPLAY_ENABLE 0、删除 memprobe）并手动确认画面与出声"
+    executed_at: "2026-11-07T13:12~13:30+08:00"
+    evidence_path: "evidence/M4/tc103_run_2026-11-07.log"
+    agent_conclusion: "**TC-103（REQ-103）通过，且首次是真正的「连续演奏」**：11.3 分钟 / 12 局 / 20400 帧，启动横幅与 [APP] init done 各仅 1 次（无复位），Assertion 0 次；11 个 [HEAP] 样本 used 恒为 113084 字节、free 恒为 322752 字节，**零字节漂移**；12 局结算全部 score=5800 P=58 G=0 M=0。**同一份日志复核 TC-101：不达标**——68 个 300 帧窗口中 iv_p95 中位 34ms、最大 46ms，仅 53% 不超过 34ms，drop 累计 499，iv_max 最大 150ms（换局时打开音频造成，B-010）。**REQ-009 延迟判据在长跑中全部满足**：696 个 feed_prev 样本中位 12ms、最大 20ms，无一个超过 20ms。**局限**：点击由软件注入，不经 FT6146 中断，不能用于 TC-104。"
+  - item: "REQ-008/REQ-009 混音打通 + 帧缓冲迁 PSRAM（2026-10-31）"
+    required_action: "学生烧录（共 6 轮），agent 保持串口连接后用 RTS 复位重采日志；学生用听感确认音效与 BGM 同时出声"
+    executed_at: "2026-10-31T13:4x~14:3x+08:00"
+    evidence_path: "evidence/M4/mix_run3_posfix_2026-10-31.log"
+    agent_conclusion: "逐步对照，失败记录均保留未覆盖。① 开混音首次失败：`Assertion failed at audio_client_init line:3834 (handle->ring_pool)`，堆探针实测系统堆仅 435,468B、帧缓冲独占 351,000B（占 80%），并不是混音本身的问题（不开混音也照样断言）。② 帧缓冲改放 PSRAM 0x60100000（带自检+回退）后 `[MEM] after fb_init free` 由 75,196 升到 426,600，mp3 client 成功打开，p95 仍 34ms——PSRAM 帧缓冲未观察到帧率退化。③ 混音开启后音效 48kHz 时为 36ms FAIL，改 44.1kHz 后 34ms PASS。④ 修正 audio_pos_ms 快 2.755 倍后 `play to end at 8039~8050ms` 对 8.05s 曲目。⑤ 阶段 2 接入场景后 `timebase=audio`，音频结束后自动转 tick。**局限：教学用音效与 BGM 共用同一个音量槽（L-14）；帧率长窗口仍 34~35ms 抖动，演奏开始含 BGM 启动的 300 帧 p95=37ms 超判据（R-11）。**"
+
 physical_verification_note: |
   M2 阶段的烧录（sftool write_flash --verify）与启动复位（CodeKit 串口复位）由 agent 执行、学生确认，
   不是学生亲自操作（见 docs/06 的 P-09）。
@@ -147,24 +157,28 @@ physical_verification_note: |
   串口数据为真实抓取的设备原始字节；bench_serial_2026-10-17.log 仅去除 ANSI 颜色控制码，
   原始字节保留在 bench_serial_2026-10-17_raw.log 中。
 
-  - item: "REQ-008/REQ-009 混音打通 + 帧缓冲迁 PSRAM（2026-10-31）"
-    required_action: "学生烧录（共 6 轮），agent 保持串口连接后用 RTS 复位重采日志；学生用听感确认音效与 BGM 同时出声"
-    executed_at: "2026-10-31T13:4x~14:3x+08:00"
-    evidence_path: "evidence/M4/mix_freeze_2026-10-31.log, mix_run1_2026-10-31.log, mix_run2_44k1_2026-10-31.log, mix_run3_posfix_2026-10-31.log, psram_fb_2026-10-31.log, memprobe_2026-10-31.log, scenetime_run1_2026-10-31.log"
-    agent_conclusion: "逐步对照，失败记录均保留未覆盖。① 开混音首次失败：`Assertion failed at audio_client_init line:3834 (handle->ring_pool)`，堆探针实测系统堆仅 435,468B、帧缓冲独占 351,000B（占 80%），并不是混音本身的问题（不开混音也照样断言）。② 帧缓冲改放 PSRAM 0x60100000（带自检+回退）后 `[MEM] after fb_init free` 由 75,196 升到 426,600，mp3 client 成功打开，p95 仍 34ms——PSRAM 帧缓冲未观察到帧率退化。③ 混音开启后音效 48kHz 时为 36ms FAIL，改 44.1kHz 后 34ms PASS。④ 修正 audio_pos_ms 快 2.755 倍后 `play to end at 8039~8050ms` 对 8.05s 曲目。⑤ 阶段 2 接入场景后 `timebase=audio`，音频结束后自动转 tick。**局限：教学用音效与 BGM 共用同一个音量槽（L-14）；帧率长窗口仍 34~35ms 抖动，演奏开始含 BGM 启动的 300 帧 p95=37ms 超判据（R-11）。**"
+
 
 test_results:
+  - test_id: "TC-103"
+    description: "M4 收口：连续演奏 11 分钟（自动演奏注入点击，真实演奏负载）"
+    expected: "无死机无复位；每 60s 打印的 free heap 无持续下降趋势"
+    actual: "11.3 分钟 / 12 局 / 20400 帧，无复位（启动横幅与 [APP] init done 各 1 次）、Assertion 0 次；11 个 [HEAP] 样本 used 恒为 113084 字节、free 恒为 322752 字节，**零字节漂移**；12 局结算全部 score=5800 P=58 G=0 M=0。**注意：这是「连续演奏」而非 M3 那轮的「连续运行」，口径已升级；局限是点击由软件注入，不经 FT6146 中断。**"
+    pass: true
+    evidence_path: "evidence/M4/tc103_run_2026-11-07.log"
   # T0 为环境与仓库任务（非 REQ 驱动的功能需求），未在 docs/03 建立 TC 编号，
   # 故本次不填 test_results，直接由 physical_verification 承接证据。
   # M3 收口轮起，此处填一条与 REQ-101 直接相关的代表性用例，其余见 docs/04。
   - test_id: "TC-101"
-    description: "M3 收口轮：修正统计口径后的真实帧间隔测量（REQ-101）"
-    expected: "帧间隔 P95 不超过 34ms（CR-04 放宽后的判据），掉帧数为 0"
-    actual: "iv_avg=33ms / iv_p95=34ms / iv_max=38ms / work=31~32ms / drop=0（四轮 [LOOP] 一致）；自检第 3 节 `p95 interval (limit 34ms): PASS`。**注意：34ms 正好等于判据上限，余量仅 1~2ms，属「恰好通过」不是「有余量」。**"
-    pass: true
-    evidence_path: "evidence/M3/interval_run_2026-10-17.log"
+    description: "REQ-101 演奏帧率（判据：连续演奏 30s，帧间隔 P95 不超过 34ms；CR-04 放宽后）"
+    expected: "真实演奏负载（有 BGM、有音符、有命中音效）下帧间隔 P95 不超过 34ms"
+    actual: "**不通过。** M3 时期曾记 `iv_avg=33ms iv_p95=34ms iv_max=38ms drop=0` 并判为通过，但那次测量发生在板子停在 TITLE、无 BGM、无音符的静止画面（自检第 3 节开机后立刻跑），口径与判据要求的「连续演奏」不符，**旧结论已作废**。2026-10-31 与 2026-11-07 用自动演奏在真实负载下实测：自检 `p95=38ms`；68 个 300 帧窗口中 `iv_p95` 中位 34ms、最大 46ms，仅 53% 的窗口不超过 34ms，`drop` 累计 499，`iv_max` 最大 150ms。主因 `draw=10~11ms`（帧缓冲迁 PSRAM 后每帧全屏擦 351KB；M3 帧缓冲在 SRAM 时只有 2ms）。学生决定接受不达标、如实记录，不放宽判据。"
+    pass: false
+    evidence_path: "evidence/M4/tc103_run_2026-11-07.log"
 
 known_issues:
+  - "**`check_all.py --final` 的「开发日志」一项必然 FAIL（CR-07，2026-11-07）**：`check_devlog.py --strict` 把任何超过 7 天的提交间隔判失败，且没有「已说明原因即豁免」的机制。台账存在 2026-10-17 → 2026-10-25 共 8 天无提交的历史间隔（真实原因：国庆后一周课程冲突项目停摆，已写进 2026-11-07 开发日志）。不修的理由：改 `scripts/check_*.py` 被规范 F 禁止，伪造提交时间被规范 E 禁止。其余四项（提交规范 / 需求追踪 / manifest / 固件编译）均通过，评审请以此为准。"
+  - "**`check_all.py --final` 的固件编译在普通终端显示 SKIP（CR-08，2026-11-07）**：本机 `export.ps1` 报 `uv was not found in PATH`（T0 起就存在）。改用 SiFli CodeKit 通道实跑 `scons --board=sf32lb52-lchspi-ulp -j8`，退出码 0；交付版固件 606,308 B 已由学生上板确认。编译虽真实通过，但 `--final` 输出里那一节仍是 SKIP，二者差异在此说明。"
   - "**REQ-101 判据已放宽且未测准（CR-04，2026-10-17）**：帧间隔用 rt_tick_get_millisecond() 打点，分辨率仅 1ms。M3 第 2 步引入触摸后 p95 从 33ms 变为 34ms，恰好卡在分辨率边界上，无法判断是真实恶化还是量化误差。agent 给出的三个方案里建议先用 DWT 周期计数器做亚毫秒测量（方案 A），**学生选择直接放宽判据（方案 B）**。因此“这 1ms 是否真的掉了”至今未被证伪，详见 docs/06 的 R-10。"
   - "参与对比的三轮数据：M3 第 1 步（无触摸代码）p95=33ms；第 2 步第 1/2 轮（bridge 优先级 19，有/无触摸事件）p95=34ms；第 3 步第 3 轮（优先级 25）p95=34ms。已排除的两个假设：线程优先级抢占、触摸事件突发；未验证的假设：FT6146 驱动以 BSP_TOUCH_SAMPLE_HZ=120 周期采样（约 8.3ms 一次 I2C）。"
   - "**流程偏离**：M2 阶段的固件烧录与启动复位由 agent 执行（学生要求免除拆插 USB），屏幕现象由学生确认；未按“学生亲自烧录”记录（docs/06 的 P-09）。"
@@ -183,15 +197,15 @@ known_issues:
   - "**帧率余量被混音吃干（R-11/L-13）**：帧缓冲迁 PSRAM 后长窗口 p95 仍为 34~35ms（判据上限 34ms），且演奏开始含 BGM 打开的 300 帧 p95=37ms 已超判据，之后回落。任何再往帧循环里加的耗时工作都会破线。"
   - "**BGM 与音效共用同一个音量槽（L-14）**：private_volume 按 audio_type 存，两个 client 都是 LOCAL_MUSIC，最终生效的是最后调 audio_server_set_private_volume 的那次（本工程为 sfx_init()）。因此 SFX_VOLUME 必须与 AUDIO_MUSIC_VOLUME 保持一致，否则会互相覆盖。"
   - "**src/audio.c 的 AUDIO_DMA_SAMPLES 与编译开关绑定**：开 SOFTWARE_TX_MIX_ENABLE 时为 160 样本，否则为 480。若将来关掉混音开关而不改这个宏，音频进度会再次算错（历史缺陷 P-14）。"
-  - "**`src/autoplay.c` 默认是开启的（`AUTOPLAY_ENABLE 1`）**：上电会自动开局并按谱面注入合成点击。正式演示/验收前必须改成 0 并重新编译，否则画面会自己动。自动演奏的点击不经 FT6146 中断，不能用于 TC-104 端到端延迟。\n"
+  - "`src/autoplay.c` 已于 2026-11-07 在交付版中**置为 AUTOPLAY_ENABLE 0**（提交 1251f1f），上电不再自动开局，需手动点击开始。该模块仅作为 TC-103/TC-101 的压测工具保留；其注入的点击不经 FT6146 中断，**不能用于 TC-104 端到端延迟**。"
   - "**REQ-101 在真实演奏负载下不达标（2026-10-31 确认，docs/04 B-008）**：用自动演奏在「演奏 + BGM + 命中音效」负载下实测 iv_p95=40ms、自检 p95=38ms、drop 累计 37，超过 34ms 判据。此前多次记录的「34ms PASS」都是在 TITLE 静止画面上量的，口径不成立，已在 docs/04 作废。尝试的脏区优化把 draw 从 10ms 降到 1ms，但出现音符拖影，已回退（B-009）。\n"
-  - "`src/memprobe.c` 为临时堆探针（带 5 处 memprobe() 调用），定位内存问题用，不是正式功能；需在后续清理时一并删除。"
+  - "`src/memprobe.c` 为临时堆探针（曾带 5 处 memprobe() 调用），定位内存问题用，不是正式功能；**已于 2026-11-07 随 M4 收口一并删除**（提交 1251f1f），`app.h` 的声明与 `audio.c`/`sfx.c` 的调用点同时移除，交付版固件不含该代码。"
   - "**帧率统计口径已在 M3 收口轮修正（L-11 已关闭）**：loop_stats() 现同时提供 avg/p95/max_ms（每帧 draw+flush 耗时）与 avg/p95/max_interval_ms（真正的帧间隔），自检第 3 节与 [LOOP] 行都分开打印，REQ-101 判据一律用后者。**口径修正后暴露出一个重要事实：真实帧间隔 p95=34ms 正好卡在 CR-04 的上限，每帧处理已占 31~32ms（其中 flush 29ms 等 VSYNC），只剩 1~2ms 余量。** 前几轮报的 avg=28ms 是 work 口径，不代表有余地。"
   - "**帧率余量很紧，是本项目当前最大的技术风险**：iv_max 已经到过 38ms（瞬时约 26fps），只因为占比不到 5% 才没拉高 p95；掉帧计数阈值是 33+5=38ms（需严格大于），也就是说**目前卡在边界上，拖到 39ms 就会开始计 drop**。后续若要加长按条、特效或判定文字动画，这 1~2ms 大概率不够。"
   - "**自检的注入 FAIL 是编译期开关造出来的**（SELFTEST_INJECT_BAD_CHART=1），不是运行时检测到真实坏数据。真实坏数据场景（例如 TF 卡上的谱面出错）属于 P1 范畴，未验证。"
   - "判定延迟直方图统计的是「触摸中断到判定执行」，**不是「触摸到画面翻转」**；后者仍需 GPIO 打点（对应 REQ-104 未闭合的那一半）。"
   - "自检的三节都在 TITLE 停留期间采样（第 3 节固定在 150 帧触发），**未覆盖长时间演奏下的帧率自检**；如果要看演奏中的自检数据，需要改成多次触发或延后触发时机。"
-  - "**REQ-103 的「连续演奏」实际做成了「连续运行」**：11.2 分钟里学生玩了若干局并停留在主界面，不是从头到尾一直在演奏；未做自动演奏脚本。堆零漂移与不死机的结论成立，但不能写成「连续演奏 10min 通过」。"
+  - "**REQ-103 的「连续演奏」曾降级为「连续运行」（M3），已由 2026-11-07 重测取代**：M3 那轮 11.2 分钟里学生玩了若干局并停留在主界面，不是从头到尾一直在演奏，当时无自动演奏脚本，故只能写「连续运行」。**2026-11-07 已用自动演奏固件重测：11.3 分钟 / 12 局 / 20400 帧、全程无复位、断言 0 次、堆 used 恒为 113084B 零漂移，是真正的「连续演奏」，TC-103 判 PASS。**M3 旧结论保留不删，仅说明口径已被升级；残留局限是点击由软件注入、不经 FT6146 中断，故该日志不能用于 TC-104。"
   - "**帧率余量已降到 0~2ms**：11 分钟长跑后 work=33ms（flush 30ms），而目标帧间隔就是 33ms，帧循环已没有任何 rt_thread_delay 余量，靠「刚好赶上」在跑。p95 仍为 34ms 是因为抖动未超 38ms。**这是当前最大的技术风险**，M4 若要加长按条/特效/判定文字动画很可能掉帧。"
   - "**全程 USB 供电，不接电池（2026-10-17 学生决定，R-04 关闭）**：官方 `mp3_sd_player/README.md` 第 23 行明确该平台要求电池的唯一原因是「长按按键检测」，而本项目全用触摸、不用按键。**残留风险（未验证）**：功放 AW8155 驱动喇叭时峰值电流可能超过 USB 的 500mA，症状是随机复位 / 播放卡顿 / 喇叭爆音，而不是明确报错。**若以后遇到「莫名其妙复位」，先想到供电不足，别一头扎进代码里查。** "
   - "**REQ-009 音效已能发声，但连续敲击时音量逐步增大（L-12，2026-10-25，未定位）**：命中发声本身正常，`feed_prev`（首样本写入音频缓存）实测 4~10ms，13 个样本 100% ≤20ms。但密集敲击时每一下比上一下响、到某上限后不再变大；静音约 5 秒后再敲，第一声又偏小。已排除：音量值变化（日志中 `vol` 全程恒定）、音效重叠（`skipped` 恒为 0）、`vol==AUDIO_MAX_VOLUME` 的特殊增益分支、16k/48k 采样率下 voice/music EQ 的差异、`bf0_audprc_eq_enable_offline(0)` 关闭 EQ。行为特征符合自动增益（AGC），但关掉 EQ 后仍未消失。**学生决策按方案 A 接受现状**，登记为已知缺陷；下一步可试「每次命中重建 audio client」（老师工程用的模式，但会牺牲延迟）。"
