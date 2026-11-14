@@ -39,4 +39,4 @@ project/src/
 
 # Office 打开文档时生成的锁文件与转换脚本的临时产物
 ~$*
-*.docx.__tmp__.docx
+*.__tmp__.docx
